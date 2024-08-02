@@ -12,6 +12,8 @@ import { Role } from '../../../../domain/role';
 import { RoleRepository } from '../../role.repository';
 import { RoleEntity } from '../entities/role.entity';
 import { RoleMapper } from '../mappers/role.mapper';
+import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { Pagination } from 'src/utils/pagination';
 
 @Injectable()
 export class RoleRelationalRepository implements RoleRepository {
@@ -45,14 +47,18 @@ export class RoleRelationalRepository implements RoleRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<Role[]> {
-    const entities = await this.roleRepository.find({
+  }): Promise<PaginationResponseDto<Role>> {
+    const [entities, count] = await this.roleRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       loadEagerRelations: true,
     });
+    const items = entities.map((entity) => RoleMapper.toDomain(entity));
 
-    return entities.map((user) => RoleMapper.toDomain(user));
+    return Pagination(
+      { items, count },
+      { ...paginationOptions, domain: 'roles' },
+    );
   }
 
   async findById(id: Role['id']): Promise<NullableType<Role>> {

@@ -10,6 +10,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { exceptionResponses } from './users.messages';
+import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -70,7 +71,7 @@ export class UsersService {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<User[]> {
+  }): Promise<PaginationResponseDto<User>> {
     return this.usersRepository.findManyWithPagination({
       filterOptions,
       sortOptions,

@@ -1,19 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  Query,
-  HttpStatus,
+  Get,
   HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
   SerializeOptions,
+  UseGuards,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -23,18 +22,19 @@ import {
 } from '@nestjs/swagger';
 import { Permissions } from '../permissions/permissions.decorator';
 import { PermissionsEnum } from '../permissions/permissions.enum';
-import { AuthGuard } from '@nestjs/passport';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 import {
-  InfinityPaginationResponse,
-  InfinityPaginationResponseDto,
-} from '../utils/dto/infinity-pagination-response.dto';
-import { NullableType } from '../utils/types/nullable.type';
-import { QueryUserDto } from './dto/query-user.dto';
-import { User } from './domain/user';
-import { UsersService } from './users.service';
+  PaginationResponse,
+  PaginationResponseDto,
+} from 'src/utils/dto/pagination-response.dto';
+import { getPagination } from 'src/utils/get-pagination';
 import { PermissionsGuard } from '../permissions/permissions.guard';
-import { infinityPagination } from '../utils/infinity-pagination';
+import { NullableType } from '../utils/types/nullable.type';
+import { User } from './domain/user';
+import { QueryUserDto } from './dto/query-user.dto';
+import { UsersService } from './users.service';
 
 @ApiBearerAuth()
 @Permissions(PermissionsEnum.CREATE_USER)
@@ -60,7 +60,7 @@ export class UsersController {
   }
 
   @ApiOkResponse({
-    type: InfinityPaginationResponse(User),
+    type: PaginationResponse(User),
   })
   @SerializeOptions({
     groups: ['admin'],
@@ -69,24 +69,14 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Query() query: QueryUserDto,
-  ): Promise<InfinityPaginationResponseDto<User>> {
-    const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
+  ): Promise<PaginationResponseDto<User>> {
+    const paginationOptions = getPagination(query);
 
-    return infinityPagination(
-      await this.usersService.findManyWithPagination({
-        filterOptions: query?.filters,
-        sortOptions: query?.sort,
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
-    );
+    return this.usersService.findManyWithPagination({
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
+      paginationOptions,
+    });
   }
 
   @ApiOkResponse({

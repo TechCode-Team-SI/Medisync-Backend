@@ -1,18 +1,16 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  Query,
+  Get,
   NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
-import { RolesService } from './roles.service';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -20,15 +18,17 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { Role } from './domain/role';
-import { AuthGuard } from '@nestjs/passport';
 import {
-  InfinityPaginationResponse,
-  InfinityPaginationResponseDto,
-} from '../utils/dto/infinity-pagination-response.dto';
-import { infinityPagination } from '../utils/infinity-pagination';
+  PaginationResponse,
+  PaginationResponseDto,
+} from 'src/utils/dto/pagination-response.dto';
+import { Role } from './domain/role';
+import { CreateRoleDto } from './dto/create-role.dto';
 import { FindAllRolesDto } from './dto/find-all-roles.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
 import { exceptionResponses } from './roles.messages';
+import { RolesService } from './roles.service';
+import { getPagination } from 'src/utils/get-pagination';
 
 @ApiTags('Roles')
 @ApiBearerAuth()
@@ -50,26 +50,14 @@ export class RolesController {
 
   @Get()
   @ApiOkResponse({
-    type: InfinityPaginationResponse(Role),
+    type: PaginationResponse(Role),
   })
   async findAll(
     @Query() query: FindAllRolesDto,
-  ): Promise<InfinityPaginationResponseDto<Role>> {
-    const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
+  ): Promise<PaginationResponseDto<Role>> {
+    const paginationOptions = getPagination(query);
 
-    return infinityPagination(
-      await this.rolesService.findAllWithPagination({
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
-    );
+    return this.rolesService.findAllWithPagination({ paginationOptions });
   }
 
   @Get(':id')

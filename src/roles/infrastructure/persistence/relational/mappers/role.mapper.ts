@@ -7,7 +7,11 @@ export class RoleMapper {
     const domainEntity = new Role();
     domainEntity.id = raw.id;
     domainEntity.name = raw.name;
-    domainEntity.permissions = raw.permissions;
+    if (raw.permissions) {
+      domainEntity.permissions = raw.permissions.map((permission) =>
+        PermissionMapper.toDomain(permission),
+      );
+    }
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
 

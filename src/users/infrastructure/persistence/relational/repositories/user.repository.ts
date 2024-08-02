@@ -10,6 +10,8 @@ import { UserRepository } from '../../user.repository';
 import { UserMapper } from '../mappers/user.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { exceptionResponses } from 'src/users/users.messages';
+import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { Pagination } from 'src/utils/pagination';
 
 @Injectable()
 export class UsersRelationalRepository implements UserRepository {
@@ -34,15 +36,16 @@ export class UsersRelationalRepository implements UserRepository {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<User[]> {
+  }): Promise<PaginationResponseDto<User>> {
     const where: FindOptionsWhere<UserEntity> = {};
     if (filterOptions?.roles?.length) {
       //TODO: Implement filters later
     }
 
-    const entities = await this.usersRepository.find({
+    const [entities, count] = await this.usersRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
+      loadEagerRelations: true,
       where: where,
       order: sortOptions?.reduce(
         (accumulator, sort) => ({
@@ -52,8 +55,12 @@ export class UsersRelationalRepository implements UserRepository {
         {},
       ),
     });
+    const items = entities.map((entity) => UserMapper.toDomain(entity));
 
-    return entities.map((user) => UserMapper.toDomain(user));
+    return Pagination(
+      { items, count },
+      { ...paginationOptions, domain: 'users' },
+    );
   }
 
   async findById(id: User['id']): Promise<NullableType<User>> {

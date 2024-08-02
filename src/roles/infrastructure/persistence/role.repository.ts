@@ -1,3 +1,4 @@
+import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
@@ -12,7 +13,7 @@ export abstract class RoleRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<Role[]>;
+  }): Promise<PaginationResponseDto<Role>>;
 
   abstract findManyByIds(ids: Role['id'][]): Promise<Role[]>;
 

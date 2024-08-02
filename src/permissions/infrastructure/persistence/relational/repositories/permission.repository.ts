@@ -7,6 +7,8 @@ import { Permission } from '../../../../domain/permission';
 import { PermissionRepository } from '../../permission.repository';
 import { PermissionEntity } from '../entities/permission.entity';
 import { PermissionMapper } from '../mappers/permission.mapper';
+import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { Pagination } from 'src/utils/pagination';
 @Injectable()
 export class permissionRelationalRepository implements PermissionRepository {
   constructor(
@@ -18,13 +20,23 @@ export class permissionRelationalRepository implements PermissionRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<Permission[]> {
-    const permissions = await this.PermissionRepository.find({
+  }): Promise<PaginationResponseDto<Permission>> {
+    const [permissions, count] = await this.PermissionRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
     });
+    const items = permissions.map((permission) =>
+      PermissionMapper.toDomain(permission),
+    );
 
-    return permissions.map((user) => PermissionMapper.toDomain(user));
+    return Pagination(
+      { items, count },
+      {
+        limit: paginationOptions.limit,
+        page: paginationOptions.page,
+        domain: 'permissions',
+      },
+    );
   }
 
   async findById(id: Permission['id']): Promise<NullableType<Permission>> {

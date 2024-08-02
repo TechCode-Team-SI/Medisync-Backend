@@ -63,7 +63,7 @@ export class UserEntity extends EntityRelationalHelper {
   @ApiProperty({
     type: () => RoleEntity,
   })
-  @ManyToMany(() => RoleEntity)
+  @ManyToMany(() => RoleEntity, { eager: true })
   @JoinTable({ name: 'user_roles' })
   roles?: RoleEntity[] | null;
 

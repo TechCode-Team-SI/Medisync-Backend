@@ -14,14 +14,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {
-  InfinityPaginationResponse,
-  InfinityPaginationResponseDto,
-} from '../utils/dto/infinity-pagination-response.dto';
-import { infinityPagination } from '../utils/infinity-pagination';
+  PaginationResponse,
+  PaginationResponseDto,
+} from 'src/utils/dto/pagination-response.dto';
 import { Permission } from './domain/permission';
 import { FindAllpermissionsDto } from './dto/find-all-permissions.dto';
-import { PermissionsService } from './permissions.service';
 import { exceptionResponses } from './permissions.messages';
+import { PermissionsService } from './permissions.service';
+import { getPagination } from 'src/utils/get-pagination';
 
 @ApiTags('Permissions')
 @ApiBearerAuth()
@@ -35,26 +35,14 @@ export class permissionsController {
 
   @Get()
   @ApiOkResponse({
-    type: InfinityPaginationResponse(Permission),
+    type: PaginationResponse(Permission),
   })
   async findAll(
     @Query() query: FindAllpermissionsDto,
-  ): Promise<InfinityPaginationResponseDto<Permission>> {
-    const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
+  ): Promise<PaginationResponseDto<Permission>> {
+    const paginationOptions = getPagination(query);
 
-    return infinityPagination(
-      await this.PermissionsService.findAllWithPagination({
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
-    );
+    return this.PermissionsService.findAllWithPagination({ paginationOptions });
   }
 
   @Get(':id')
