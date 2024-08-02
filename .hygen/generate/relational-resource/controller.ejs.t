@@ -26,12 +26,12 @@ import {
 import { <%= name %> } from './domain/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>';
 import { AuthGuard } from '@nestjs/passport';
 import {
-  InfinityPaginationResponse,
-  InfinityPaginationResponseDto,
-} from '../utils/dto/infinity-pagination-response.dto';
-import { infinityPagination } from '../utils/infinity-pagination';
+  PaginationResponse,
+  PaginationResponseDto,
+} from '../utils/dto/pagination-response.dto';
 import { FindAll<%= h.inflection.transform(name, ['pluralize']) %>Dto } from './dto/find-all-<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.dto';
 import { exceptionResponses } from 'src/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.messages';
+import { getPagination } from 'src/utils/get-pagination';
 
 @ApiTags('<%= h.inflection.transform(name, ['pluralize', 'humanize']) %>')
 @ApiBearerAuth()
@@ -53,26 +53,16 @@ export class <%= h.inflection.transform(name, ['pluralize']) %>Controller {
 
   @Get()
   @ApiOkResponse({
-    type: InfinityPaginationResponse(<%= name %>),
+    type: PaginationResponse(<%= name %>),
   })
   async findAll(
     @Query() query: FindAll<%= h.inflection.transform(name, ['pluralize']) %>Dto,
-  ): Promise<InfinityPaginationResponseDto<<%= name %>>> {
-    const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
+  ): Promise<PaginationResponseDto<<%= name %>>> {
+    const paginationOptions = getPagination(query);
 
-    return infinityPagination(
-      await this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.findAllWithPagination({
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
-    );
+    return this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.findAllWithPagination({
+        paginationOptions,
+      })
   }
 
   @Get(':id')

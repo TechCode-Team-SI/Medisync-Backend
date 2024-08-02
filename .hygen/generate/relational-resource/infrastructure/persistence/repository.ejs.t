@@ -1,6 +1,7 @@
 ---
 to: src/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>/infrastructure/persistence/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>.repository.ts
 ---
+import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
@@ -15,7 +16,7 @@ export abstract class <%= name %>Repository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<<%= name %>[]>;
+  }): Promise<PaginationResponseDto<<%= name %>>>;
 
   abstract findById(id: <%= name %>['id']): Promise<NullableType<<%= name %>>>;
 

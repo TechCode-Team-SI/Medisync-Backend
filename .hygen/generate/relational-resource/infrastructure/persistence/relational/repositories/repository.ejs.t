@@ -11,6 +11,8 @@ import { <%= name %>Repository } from '../../<%= h.inflection.transform(name, ['
 import { <%= name %>Mapper } from '../mappers/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { exceptionResponses } from 'src/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.messages';
+import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { Pagination } from 'src/utils/pagination';
 
 @Injectable()
 export class <%= name %>RelationalRepository implements <%= name %>Repository {
@@ -31,13 +33,23 @@ export class <%= name %>RelationalRepository implements <%= name %>Repository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<<%= name %>[]> {
-    const entities = await this.<%= h.inflection.camelize(name, true) %>Repository.find({
+  }): Promise<PaginationResponseDto<<%= name %>>> {
+    const [entities, count] = await this.<%= h.inflection.camelize(name, true) %>Repository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
     });
+    const items = entities.map((entity) =>
+      <%= name %>Mapper.toDomain(entity),
+    );
 
-    return entities.map((user) => <%= name %>Mapper.toDomain(user));
+    return Pagination(
+      { items, count },
+      {
+        limit: paginationOptions.limit,
+        page: paginationOptions.page,
+        domain: '<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>',
+      },
+    );
   }
 
   async findById(id: <%= name %>['id']): Promise<NullableType<<%= name %>>> {
