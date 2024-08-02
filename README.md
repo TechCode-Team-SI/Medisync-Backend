@@ -42,7 +42,17 @@ npm run db:reset
 npm run start:dev
 ```
 
-## Caracteristicas
+### Desarrollo
+
+Para el desarrollo, se tiene una serie de comandos CLI que te permite crear todo el boilerplate de un modulo y empezar a desarrollar desde ahi los detalles de los mismos
+
+- Creacion de un nuevo modulo
+
+```bash
+npm run generate:resource
+```
+
+### Caracteristicas
 
 - [x] Base de Datos con [TypeORM](https://www.npmjs.com/package/typeorm).
 - [x] Seeding.
