@@ -52,6 +52,12 @@ Para el desarrollo, se tiene una serie de comandos CLI que te permite crear todo
 npm run generate:resource
 ```
 
+- Agregado de nuevas propiedades a modelos existentes
+
+```bash
+npm run add:property:to-db
+```
+
 ### Caracteristicas
 
 - [x] Base de Datos con [TypeORM](https://www.npmjs.com/package/typeorm).
