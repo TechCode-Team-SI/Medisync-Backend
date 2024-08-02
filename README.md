@@ -22,13 +22,13 @@ API Backend de Medisync, Sistema de Informacion para optimizar los procesos y ma
 npm install
 ```
 
+- Copia y pega el env-example y cambia el nombre a .env, finalmente cambia los datos dentro que te convengan
+
 - Luego se instala las dependencias en docker
 
 ```bash
-docker compose up -d mysql maildev phpadmin minio
+docker compose up -d mysql maildev phpmyadmin minio
 ```
-
-- Copia y pega el env-example y cambia el nombre a .env, finalmente cambia los datos dentro que te convengan
 
 - Finalmente Crear la base de datos
 
