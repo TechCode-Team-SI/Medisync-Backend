@@ -6,6 +6,7 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -20,6 +21,7 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 // in your project and return an ORM entity directly in response.
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { ArticleEntity } from 'src/articles/infrastructure/persistence/relational/entities/article.entity';
 
 @Entity({
   name: 'user',
@@ -63,9 +65,13 @@ export class UserEntity extends EntityRelationalHelper {
   @ApiProperty({
     type: () => RoleEntity,
   })
-  @ManyToMany(() => RoleEntity, { eager: true })
+  @ManyToMany(() => RoleEntity)
   @JoinTable({ name: 'user_roles' })
   roles?: RoleEntity[] | null;
+
+  @ApiProperty()
+  @OneToMany(() => ArticleEntity, (article) => article.updatedBy)
+  articles: ArticleEntity[];
 
   @ApiProperty()
   @CreateDateColumn()

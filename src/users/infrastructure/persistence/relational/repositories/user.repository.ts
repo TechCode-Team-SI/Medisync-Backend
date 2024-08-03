@@ -46,6 +46,7 @@ export class UsersRelationalRepository implements UserRepository {
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       loadEagerRelations: true,
+      relations: ['roles'],
       where: where,
       order: sortOptions?.reduce(
         (accumulator, sort) => ({
@@ -66,6 +67,7 @@ export class UsersRelationalRepository implements UserRepository {
   async findById(id: User['id']): Promise<NullableType<User>> {
     const entity = await this.usersRepository.findOne({
       where: { id },
+      relations: ['roles'],
     });
 
     return entity ? UserMapper.toDomain(entity) : null;

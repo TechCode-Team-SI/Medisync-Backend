@@ -58,6 +58,16 @@ npm run generate:resource
 npm run add:property:to-db
 ```
 
+- Despues de cada cambio en algun modelo en la base de datos, se debe actualizar la misma, para ello hay que crear la nueva migracion
+
+```bash
+npm run migration:generate
+```
+
+```bash
+npm run migration:run
+```
+
 ### Caracteristicas
 
 - [x] Base de Datos con [TypeORM](https://www.npmjs.com/package/typeorm).

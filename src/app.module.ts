@@ -27,8 +27,11 @@ import { permissionsModule } from './permissions/permissions.module';
 
 import { RolesModule } from './roles/roles.module';
 
+import { ArticlesModule } from './articles/articles.module';
+
 @Module({
   imports: [
+    ArticlesModule,
     RolesModule,
     permissionsModule,
     ConfigModule.forRoot({
