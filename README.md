@@ -68,6 +68,19 @@ npm run migration:generate
 npm run migration:run
 ```
 
+- El API trabaja bajo autenticacion por medio de Bearer Tokens usando JWT, por lo que es posible obtener los datos del payload con el decodador @Me(), siempre y cuando se haya utilizado el Guard('jwt'), un ejemplo:
+
+```node
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  public me(@Me() userPayload: JwtPayloadType): Promise<NullableType<User>> {
+    return this.service.me(userPayload);
+  }
+```
+
+- Para el manejo de la permisologia, tenemos PermissionEnum, los cuales son todos los permisos que tendra el sistema, y para aplicar los permisos, se utiliza el decorador Permission(PermissionEnum.EL_PERMISO) para indicar el permiso requerido, y UseGuard(PermissionGuard) para aplicar la verificacion de permisos, un ejemplo de como aplicarlo esta en el modulo de users
+
 ### Caracteristicas
 
 - [x] Base de Datos con [TypeORM](https://www.npmjs.com/package/typeorm).

@@ -37,8 +37,7 @@ import { QueryUserDto } from './dto/query-user.dto';
 import { UsersService } from './users.service';
 
 @ApiBearerAuth()
-@Permissions(PermissionsEnum.CREATE_USER)
-@UseGuards(AuthGuard('jwt'), PermissionsGuard)
+@UseGuards(AuthGuard('jwt'))
 @ApiTags('Users')
 @Controller({
   path: 'users',
@@ -53,6 +52,8 @@ export class UsersController {
   @SerializeOptions({
     groups: ['admin'],
   })
+  @Permissions(PermissionsEnum.CREATE_USER)
+  @UseGuards(PermissionsGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createProfileDto: CreateUserDto): Promise<User> {
@@ -109,6 +110,8 @@ export class UsersController {
     type: String,
     required: true,
   })
+  @Permissions(PermissionsEnum.EDIT_USER)
+  @UseGuards(PermissionsGuard)
   update(
     @Param('id') id: User['id'],
     @Body() updateProfileDto: UpdateUserDto,
@@ -122,6 +125,8 @@ export class UsersController {
     type: String,
     required: true,
   })
+  @Permissions(PermissionsEnum.SOFT_DELETE_USER)
+  @UseGuards(PermissionsGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: User['id']): Promise<void> {
     return this.usersService.remove(id);
