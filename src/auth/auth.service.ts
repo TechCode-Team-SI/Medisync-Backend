@@ -292,8 +292,8 @@ export class AuthService {
     };
   }
 
-  async softDelete(user: User): Promise<void> {
-    await this.usersService.remove(user.id);
+  async softDelete(userId: string): Promise<void> {
+    await this.usersService.remove(userId);
   }
 
   async logout(data: Pick<JwtRefreshPayloadType, 'sessionId'>) {
@@ -312,32 +312,30 @@ export class AuthService {
 
     const tokenExpires = Date.now() + ms(tokenExpiresIn);
 
+    const payload: Omit<JwtPayloadType, 'iat' | 'exp'> = {
+      id: data.id,
+      roles: data.roles,
+      sessionId: data.sessionId,
+    };
+
+    const refreshPayload: Omit<JwtRefreshPayloadType, 'iat' | 'exp'> = {
+      sessionId: data.sessionId,
+      hash: data.hash,
+    };
+
     const [token, refreshToken] = await Promise.all([
-      await this.jwtService.signAsync(
-        {
-          id: data.id,
-          roles: data.roles,
-          sessionId: data.sessionId,
-        },
-        {
-          secret: this.configService.getOrThrow('auth.secret', { infer: true }),
-          expiresIn: tokenExpiresIn,
-        },
-      ),
-      await this.jwtService.signAsync(
-        {
-          sessionId: data.sessionId,
-          hash: data.hash,
-        },
-        {
-          secret: this.configService.getOrThrow('auth.refreshSecret', {
-            infer: true,
-          }),
-          expiresIn: this.configService.getOrThrow('auth.refreshExpires', {
-            infer: true,
-          }),
-        },
-      ),
+      await this.jwtService.signAsync(payload, {
+        secret: this.configService.getOrThrow('auth.secret', { infer: true }),
+        expiresIn: tokenExpiresIn,
+      }),
+      await this.jwtService.signAsync(refreshPayload, {
+        secret: this.configService.getOrThrow('auth.refreshSecret', {
+          infer: true,
+        }),
+        expiresIn: this.configService.getOrThrow('auth.refreshExpires', {
+          infer: true,
+        }),
+      }),
     ]);
 
     return {

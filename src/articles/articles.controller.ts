@@ -1,19 +1,16 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  Query,
+  Get,
   NotFoundException,
-  Request,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ArticlesService } from './articles.service';
-import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -21,15 +18,19 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { Article } from './domain/article';
-import { AuthGuard } from '@nestjs/passport';
+import { exceptionResponses } from 'src/articles/articles.messages';
+import { Me } from 'src/auth/auth.decorator';
+import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { getPagination } from 'src/utils/get-pagination';
 import {
   PaginationResponse,
   PaginationResponseDto,
 } from '../utils/dto/pagination-response.dto';
+import { ArticlesService } from './articles.service';
+import { Article } from './domain/article';
+import { CreateArticleDto } from './dto/create-article.dto';
 import { FindAllArticlesDto } from './dto/find-all-articles.dto';
-import { exceptionResponses } from 'src/articles/articles.messages';
-import { getPagination } from 'src/utils/get-pagination';
+import { UpdateArticleDto } from './dto/update-article.dto';
 
 @ApiTags('Articles')
 @ApiBearerAuth()
@@ -45,8 +46,11 @@ export class ArticlesController {
   @ApiCreatedResponse({
     type: Article,
   })
-  create(@Request() request, @Body() createArticleDto: CreateArticleDto) {
-    return this.articlesService.create(createArticleDto, request.user.id);
+  create(
+    @Me() userPayload: JwtPayloadType,
+    @Body() createArticleDto: CreateArticleDto,
+  ) {
+    return this.articlesService.create(createArticleDto, userPayload.id);
   }
 
   @Get()

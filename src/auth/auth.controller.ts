@@ -25,6 +25,8 @@ import { AuthUpdateDto } from './dto/auth-update.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { RefreshResponseDto } from './dto/refresh-response.dto';
 import { SuccessResponseDto } from './dto/success-response.dto';
+import { Me } from './auth.decorator';
+import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 
 @ApiTags('Auth')
 @Controller({
@@ -91,8 +93,8 @@ export class AuthController {
     type: User,
   })
   @HttpCode(HttpStatus.OK)
-  public me(@Request() request): Promise<NullableType<User>> {
-    return this.service.me(request.user);
+  public me(@Me() userPayload: JwtPayloadType): Promise<NullableType<User>> {
+    return this.service.me(userPayload);
   }
 
   @ApiBearerAuth()
@@ -116,9 +118,9 @@ export class AuthController {
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async logout(@Request() request): Promise<void> {
+  public async logout(@Me() userPayload: JwtPayloadType): Promise<void> {
     await this.service.logout({
-      sessionId: request.user.sessionId,
+      sessionId: userPayload.sessionId,
     });
   }
 
@@ -133,17 +135,17 @@ export class AuthController {
     type: User,
   })
   public update(
-    @Request() request,
+    @Me() userPayload: JwtPayloadType,
     @Body() userDto: AuthUpdateDto,
   ): Promise<NullableType<User>> {
-    return this.service.update(request.user, userDto);
+    return this.service.update(userPayload, userDto);
   }
 
   @ApiBearerAuth()
   @Delete('me')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async delete(@Request() request): Promise<void> {
-    return this.service.softDelete(request.user);
+  public async delete(@Me() userPayload: JwtPayloadType): Promise<void> {
+    return this.service.softDelete(userPayload.id);
   }
 }
