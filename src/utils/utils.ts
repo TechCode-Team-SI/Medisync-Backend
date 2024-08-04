@@ -7,3 +7,17 @@ export async function wait(ms: number) {
 export function slugify(str: string) {
   return str.trim().toLowerCase().replace(/ /g, '-');
 }
+
+export function genRandomNumber(min: number, max: number) {
+  return Math.floor(Math.random() * max + min);
+}
+
+export function genOTPCode() {
+  const MIN = 1;
+  const MAX = 9;
+  const otpCode: number[] = [];
+  for (let i = 0; i < 6; i++) {
+    otpCode.push(genRandomNumber(MIN, MAX));
+  }
+  return otpCode.join('');
+}

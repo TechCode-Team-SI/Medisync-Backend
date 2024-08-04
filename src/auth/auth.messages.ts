@@ -25,4 +25,10 @@ export const exceptionResponses = {
       email: 'Email does not exist',
     },
   },
+  InvalidPasswordReset: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    errors: {
+      message: 'Invalid password reset',
+    },
+  },
 };

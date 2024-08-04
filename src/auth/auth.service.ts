@@ -25,6 +25,7 @@ import { LoginResponseDto } from './dto/login-response.dto';
 import { SuccessResponseDto } from './dto/success-response.dto';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
+import { PasswordTokenRepository } from './infrastructure/persistence/password-token.repository';
 
 @Injectable()
 export class AuthService {
@@ -34,6 +35,7 @@ export class AuthService {
     private sessionService: SessionService,
     private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
+    private passwordTokenRepository: PasswordTokenRepository,
   ) {}
 
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
@@ -72,6 +74,7 @@ export class AuthService {
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: user.id,
+      email: user.email,
       roles: user.roles,
       sessionId: session.id,
       hash,
@@ -85,45 +88,47 @@ export class AuthService {
     };
   }
 
-  async register(dto: AuthRegisterLoginDto): Promise<SuccessResponseDto> {
+  async register(dto: AuthRegisterLoginDto): Promise<LoginResponseDto> {
     const user = await this.usersService.create({
       ...dto,
       email: dto.email,
     });
 
-    const hash = await this.jwtService.signAsync(
-      {
-        confirmEmailUserId: user.id,
-      },
-      {
-        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
-          infer: true,
-        }),
-        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
-          infer: true,
-        }),
-      },
-    );
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
 
-    await this.mailService.userSignUp({
-      to: dto.email,
-      data: {
-        hash,
-      },
+    const session = await this.sessionService.create({
+      user,
+      hash,
+    });
+
+    const { token, refreshToken, tokenExpires } = await this.getTokensData({
+      id: user.id,
+      email: user.email,
+      roles: user.roles,
+      sessionId: session.id,
+      hash,
     });
 
     return {
-      success: true,
+      refreshToken,
+      token,
+      tokenExpires,
+      user,
     };
   }
 
-  async confirmEmail(hash: string): Promise<SuccessResponseDto> {
+  //TODO: Update this to use code instead of hash
+  async confirmEmail(email: string, code: string): Promise<SuccessResponseDto> {
     let userId: User['id'];
+    console.log(code);
 
     try {
       const jwtData = await this.jwtService.verifyAsync<{
         confirmEmailUserId: User['id'];
-      }>(hash, {
+      }>(code, {
         secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
           infer: true,
         }),
@@ -160,23 +165,15 @@ export class AuthService {
 
     const tokenExpires = Date.now() + ms(tokenExpiresIn);
 
-    const hash = await this.jwtService.signAsync(
-      {
-        forgotUserId: user.id,
-      },
-      {
-        secret: this.configService.getOrThrow('auth.forgotSecret', {
-          infer: true,
-        }),
-        expiresIn: tokenExpiresIn,
-      },
+    const passwordToken = await this.passwordTokenRepository.create(
+      email,
+      new Date(tokenExpires),
     );
 
-    await this.mailService.forgotPassword({
+    void this.mailService.forgotPassword({
       to: email,
       data: {
-        hash,
-        tokenExpires,
+        code: passwordToken.code,
       },
     });
 
@@ -186,26 +183,22 @@ export class AuthService {
   }
 
   async resetPassword(
-    hash: string,
+    email: string,
+    code: string,
     password: string,
   ): Promise<SuccessResponseDto> {
-    let userId: User['id'];
+    const passwordToken = await this.passwordTokenRepository.findOne({
+      email,
+      code,
+    });
 
-    try {
-      const jwtData = await this.jwtService.verifyAsync<{
-        forgotUserId: User['id'];
-      }>(hash, {
-        secret: this.configService.getOrThrow('auth.forgotSecret', {
-          infer: true,
-        }),
-      });
-
-      userId = jwtData.forgotUserId;
-    } catch {
-      throw new UnprocessableEntityException(exceptionResponses.InvalidHash);
+    if (!passwordToken) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.InvalidPasswordReset,
+      );
     }
 
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findByEmail(email);
 
     if (!user) {
       throw new UnprocessableEntityException(exceptionResponses.UserNotFound);
@@ -216,6 +209,8 @@ export class AuthService {
     await this.sessionService.deleteByUserId({
       userId: user.id,
     });
+
+    await this.passwordTokenRepository.deleteById(passwordToken.id);
 
     await this.usersService.update(user.id, user);
 
@@ -280,6 +275,7 @@ export class AuthService {
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: session.user.id,
+      email: user.email,
       roles: user.roles,
       sessionId: session.id,
       hash,
@@ -302,6 +298,7 @@ export class AuthService {
 
   private async getTokensData(data: {
     id: User['id'];
+    email: User['email'];
     roles: User['roles'];
     sessionId: Session['id'];
     hash: Session['hash'];
@@ -315,6 +312,7 @@ export class AuthService {
     const payload: Omit<JwtPayloadType, 'iat' | 'exp'> = {
       id: data.id,
       roles: data.roles,
+      email: data.email,
       sessionId: data.sessionId,
     };
 

@@ -9,6 +9,9 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { MailModule } from '../mail/mail.module';
 import { SessionModule } from '../session/session.module';
 import { UsersModule } from '../users/users.module';
+import { RelationalPasswordTokenPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PasswordTokenEntity } from './infrastructure/persistence/relational/entities/password-token.entity';
 
 @Module({
   imports: [
@@ -16,6 +19,8 @@ import { UsersModule } from '../users/users.module';
     SessionModule,
     PassportModule,
     MailModule,
+    RelationalPasswordTokenPersistenceModule,
+    TypeOrmModule.forFeature([PasswordTokenEntity]),
     JwtModule.register({}),
   ],
   controllers: [AuthController],

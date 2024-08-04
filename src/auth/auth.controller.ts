@@ -52,16 +52,19 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async register(
     @Body() createUserDto: AuthRegisterLoginDto,
-  ): Promise<SuccessResponseDto> {
+  ): Promise<LoginResponseDto> {
     return this.service.register(createUserDto);
   }
 
   @Post('confirm')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
   async confirmEmail(
+    @Me() userPayload: JwtPayloadType,
     @Body() confirmEmailDto: AuthConfirmEmailDto,
   ): Promise<SuccessResponseDto> {
-    return this.service.confirmEmail(confirmEmailDto.hash);
+    return this.service.confirmEmail(userPayload.email, confirmEmailDto.code);
   }
 
   @Post('forgot/password')
@@ -78,7 +81,8 @@ export class AuthController {
     @Body() resetPasswordDto: AuthResetPasswordDto,
   ): Promise<SuccessResponseDto> {
     return this.service.resetPassword(
-      resetPasswordDto.hash,
+      resetPasswordDto.email,
+      resetPasswordDto.code,
       resetPasswordDto.password,
     );
   }

@@ -52,12 +52,11 @@ export class MailService {
     });
   }
 
-  async forgotPassword(
-    mailData: MailData<{ hash: string; tokenExpires: number }>,
-  ): Promise<void> {
+  async forgotPassword(mailData: MailData<{ code: string }>): Promise<void> {
     const resetPasswordTitle: MaybeType<string> = 'Reset Password';
-    let text1: MaybeType<string>;
-    let text2: MaybeType<string>;
+    const text1: MaybeType<string> =
+      'You have requested to reset your password.';
+    const text2: MaybeType<string> = `Please use the following code to reset your password: ${mailData.data.code}`;
     let text3: MaybeType<string>;
     let text4: MaybeType<string>;
 
@@ -66,8 +65,6 @@ export class MailService {
         infer: true,
       }) + '/password-change',
     );
-    url.searchParams.set('hash', mailData.data.hash);
-    url.searchParams.set('expires', mailData.data.tokenExpires.toString());
 
     await this.mailerService.sendMail({
       to: mailData.to,

@@ -22,6 +22,7 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { ArticleEntity } from 'src/articles/infrastructure/persistence/relational/entities/article.entity';
+import { PasswordTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/password-token.entity';
 
 @Entity({
   name: 'user',
@@ -72,6 +73,10 @@ export class UserEntity extends EntityRelationalHelper {
   @ApiProperty()
   @OneToMany(() => ArticleEntity, (article) => article.updatedBy)
   articles: ArticleEntity[];
+
+  @ApiProperty()
+  @OneToMany(() => PasswordTokenEntity, (passwordToken) => passwordToken.email)
+  passwordTokens: PasswordTokenEntity[];
 
   @ApiProperty()
   @CreateDateColumn()
