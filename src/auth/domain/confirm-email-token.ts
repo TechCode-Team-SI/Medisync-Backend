@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class PasswordToken {
+export class ConfirmEmailToken {
   @ApiProperty({
     type: String,
   })

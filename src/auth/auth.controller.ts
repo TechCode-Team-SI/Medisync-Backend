@@ -56,6 +56,16 @@ export class AuthController {
     return this.service.register(createUserDto);
   }
 
+  @Post('confirm/email')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  async generateConfirmEmail(
+    @Me() userPayload: JwtPayloadType,
+  ): Promise<SuccessResponseDto> {
+    return this.service.generateCodeConfirmEmail(userPayload.email);
+  }
+
   @Post('confirm')
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))

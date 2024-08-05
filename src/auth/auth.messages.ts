@@ -31,4 +31,10 @@ export const exceptionResponses = {
       message: 'Invalid password reset',
     },
   },
+  InvalidConfirmEmail: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    errors: {
+      message: 'Invalid confirm email',
+    },
+  },
 };

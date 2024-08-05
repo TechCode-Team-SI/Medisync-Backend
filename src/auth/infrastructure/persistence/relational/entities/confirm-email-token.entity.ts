@@ -13,10 +13,10 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 
 @Entity({
-  name: 'password_token',
+  name: 'confirm_email_token',
 })
 @Index(['email', 'code'], { unique: true })
-export class PasswordTokenEntity extends EntityRelationalHelper {
+export class ConfirmEmailTokenEntity extends EntityRelationalHelper {
   @ApiProperty({
     type: UUID,
   })
@@ -33,7 +33,7 @@ export class PasswordTokenEntity extends EntityRelationalHelper {
   @ApiProperty({
     type: UserEntity,
   })
-  @ManyToOne(() => UserEntity, (user) => user.passwordTokens)
+  @ManyToOne(() => UserEntity, (user) => user.confirmEmailTokens)
   @JoinColumn({ name: 'email', referencedColumnName: 'email' })
   user: UserEntity;
 

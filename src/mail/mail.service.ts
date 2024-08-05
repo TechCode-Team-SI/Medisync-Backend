@@ -94,23 +94,22 @@ export class MailService {
     });
   }
 
-  async confirmNewEmail(mailData: MailData<{ hash: string }>): Promise<void> {
-    let emailConfirmTitle: MaybeType<string>;
-    let text1: MaybeType<string>;
-    let text2: MaybeType<string>;
+  async confirmEmail(
+    mailData: MailData<{ code: string; fullName: string }>,
+  ): Promise<void> {
+    const emailConfirmTitle: MaybeType<string> =
+      'Confirmación de correo electrónico';
+    const text1: MaybeType<string> = `Hola, ${mailData.data.fullName}`;
+    const text2: MaybeType<string> =
+      '¡Gracias por registrarte con nosotros! Para completar tu registro, por favor confirma tu dirección de correo electrónico haciendo clic en el botón de abajo:';
     let text3: MaybeType<string>;
-
-    const url = new URL(
-      this.configService.getOrThrow('app.frontendDomain', {
-        infer: true,
-      }) + '/confirm-new-email',
-    );
-    url.searchParams.set('hash', mailData.data.hash);
+    const footerText1: MaybeType<string> =
+      'Si no has solicitado este correo, por favor ignóralo.';
 
     await this.mailerService.sendMail({
       to: mailData.to,
       subject: emailConfirmTitle,
-      text: `${url.toString()} ${emailConfirmTitle}`,
+      text: `${mailData.data.code} ${emailConfirmTitle}`,
       templatePath: path.join(
         this.configService.getOrThrow('app.workingDirectory', {
           infer: true,
@@ -122,12 +121,12 @@ export class MailService {
       ),
       context: {
         title: emailConfirmTitle,
-        url: url.toString(),
-        actionTitle: emailConfirmTitle,
+        code: mailData.data.code,
         app_name: this.configService.get('app.name', { infer: true }),
         text1,
         text2,
         text3,
+        footerText1,
       },
     });
   }

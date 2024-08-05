@@ -1,6 +1,5 @@
 import {
   Injectable,
-  NotFoundException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -23,9 +22,10 @@ import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { SuccessResponseDto } from './dto/success-response.dto';
+import { ConfirmEmailTokenRepository } from './infrastructure/persistence/confirm-email-token.repository';
+import { PasswordTokenRepository } from './infrastructure/persistence/password-token.repository';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
-import { PasswordTokenRepository } from './infrastructure/persistence/password-token.repository';
 
 @Injectable()
 export class AuthService {
@@ -36,6 +36,7 @@ export class AuthService {
     private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
     private passwordTokenRepository: PasswordTokenRepository,
+    private confirmEmailTokenRepository: ConfirmEmailTokenRepository,
   ) {}
 
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
@@ -112,6 +113,8 @@ export class AuthService {
       hash,
     });
 
+    void this.generateCodeConfirmEmail(user.email);
+
     return {
       refreshToken,
       token,
@@ -120,32 +123,59 @@ export class AuthService {
     };
   }
 
-  //TODO: Update this to use code instead of hash
   async confirmEmail(email: string, code: string): Promise<SuccessResponseDto> {
-    let userId: User['id'];
-    console.log(code);
+    const confirmEmailToken = await this.confirmEmailTokenRepository.findOne({
+      email,
+      code,
+    });
 
-    try {
-      const jwtData = await this.jwtService.verifyAsync<{
-        confirmEmailUserId: User['id'];
-      }>(code, {
-        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
-          infer: true,
-        }),
-      });
-
-      userId = jwtData.confirmEmailUserId;
-    } catch {
-      throw new UnprocessableEntityException(exceptionResponses.InvalidHash);
+    if (!confirmEmailToken) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.InvalidConfirmEmail,
+      );
     }
 
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findByEmail(email);
 
     if (!user) {
-      throw new NotFoundException(exceptionResponses.UserNotFound);
+      throw new UnprocessableEntityException(exceptionResponses.UserNotFound);
     }
 
-    await this.usersService.update(user.id, user);
+    await this.confirmEmailTokenRepository.deleteById(confirmEmailToken.id);
+
+    return {
+      success: true,
+    };
+  }
+
+  async generateCodeConfirmEmail(email: string): Promise<SuccessResponseDto> {
+    const user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+      throw new UnprocessableEntityException(exceptionResponses.EmailNotExist);
+    }
+
+    const tokenExpiresIn = this.configService.getOrThrow(
+      'auth.confirmEmailExpires',
+      {
+        infer: true,
+      },
+    );
+
+    const tokenExpires = Date.now() + ms(tokenExpiresIn);
+
+    const passwordToken = await this.confirmEmailTokenRepository.create(
+      email,
+      new Date(tokenExpires),
+    );
+
+    void this.mailService.confirmEmail({
+      to: email,
+      data: {
+        code: passwordToken.code,
+        fullName: user.fullName,
+      },
+    });
 
     return {
       success: true,
