@@ -1,16 +1,15 @@
 import { HttpStatus } from '@nestjs/common';
+import { HTTPErrorMessage } from 'src/utils/types/http-error-message.type';
 
-export const exceptionResponses = {
+export const exceptionResponses: HTTPErrorMessage = {
   NotFound: {
     status: HttpStatus.NOT_FOUND,
-    errors: {
-      name: 'Article not found',
-    },
+    error: 'article_not_found',
+    message: 'Articulo no encontrado',
   },
   UserNotFound: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    errors: {
-      name: 'Auth User does not exist',
-    },
+    error: 'auth_user_not_exist',
+    message: 'El usuario no existe',
   },
 };

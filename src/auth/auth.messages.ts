@@ -1,40 +1,35 @@
 import { HttpStatus } from '@nestjs/common';
+import { HTTPErrorMessage } from 'src/utils/types/http-error-message.type';
 
-export const exceptionResponses = {
+export const exceptionResponses: HTTPErrorMessage = {
   IncorrectPassword: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    errors: {
-      password: 'Password is incorrect',
-    },
+    error: 'auth_incorrect_password',
+    message: 'Contraseña incorrecta',
   },
   UserNotFound: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    errors: {
-      email: 'User Not Found',
-    },
+    error: 'user_not_found',
+    message: 'Usuario no encontrado',
   },
   InvalidHash: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    errors: {
-      hash: `Invalid Hash`,
-    },
+    error: 'invalid_hash',
+    message: 'Hash invalido',
   },
   EmailNotExist: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    errors: {
-      email: 'Email does not exist',
-    },
+    error: 'email_not_exist',
+    message: 'Email no existe',
   },
   InvalidPasswordReset: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    errors: {
-      message: 'Invalid password reset',
-    },
+    error: 'invalid_password_reset',
+    message: 'reinicio de contraseña invalido',
   },
   InvalidConfirmEmail: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    errors: {
-      message: 'Invalid confirm email',
-    },
+    error: 'invalid_confirm_email',
+    message: 'confirmacion de email invalida',
   },
 };

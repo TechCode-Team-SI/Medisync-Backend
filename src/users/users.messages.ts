@@ -1,34 +1,30 @@
 import { HttpStatus } from '@nestjs/common';
+import { HTTPErrorMessage } from 'src/utils/types/http-error-message.type';
 
-export const exceptionResponses = {
+export const exceptionResponses: HTTPErrorMessage = {
   AlreadyExists: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    errors: {
-      name: 'User already exists',
-    },
+    error: 'user_already_exists',
+    message: 'El usuario ya existe',
   },
   EmailTaken: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    errors: {
-      name: 'Email already taken',
-    },
+    error: 'email_already_in_use',
+    message: 'El correo electrónico ya está en uso',
   },
   NotFound: {
     status: HttpStatus.NOT_FOUND,
-    errors: {
-      name: 'User not found',
-    },
+    error: 'user_not_found',
+    message: 'Usuario no encontrado',
   },
   AvatarNotExist: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    errors: {
-      photo: 'Image does not exist',
-    },
+    error: 'avatar_not_exist',
+    message: 'La imagen no existe',
   },
   RoleNotExist: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
-    errors: {
-      role: 'Role does not exist',
-    },
+    error: 'role_not_exist',
+    message: 'El rol no existe',
   },
 };
