@@ -19,7 +19,7 @@ export abstract class RoleRepository {
 
   abstract findById(id: Role['id']): Promise<NullableType<Role>>;
 
-  abstract findByName(name: Role['name']): Promise<NullableType<Role>>;
+  abstract findBySlug(name: Role['slug']): Promise<NullableType<Role>>;
 
   abstract update(
     id: Role['id'],

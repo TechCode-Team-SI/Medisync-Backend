@@ -17,6 +17,10 @@ import { UserEntity } from 'src/users/infrastructure/persistence/relational/enti
 })
 export class RoleEntity extends EntityRelationalHelper {
   @ApiProperty()
+  @Column({ unique: true })
+  slug: string;
+
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

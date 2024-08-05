@@ -27,6 +27,7 @@ export class RoleSeedService {
 
         return this.repository.create({
           name: role.name,
+          slug: role.slug,
           permissions: permissionEntities,
         });
       }),

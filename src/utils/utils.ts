@@ -1,3 +1,5 @@
+import { RolesEnum } from 'src/roles/roles.enum';
+
 export async function wait(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -20,4 +22,8 @@ export function genOTPCode() {
     otpCode.push(genRandomNumber(MIN, MAX));
   }
   return otpCode.join('');
+}
+
+export function isRoleMutable(roleSlug: string) {
+  return !Object.values(RolesEnum).some((role) => role === roleSlug);
 }

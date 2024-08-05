@@ -1,9 +1,10 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { slugify } from 'src/utils/utils';
+import { IPaginationOptions } from '../utils/types/pagination-options';
+import { Role } from './domain/role';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleRepository } from './infrastructure/persistence/role.repository';
-import { IPaginationOptions } from '../utils/types/pagination-options';
-import { Role } from './domain/role';
 import { exceptionResponses } from './roles.messages';
 
 @Injectable()
@@ -11,10 +12,14 @@ export class RolesService {
   constructor(private readonly roleRepository: RoleRepository) {}
 
   async create(createRoleDto: CreateRoleDto) {
-    const role = await this.roleRepository.findByName(createRoleDto.name);
-    if (role)
+    const slug = slugify(createRoleDto.name);
+    const role = await this.roleRepository.findBySlug(slug);
+    if (role) {
       throw new UnprocessableEntityException(exceptionResponses.AlreadyExists);
-    return this.roleRepository.create(createRoleDto);
+    }
+
+    const data = { ...createRoleDto, slug };
+    return this.roleRepository.create(data);
   }
 
   findAllWithPagination({
@@ -39,10 +44,18 @@ export class RolesService {
   }
 
   update(id: Role['id'], updateRoleDto: UpdateRoleDto) {
-    return this.roleRepository.update(id, updateRoleDto);
+    const data: UpdateRoleDto & { slug?: string } = {
+      ...updateRoleDto,
+    };
+
+    if (updateRoleDto.name) {
+      data.slug = slugify(updateRoleDto.name);
+    }
+
+    return this.roleRepository.update(id, data);
   }
 
-  remove(id: Role['id']) {
+  async remove(id: Role['id']) {
     return this.roleRepository.remove(id);
   }
 }

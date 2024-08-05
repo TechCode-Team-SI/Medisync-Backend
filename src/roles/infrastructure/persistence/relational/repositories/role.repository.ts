@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { exceptionResponses } from 'src/roles/roles.messages';
+import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { Pagination } from 'src/utils/pagination';
 import { In, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
@@ -12,8 +14,6 @@ import { Role } from '../../../../domain/role';
 import { RoleRepository } from '../../role.repository';
 import { RoleEntity } from '../entities/role.entity';
 import { RoleMapper } from '../mappers/role.mapper';
-import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
-import { Pagination } from 'src/utils/pagination';
 
 @Injectable()
 export class RoleRelationalRepository implements RoleRepository {
@@ -31,6 +31,11 @@ export class RoleRelationalRepository implements RoleRepository {
       );
       return RoleMapper.toDomain(newEntity);
     } catch (error) {
+      if (error.errno === 1452) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.PermissionNotExist,
+        );
+      }
       throw new UnprocessableEntityException(exceptionResponses.AlreadyExists);
     }
   }
@@ -70,9 +75,9 @@ export class RoleRelationalRepository implements RoleRepository {
     return entity ? RoleMapper.toDomain(entity) : null;
   }
 
-  async findByName(name: Role['name']): Promise<NullableType<Role>> {
+  async findBySlug(slug: Role['slug']): Promise<NullableType<Role>> {
     const entity = await this.roleRepository.findOne({
-      where: { name },
+      where: { slug },
       loadEagerRelations: true,
     });
 
@@ -80,18 +85,19 @@ export class RoleRelationalRepository implements RoleRepository {
   }
 
   async update(id: Role['id'], payload: Partial<Role>): Promise<Role> {
-    const entity = await this.roleRepository.findOne({
-      where: { id },
-    });
+    const entity = await this.findById(id);
 
     if (!entity) {
       throw new NotFoundException(exceptionResponses.NotFound);
+    }
+    if (!entity.isMutable) {
+      throw new UnprocessableEntityException(exceptionResponses.Inmutable);
     }
 
     const updatedEntity = await this.roleRepository.save(
       this.roleRepository.create(
         RoleMapper.toPersistence({
-          ...RoleMapper.toDomain(entity),
+          ...entity,
           ...payload,
         }),
       ),
@@ -101,6 +107,15 @@ export class RoleRelationalRepository implements RoleRepository {
   }
 
   async remove(id: Role['id']): Promise<void> {
+    const entity = await this.findById(id);
+
+    if (!entity) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+    if (!entity.isMutable) {
+      throw new UnprocessableEntityException(exceptionResponses.Inmutable);
+    }
+
     await this.roleRepository.delete(id);
   }
 }
