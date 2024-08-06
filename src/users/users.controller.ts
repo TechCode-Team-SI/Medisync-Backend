@@ -100,9 +100,6 @@ export class UsersController {
   @ApiOkResponse({
     type: User,
   })
-  @SerializeOptions({
-    groups: ['admin'],
-  })
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiParam({

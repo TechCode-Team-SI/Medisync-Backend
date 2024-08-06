@@ -4,6 +4,8 @@ import { FileMapper } from '../../../../../files/infrastructure/persistence/rela
 import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
 import { User } from '../../../../domain/user';
 import { UserEntity } from '../entities/user.entity';
+import { EmployeeProfileMapper } from './employee-profile.mapper';
+import { EmployeeProfileEntity } from '../entities/employee-profile.entity';
 
 export class UserMapper {
   static toDomain(raw: UserEntity): User {
@@ -17,6 +19,11 @@ export class UserMapper {
     }
     if (raw.roles) {
       domainEntity.roles = raw.roles.map((role) => RoleMapper.toDomain(role));
+    }
+    if (raw.employeeProfile) {
+      domainEntity.employeeProfile = EmployeeProfileMapper.toDomain(
+        raw.employeeProfile,
+      );
     }
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
@@ -43,6 +50,14 @@ export class UserMapper {
       photo = null;
     }
 
+    let employeeProfile: EmployeeProfileEntity | undefined = undefined;
+
+    if (domainEntity.employeeProfile) {
+      employeeProfile = EmployeeProfileMapper.toPersistence(
+        domainEntity.employeeProfile,
+      );
+    }
+
     const persistenceEntity = new UserEntity();
     if (domainEntity.id) {
       persistenceEntity.id = domainEntity.id;
@@ -52,6 +67,7 @@ export class UserMapper {
     persistenceEntity.fullName = domainEntity.fullName;
     persistenceEntity.photo = photo;
     persistenceEntity.roles = roles;
+    persistenceEntity.employeeProfile = employeeProfile;
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
     persistenceEntity.deletedAt = domainEntity.deletedAt;

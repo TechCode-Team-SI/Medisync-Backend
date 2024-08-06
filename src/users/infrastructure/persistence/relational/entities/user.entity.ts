@@ -24,6 +24,7 @@ import { Exclude } from 'class-transformer';
 import { ArticleEntity } from 'src/articles/infrastructure/persistence/relational/entities/article.entity';
 import { ConfirmEmailTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/confirm-email-token.entity';
 import { PasswordTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/password-token.entity';
+import { EmployeeProfileEntity } from './employee-profile.entity';
 
 @Entity({
   name: 'user',
@@ -85,6 +86,14 @@ export class UserEntity extends EntityRelationalHelper {
     (confirmEmailToken) => confirmEmailToken.email,
   )
   confirmEmailTokens: ConfirmEmailTokenEntity[];
+
+  @ApiProperty()
+  @OneToOne(
+    () => EmployeeProfileEntity,
+    (employeeProfile) => employeeProfile.user,
+    { cascade: true },
+  )
+  employeeProfile?: EmployeeProfileEntity;
 
   @ApiProperty()
   @CreateDateColumn()

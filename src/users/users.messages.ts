@@ -7,6 +7,11 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'user_already_exists',
     message: 'El usuario ya existe',
   },
+  ProfileAlreadyExists: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'profile_already_exists',
+    message: 'El perfil ya existe',
+  },
   EmailTaken: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     error: 'email_already_in_use',

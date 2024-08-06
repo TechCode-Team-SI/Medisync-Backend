@@ -108,6 +108,16 @@ export class UsersService {
       }
     }
 
+    if (clonedPayload.employeeProfile) {
+      const user = await this.usersRepository.findById(id);
+
+      if (user?.employeeProfile && !clonedPayload.employeeProfile.id) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.ProfileAlreadyExists,
+        );
+      }
+    }
+
     if (clonedPayload.photo?.id) {
       const fileObject = await this.filesService.findById(
         clonedPayload.photo.id,
