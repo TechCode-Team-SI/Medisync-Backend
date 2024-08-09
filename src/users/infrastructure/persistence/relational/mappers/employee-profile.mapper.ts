@@ -1,3 +1,4 @@
+import { SpecialtyMapper } from 'src/specialties/infrastructure/persistence/relational/mappers/specialty.mapper';
 import { EmployeeProfile } from '../../../../domain/employee-profile';
 import { EmployeeProfileEntity } from '../entities/employee-profile.entity';
 
@@ -8,6 +9,11 @@ export class EmployeeProfileMapper {
     domainEntity.address = raw.address;
     domainEntity.birthday = raw.birthday;
     domainEntity.dni = raw.dni;
+    if (raw.specialties) {
+      domainEntity.specialties = raw.specialties.map((specialty) =>
+        SpecialtyMapper.toDomain(specialty),
+      );
+    }
 
     return domainEntity;
   }
@@ -20,6 +26,11 @@ export class EmployeeProfileMapper {
     persistenceEntity.address = domainEntity.address;
     persistenceEntity.birthday = domainEntity.birthday;
     persistenceEntity.dni = domainEntity.dni;
+    if (domainEntity.specialties) {
+      persistenceEntity.specialties = domainEntity.specialties.map(
+        (specialty) => SpecialtyMapper.toPersistence(specialty),
+      );
+    }
 
     return persistenceEntity;
   }
