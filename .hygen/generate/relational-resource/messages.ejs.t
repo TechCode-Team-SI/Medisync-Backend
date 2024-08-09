@@ -10,4 +10,4 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: '<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %> not found',
     message: '<%= h.inflection.transform(name, ['capitalize']) %> not found'
   },
-};
+} as const;

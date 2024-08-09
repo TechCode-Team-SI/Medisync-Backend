@@ -22,4 +22,4 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'permission_not_exist',
     message: 'Los permisos proporcionados no existen',
   },
-};
+} as const;

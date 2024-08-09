@@ -12,4 +12,4 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'auth_user_not_exist',
     message: 'El usuario no existe',
   },
-};
+} as const;

@@ -32,4 +32,4 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'invalid_confirm_email',
     message: 'confirmacion de email invalida',
   },
-};
+} as const;

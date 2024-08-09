@@ -32,4 +32,4 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'role_not_exist',
     message: 'El rol no existe',
   },
-};
+} as const;

@@ -12,4 +12,4 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'select_file',
     message: 'Seleccione un archivo',
   },
-};
+} as const;

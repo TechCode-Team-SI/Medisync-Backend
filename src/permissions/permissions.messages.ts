@@ -7,4 +7,4 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'session_not_found',
     message: 'Sesión no encontrada',
   },
-};
+} as const;
