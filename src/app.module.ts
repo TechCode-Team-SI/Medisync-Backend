@@ -29,8 +29,11 @@ import { RolesModule } from './roles/roles.module';
 
 import { ArticlesModule } from './articles/articles.module';
 
+import { SpecialtiesModule } from './specialties/specialties.module';
+
 @Module({
   imports: [
+    SpecialtiesModule,
     ArticlesModule,
     RolesModule,
     permissionsModule,

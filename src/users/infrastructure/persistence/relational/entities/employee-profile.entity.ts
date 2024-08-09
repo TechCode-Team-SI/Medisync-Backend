@@ -4,10 +4,13 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
+import { SpecialtyEntity } from 'src/specialties/infrastructure/persistence/relational/entities/specialty.entity';
 
 @Entity({
   name: 'employee_profile',
@@ -25,6 +28,13 @@ export class EmployeeProfileEntity extends EntityRelationalHelper {
   @OneToOne(() => UserEntity, (user) => user.employeeProfile)
   @JoinColumn()
   user: UserEntity;
+
+  @ApiProperty({
+    type: () => SpecialtyEntity,
+  })
+  @ManyToMany(() => SpecialtyEntity)
+  @JoinTable({ name: 'employee_specialty' })
+  specialties: SpecialtyEntity[];
 
   @ApiProperty()
   @Column()
