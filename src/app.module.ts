@@ -31,8 +31,11 @@ import { ArticlesModule } from './articles/articles.module';
 
 import { SpecialtiesModule } from './specialties/specialties.module';
 
+import { TicketsModule } from './tickets/tickets.module';
+
 @Module({
   imports: [
+    TicketsModule,
     SpecialtiesModule,
     ArticlesModule,
     RolesModule,
