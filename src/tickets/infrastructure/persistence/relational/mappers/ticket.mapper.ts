@@ -3,6 +3,7 @@ import { Ticket } from '../../../../domain/ticket';
 import { TicketEntity } from '../entities/ticket.entity';
 import { TicketStatusEnum, TicketTypeEnum } from 'src/tickets/tickets.enum';
 import { isValueInEnum } from 'src/utils/utils';
+import { TicketCommentMapper } from 'src/ticket-comments/infrastructure/persistence/relational/mappers/ticket-comment.mapper';
 
 export class TicketMapper {
   static toDomain(raw: TicketEntity): Ticket {
@@ -15,6 +16,12 @@ export class TicketMapper {
     }
     if (isValueInEnum(TicketStatusEnum, raw.status)) {
       domainEntity.status = raw.status as TicketStatusEnum;
+    }
+    domainEntity.comments = [];
+    if (raw.comments) {
+      domainEntity.comments = raw.comments.map((comment) =>
+        TicketCommentMapper.toDomain(comment),
+      );
     }
     if (raw.createdBy) {
       domainEntity.createdBy = UserMapper.toDomain(raw.createdBy);

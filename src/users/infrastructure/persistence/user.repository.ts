@@ -6,6 +6,7 @@ import { User } from '../../domain/user';
 import { RoleDto } from 'src/roles/dto/role.dto';
 import { FilterUserDto, SortUserDto } from '../../dto/query-user.dto';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { findOneOptions } from 'src/utils/types/fine-one-options.type';
 
 export abstract class UserRepository {
   abstract create(
@@ -23,7 +24,10 @@ export abstract class UserRepository {
     paginationOptions: IPaginationOptions;
   }): Promise<PaginationResponseDto<User>>;
 
-  abstract findById(id: User['id']): Promise<NullableType<User>>;
+  abstract findById(
+    id: User['id'],
+    options?: findOneOptions,
+  ): Promise<NullableType<User>>;
   abstract findByEmail(email: User['email']): Promise<NullableType<User>>;
 
   abstract update(

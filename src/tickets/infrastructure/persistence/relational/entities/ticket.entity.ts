@@ -1,16 +1,18 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { TicketCommentEntity } from 'src/ticket-comments/infrastructure/persistence/relational/entities/ticket-comment.entity';
+import { TicketStatusEnum, TicketTypeEnum } from 'src/tickets/tickets.enum';
+import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
-import { ApiProperty } from '@nestjs/swagger';
-import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
-import { TicketStatusEnum, TicketTypeEnum } from 'src/tickets/tickets.enum';
 
 @Entity({
   name: 'ticket',
@@ -42,6 +44,10 @@ export class TicketEntity extends EntityRelationalHelper {
     default: TicketStatusEnum.OPEN,
   })
   status: string;
+
+  @ApiProperty()
+  @OneToMany(() => TicketCommentEntity, (comment) => comment.ticket)
+  comments: TicketCommentEntity[];
 
   @ApiProperty()
   @ManyToOne(() => UserEntity)

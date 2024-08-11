@@ -11,6 +11,7 @@ import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { exceptionResponses } from './users.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { findOneOptions } from 'src/utils/types/fine-one-options.type';
 
 @Injectable()
 export class UsersService {
@@ -79,8 +80,11 @@ export class UsersService {
     });
   }
 
-  findById(id: User['id']): Promise<NullableType<User>> {
-    return this.usersRepository.findById(id);
+  findById(
+    id: User['id'],
+    options?: findOneOptions,
+  ): Promise<NullableType<User>> {
+    return this.usersRepository.findById(id, options);
   }
 
   findByEmail(email: User['email']): Promise<NullableType<User>> {

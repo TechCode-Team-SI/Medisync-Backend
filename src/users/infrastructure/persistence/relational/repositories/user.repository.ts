@@ -12,6 +12,7 @@ import { IPaginationOptions } from '../../../../../utils/types/pagination-option
 import { exceptionResponses } from 'src/users/users.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
+import { findOneOptions } from 'src/utils/types/fine-one-options.type';
 
 @Injectable()
 export class UsersRelationalRepository implements UserRepository {
@@ -64,10 +65,17 @@ export class UsersRelationalRepository implements UserRepository {
     );
   }
 
-  async findById(id: User['id']): Promise<NullableType<User>> {
+  async findById(
+    id: User['id'],
+    options?: findOneOptions,
+  ): Promise<NullableType<User>> {
+    let relations = ['roles', 'employeeProfile'];
+    if (options?.minimal) {
+      relations = [];
+    }
     const entity = await this.usersRepository.findOne({
       where: { id },
-      relations: ['roles', 'employeeProfile'],
+      relations,
     });
 
     return entity ? UserMapper.toDomain(entity) : null;

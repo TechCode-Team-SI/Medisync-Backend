@@ -7,7 +7,7 @@ import { TicketTypeEnum } from 'src/tickets/tickets.enum';
 
 type CreateTicketType = Omit<
   Ticket,
-  'id' | 'createdAt' | 'updatedAt' | 'status' | 'type'
+  'id' | 'createdAt' | 'updatedAt' | 'status' | 'type' | 'comments'
 > &
   Partial<Pick<Ticket, 'status' | 'type'>>;
 

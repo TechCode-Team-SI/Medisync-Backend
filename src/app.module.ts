@@ -33,8 +33,11 @@ import { SpecialtiesModule } from './specialties/specialties.module';
 
 import { TicketsModule } from './tickets/tickets.module';
 
+import { TicketCommentsModule } from './ticket-comments/ticket-comments.module';
+
 @Module({
   imports: [
+    TicketCommentsModule,
     TicketsModule,
     SpecialtiesModule,
     ArticlesModule,

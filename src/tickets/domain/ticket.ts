@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/users/domain/user';
 import { TicketStatusEnum, TicketTypeEnum } from '../tickets.enum';
+import { TicketComment } from 'src/ticket-comments/domain/ticket-comment';
 
 export class Ticket {
   @ApiProperty({
@@ -19,6 +20,9 @@ export class Ticket {
 
   @ApiProperty()
   status: TicketStatusEnum;
+
+  @ApiProperty()
+  comments: TicketComment[];
 
   @ApiProperty()
   createdBy: User;
