@@ -11,6 +11,7 @@ import { exceptionResponses } from 'src/tickets/tickets.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { TicketTypeEnum } from 'src/tickets/tickets.enum';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class TicketRelationalRepository implements TicketRepository {
@@ -18,6 +19,8 @@ export class TicketRelationalRepository implements TicketRepository {
     @InjectRepository(TicketEntity)
     private readonly ticketRepository: Repository<TicketEntity>,
   ) {}
+
+  private relations = ['createdBy'];
 
   async create(data: Ticket): Promise<Ticket> {
     const persistenceModel = TicketMapper.toPersistence(data);
@@ -30,16 +33,21 @@ export class TicketRelationalRepository implements TicketRepository {
   async findAllWithPagination({
     paginationOptions,
     type,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
     type?: TicketTypeEnum;
+    options?: findOptions;
   }): Promise<PaginationResponseDto<Ticket>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const where = type ? { type } : {};
     const [entities, count] = await this.ticketRepository.findAndCount({
       where,
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
-      relations: ['createdBy'],
+      relations,
     });
     const items = entities.map((entity) => TicketMapper.toDomain(entity));
 
@@ -53,10 +61,16 @@ export class TicketRelationalRepository implements TicketRepository {
     );
   }
 
-  async findById(id: Ticket['id']): Promise<NullableType<Ticket>> {
+  async findById(
+    id: Ticket['id'],
+    options?: findOptions,
+  ): Promise<NullableType<Ticket>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const entity = await this.ticketRepository.findOne({
       where: { id },
-      relations: ['createdBy'],
+      relations,
     });
 
     return entity ? TicketMapper.toDomain(entity) : null;

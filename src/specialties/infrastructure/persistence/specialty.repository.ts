@@ -3,6 +3,7 @@ import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Specialty } from '../../domain/specialty';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 type CreateSpecialty = Omit<
   Specialty,
@@ -15,11 +16,16 @@ export abstract class SpecialtyRepository {
 
   abstract findAllWithPagination({
     paginationOptions,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }): Promise<PaginationResponseDto<Specialty>>;
 
-  abstract findById(id: Specialty['id']): Promise<NullableType<Specialty>>;
+  abstract findById(
+    id: Specialty['id'],
+    options?: findOptions,
+  ): Promise<NullableType<Specialty>>;
 
   abstract update(
     id: Specialty['id'],

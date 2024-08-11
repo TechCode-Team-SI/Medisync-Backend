@@ -6,6 +6,7 @@ import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Specialty } from './domain/specialty';
 import { FilesService } from 'src/files/files.service';
 import { exceptionResponses } from './specialties.messages';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class SpecialtiesService {
@@ -31,19 +32,22 @@ export class SpecialtiesService {
 
   findAllWithPagination({
     paginationOptions,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }) {
     return this.specialtyRepository.findAllWithPagination({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
+      options,
     });
   }
 
-  findOne(id: Specialty['id']) {
-    return this.specialtyRepository.findById(id);
+  findOne(id: Specialty['id'], options?: findOptions) {
+    return this.specialtyRepository.findById(id, options);
   }
 
   update(id: Specialty['id'], updateSpecialtyDto: UpdateSpecialtyDto) {

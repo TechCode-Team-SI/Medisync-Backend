@@ -12,7 +12,7 @@ import { IPaginationOptions } from '../../../../../utils/types/pagination-option
 import { exceptionResponses } from 'src/users/users.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
-import { findOneOptions } from 'src/utils/types/fine-one-options.type';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class UsersRelationalRepository implements UserRepository {
@@ -20,6 +20,8 @@ export class UsersRelationalRepository implements UserRepository {
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
   ) {}
+
+  private relations = ['roles', 'employeeProfile'];
 
   async create(data: User): Promise<User> {
     const persistenceModel = UserMapper.toPersistence(data);
@@ -33,11 +35,16 @@ export class UsersRelationalRepository implements UserRepository {
     filterOptions,
     sortOptions,
     paginationOptions,
+    options,
   }: {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }): Promise<PaginationResponseDto<User>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const where: FindOptionsWhere<UserEntity> = {};
     if (filterOptions?.roles?.length) {
       //TODO: Implement filters later
@@ -47,7 +54,7 @@ export class UsersRelationalRepository implements UserRepository {
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       loadEagerRelations: true,
-      relations: ['roles', 'employeeProfile'],
+      relations,
       where: where,
       order: sortOptions?.reduce(
         (accumulator, sort) => ({
@@ -67,12 +74,10 @@ export class UsersRelationalRepository implements UserRepository {
 
   async findById(
     id: User['id'],
-    options?: findOneOptions,
+    options?: findOptions,
   ): Promise<NullableType<User>> {
-    let relations = ['roles', 'employeeProfile'];
-    if (options?.minimal) {
-      relations = [];
-    }
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
     const entity = await this.usersRepository.findOne({
       where: { id },
       relations,
@@ -81,12 +86,16 @@ export class UsersRelationalRepository implements UserRepository {
     return entity ? UserMapper.toDomain(entity) : null;
   }
 
-  async findByEmail(email: User['email']): Promise<NullableType<User>> {
-    if (!email) return null;
+  async findByEmail(
+    email: User['email'],
+    options?: findOptions,
+  ): Promise<NullableType<User>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
 
     const entity = await this.usersRepository.findOne({
       where: { email },
-      relations: ['roles', 'employeeProfile'],
+      relations,
     });
 
     return entity ? UserMapper.toDomain(entity) : null;

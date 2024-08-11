@@ -10,6 +10,7 @@ import { IPaginationOptions } from '../../../../../utils/types/pagination-option
 import { exceptionResponses } from 'src/ticket-comments/ticket-comments.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class TicketCommentRelationalRepository
@@ -19,6 +20,8 @@ export class TicketCommentRelationalRepository
     @InjectRepository(TicketCommentEntity)
     private readonly ticketCommentRepository: Repository<TicketCommentEntity>,
   ) {}
+
+  private relations = [];
 
   async create(data: TicketComment): Promise<TicketComment> {
     const persistenceModel = TicketCommentMapper.toPersistence(data);
@@ -30,12 +33,18 @@ export class TicketCommentRelationalRepository
 
   async findAllWithPagination({
     paginationOptions,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }): Promise<PaginationResponseDto<TicketComment>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const [entities, count] = await this.ticketCommentRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
+      relations,
     });
     const items = entities.map((entity) =>
       TicketCommentMapper.toDomain(entity),
@@ -53,9 +62,14 @@ export class TicketCommentRelationalRepository
 
   async findById(
     id: TicketComment['id'],
+    options?: findOptions,
   ): Promise<NullableType<TicketComment>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const entity = await this.ticketCommentRepository.findOne({
       where: { id },
+      relations,
     });
 
     return entity ? TicketCommentMapper.toDomain(entity) : null;

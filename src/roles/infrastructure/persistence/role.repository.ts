@@ -3,6 +3,7 @@ import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Role } from '../../domain/role';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 export abstract class RoleRepository {
   abstract create(
@@ -13,13 +14,23 @@ export abstract class RoleRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }): Promise<PaginationResponseDto<Role>>;
 
-  abstract findManyByIds(ids: Role['id'][]): Promise<Role[]>;
+  abstract findManyByIds(
+    ids: Role['id'][],
+    options?: findOptions,
+  ): Promise<Role[]>;
 
-  abstract findById(id: Role['id']): Promise<NullableType<Role>>;
+  abstract findById(
+    id: Role['id'],
+    options?: findOptions,
+  ): Promise<NullableType<Role>>;
 
-  abstract findBySlug(name: Role['slug']): Promise<NullableType<Role>>;
+  abstract findBySlug(
+    name: Role['slug'],
+    options?: findOptions,
+  ): Promise<NullableType<Role>>;
 
   abstract update(
     id: Role['id'],

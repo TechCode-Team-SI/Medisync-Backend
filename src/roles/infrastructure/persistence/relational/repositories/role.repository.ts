@@ -14,6 +14,7 @@ import { Role } from '../../../../domain/role';
 import { RoleRepository } from '../../role.repository';
 import { RoleEntity } from '../entities/role.entity';
 import { RoleMapper } from '../mappers/role.mapper';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class RoleRelationalRepository implements RoleRepository {
@@ -21,6 +22,8 @@ export class RoleRelationalRepository implements RoleRepository {
     @InjectRepository(RoleEntity)
     private readonly roleRepository: Repository<RoleEntity>,
   ) {}
+
+  private relations = ['users', 'permissions'];
 
   async create(data: Role): Promise<Role> {
     const persistenceModel = RoleMapper.toPersistence(data);
@@ -40,23 +43,31 @@ export class RoleRelationalRepository implements RoleRepository {
     }
   }
 
-  async findManyByIds(ids: string[]): Promise<Role[]> {
+  async findManyByIds(ids: string[], options?: findOptions): Promise<Role[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const entities = await this.roleRepository.find({
       where: { id: In(ids) },
-      loadEagerRelations: true,
+      relations,
     });
     return entities.map((role) => RoleMapper.toDomain(role));
   }
 
   async findAllWithPagination({
     paginationOptions,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }): Promise<PaginationResponseDto<Role>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const [entities, count] = await this.roleRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
-      loadEagerRelations: true,
+      relations,
     });
     const items = entities.map((entity) => RoleMapper.toDomain(entity));
 
@@ -66,19 +77,31 @@ export class RoleRelationalRepository implements RoleRepository {
     );
   }
 
-  async findById(id: Role['id']): Promise<NullableType<Role>> {
+  async findById(
+    id: Role['id'],
+    options?: findOptions,
+  ): Promise<NullableType<Role>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const entity = await this.roleRepository.findOne({
       where: { id },
-      loadEagerRelations: true,
+      relations,
     });
 
     return entity ? RoleMapper.toDomain(entity) : null;
   }
 
-  async findBySlug(slug: Role['slug']): Promise<NullableType<Role>> {
+  async findBySlug(
+    slug: Role['slug'],
+    options?: findOptions,
+  ): Promise<NullableType<Role>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const entity = await this.roleRepository.findOne({
       where: { slug },
-      loadEagerRelations: true,
+      relations,
     });
 
     return entity ? RoleMapper.toDomain(entity) : null;

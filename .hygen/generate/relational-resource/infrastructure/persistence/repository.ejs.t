@@ -6,6 +6,7 @@ import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { <%= name %> } from '../../domain/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 export abstract class <%= name %>Repository {
   abstract create(
@@ -14,11 +15,13 @@ export abstract class <%= name %>Repository {
 
   abstract findAllWithPagination({
     paginationOptions,
+    options
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }): Promise<PaginationResponseDto<<%= name %>>>;
 
-  abstract findById(id: <%= name %>['id']): Promise<NullableType<<%= name %>>>;
+  abstract findById(id: <%= name %>['id'], options?: findOptions): Promise<NullableType<<%= name %>>>;
 
   abstract update(
     id: <%= name %>['id'],

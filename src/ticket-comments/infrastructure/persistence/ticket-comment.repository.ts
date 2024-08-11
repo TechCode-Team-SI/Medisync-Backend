@@ -3,6 +3,7 @@ import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { TicketComment } from '../../domain/ticket-comment';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 export abstract class TicketCommentRepository {
   abstract create(
@@ -11,12 +12,15 @@ export abstract class TicketCommentRepository {
 
   abstract findAllWithPagination({
     paginationOptions,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }): Promise<PaginationResponseDto<TicketComment>>;
 
   abstract findById(
     id: TicketComment['id'],
+    options?: findOptions,
   ): Promise<NullableType<TicketComment>>;
 
   abstract update(

@@ -7,6 +7,7 @@ import { CreateTicketCommentDto } from './dto/create-ticket-comment.dto';
 import { UpdateTicketCommentDto } from './dto/update-ticket-comment.dto';
 import { TicketCommentRepository } from './infrastructure/persistence/ticket-comment.repository';
 import { exceptionResponses } from './ticket-comments.messages';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class TicketCommentsService {
@@ -42,19 +43,22 @@ export class TicketCommentsService {
 
   findAllWithPagination({
     paginationOptions,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }) {
     return this.ticketCommentRepository.findAllWithPagination({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
+      options,
     });
   }
 
-  findOne(id: TicketComment['id']) {
-    return this.ticketCommentRepository.findById(id);
+  findOne(id: TicketComment['id'], options?: findOptions) {
+    return this.ticketCommentRepository.findById(id, options);
   }
 
   update(

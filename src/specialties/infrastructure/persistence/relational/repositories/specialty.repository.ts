@@ -10,6 +10,7 @@ import { IPaginationOptions } from '../../../../../utils/types/pagination-option
 import { exceptionResponses } from 'src/specialties/specialties.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class SpecialtyRelationalRepository implements SpecialtyRepository {
@@ -17,6 +18,8 @@ export class SpecialtyRelationalRepository implements SpecialtyRepository {
     @InjectRepository(SpecialtyEntity)
     private readonly specialtyRepository: Repository<SpecialtyEntity>,
   ) {}
+
+  private relations = ['image'];
 
   async create(data: Specialty): Promise<Specialty> {
     const persistenceModel = SpecialtyMapper.toPersistence(data);
@@ -28,13 +31,18 @@ export class SpecialtyRelationalRepository implements SpecialtyRepository {
 
   async findAllWithPagination({
     paginationOptions,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }): Promise<PaginationResponseDto<Specialty>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const [entities, count] = await this.specialtyRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
-      relations: ['image'],
+      relations,
     });
     const items = entities.map((entity) => SpecialtyMapper.toDomain(entity));
 
@@ -48,10 +56,16 @@ export class SpecialtyRelationalRepository implements SpecialtyRepository {
     );
   }
 
-  async findById(id: Specialty['id']): Promise<NullableType<Specialty>> {
+  async findById(
+    id: Specialty['id'],
+    options?: findOptions,
+  ): Promise<NullableType<Specialty>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const entity = await this.specialtyRepository.findOne({
       where: { id },
-      relations: ['image'],
+      relations,
     });
 
     return entity ? SpecialtyMapper.toDomain(entity) : null;
