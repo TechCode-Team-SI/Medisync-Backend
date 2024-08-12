@@ -341,8 +341,8 @@ export class AuthService {
 
     const payload: Omit<JwtPayloadType, 'iat' | 'exp'> = {
       id: data.id,
-      roles: data.roles,
       email: data.email,
+      roleSlugs: data.roles?.map((role) => role.slug) || [],
       sessionId: data.sessionId,
     };
 

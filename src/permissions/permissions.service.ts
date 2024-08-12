@@ -27,4 +27,8 @@ export class PermissionsService {
   findOne(id: Permission['id'], options?: findOptions) {
     return this.PermissionRepository.findById(id, options);
   }
+
+  findAllByRoleSlugs(roleSlugs: string[], options?: findOptions) {
+    return this.PermissionRepository.findAllByRoles(roleSlugs, options);
+  }
 }

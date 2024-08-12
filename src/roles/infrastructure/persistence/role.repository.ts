@@ -22,6 +22,11 @@ export abstract class RoleRepository {
     options?: findOptions,
   ): Promise<Role[]>;
 
+  abstract findManyBySlugs(
+    slugs: Role['slug'][],
+    options?: findOptions,
+  ): Promise<Role[]>;
+
   abstract findById(
     id: Role['id'],
     options?: findOptions,

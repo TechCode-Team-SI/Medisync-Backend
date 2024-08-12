@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Permission } from '../../../../domain/permission';
@@ -61,5 +61,26 @@ export class permissionRelationalRepository implements PermissionRepository {
     });
 
     return permission ? PermissionMapper.toDomain(permission) : null;
+  }
+
+  async findAllByRoles(
+    rolesSlug: string[],
+    options?: findOptions,
+  ): Promise<Permission[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
+    const permissions = await this.PermissionRepository.find({
+      where: {
+        roles: {
+          slug: In(rolesSlug),
+        },
+      },
+      relations,
+    });
+
+    return permissions.map((permission) =>
+      PermissionMapper.toDomain(permission),
+    );
   }
 }

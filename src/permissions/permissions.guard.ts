@@ -1,16 +1,16 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
-import { RolesService } from 'src/roles/roles.service';
+import { PermissionsService } from './permissions.service';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
   constructor(
-    private readonly rolesService: RolesService,
+    private readonly permissionsService: PermissionsService,
     private reflector: Reflector,
   ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const permissions = this.reflector.getAllAndOverride<string[]>(
       'permissions',
       [context.getClass(), context.getHandler()],
@@ -21,18 +21,18 @@ export class PermissionsGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     const jwtPayload = request.user as JwtPayloadType;
-    const roles = jwtPayload.roles;
+    const currentUserPermissions =
+      await this.permissionsService.findAllByRoleSlugs(jwtPayload.roleSlugs, {
+        minimal: true,
+      });
+    const currentUserPermissionSlugs = currentUserPermissions.map(
+      (permission) => permission.slug,
+    );
 
-    if (!roles) return false;
-
-    const currentUserPermissions = roles.reduce<string[]>((acc, role) => {
-      const permissions = role.permissions?.map((role) => role.slug) || [];
-      const noDuplicatePermissions = [...new Set([...acc, ...permissions])];
-      return noDuplicatePermissions;
-    }, []);
+    if (permissions.length === 0) return false;
 
     const hasAllPermissions = permissions.every((permission) =>
-      currentUserPermissions.includes(permission),
+      currentUserPermissionSlugs.includes(permission),
     );
 
     return hasAllPermissions;

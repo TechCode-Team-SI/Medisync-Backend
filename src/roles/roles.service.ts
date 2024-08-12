@@ -51,6 +51,10 @@ export class RolesService {
     return this.roleRepository.findManyByIds(ids, options);
   }
 
+  findManyBySlugs(slugs: Role['slug'][], options?: findOptions) {
+    return this.roleRepository.findManyBySlugs(slugs, options);
+  }
+
   update(id: Role['id'], updateRoleDto: UpdateRoleDto) {
     const data: UpdateRoleDto & { slug?: string } = {
       ...updateRoleDto,

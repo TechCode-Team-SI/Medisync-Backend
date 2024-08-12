@@ -17,4 +17,9 @@ export abstract class PermissionRepository {
     id: Permission['id'],
     options?: findOptions,
   ): Promise<NullableType<Permission>>;
+
+  abstract findAllByRoles(
+    roles: string[],
+    options?: findOptions,
+  ): Promise<Permission[]>;
 }

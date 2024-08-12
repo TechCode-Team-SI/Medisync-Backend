@@ -54,6 +54,20 @@ export class RoleRelationalRepository implements RoleRepository {
     return entities.map((role) => RoleMapper.toDomain(role));
   }
 
+  async findManyBySlugs(
+    slugs: string[],
+    options?: findOptions,
+  ): Promise<Role[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
+    const entities = await this.roleRepository.find({
+      where: { id: In(slugs) },
+      relations,
+    });
+    return entities.map((role) => RoleMapper.toDomain(role));
+  }
+
   async findAllWithPagination({
     paginationOptions,
     options,
