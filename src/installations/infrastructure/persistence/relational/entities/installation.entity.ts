@@ -7,8 +7,8 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 })
 export class InstallationEntity extends EntityRelationalHelper {
   @ApiProperty()
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn('increment')
+  id: number;
 
   @ApiProperty()
   @Column()

@@ -36,6 +36,8 @@ import { TicketsModule } from './tickets/tickets.module';
 import { TicketCommentsModule } from './ticket-comments/ticket-comments.module';
 
 import { InstallationsModule } from './installations/installations.module';
+import { APP_GUARD } from '@nestjs/core';
+import { InstallationsGuard } from './installations/installations.guard';
 
 @Module({
   imports: [
@@ -59,6 +61,12 @@ import { InstallationsModule } from './installations/installations.module';
     MailModule,
     MailerModule,
     HomeModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: InstallationsGuard,
+    },
   ],
 })
 export class AppModule {}

@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { PermissionEntity } from 'src/permissions/infrastructure/persistence/relational/entities/permission.entity';
 import { InstallationSeedService } from './installation-seed.service';
+import { InstallationEntity } from 'src/installations/infrastructure/persistence/relational/entities/installation.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PermissionEntity])],
+  imports: [TypeOrmModule.forFeature([InstallationEntity])],
   providers: [InstallationSeedService],
   exports: [InstallationSeedService],
 })
-export class PermissionSeedModule {}
+export class InstallationSeedModule {}

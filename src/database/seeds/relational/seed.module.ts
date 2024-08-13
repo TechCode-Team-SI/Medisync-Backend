@@ -3,18 +3,20 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { DataSource, DataSourceOptions } from 'typeorm';
+import appConfig from '../../../config/app.config';
+import databaseConfig from '../../config/database.config';
 import { TypeOrmConfigService } from '../../typeorm-config.service';
+import { InstallationSeedModule } from './installation/installation-seed.module';
+import { PermissionSeedModule } from './permission/permission-seed.module';
 import { RoleSeedModule } from './role/role-seed.module';
 import { UserSeedModule } from './user/user-seed.module';
-import databaseConfig from '../../config/database.config';
-import appConfig from '../../../config/app.config';
-import { PermissionSeedModule } from './permission/permission-seed.module';
 
 @Module({
   imports: [
     RoleSeedModule,
     UserSeedModule,
     PermissionSeedModule,
+    InstallationSeedModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, appConfig],

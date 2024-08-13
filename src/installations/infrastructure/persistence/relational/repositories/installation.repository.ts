@@ -26,7 +26,9 @@ export class InstallationRelationalRepository
   }
 
   async findOne(): Promise<NullableType<Installation>> {
-    const entity = await this.installationRepository.findOne({});
+    const entity = await this.installationRepository.findOne({
+      where: { id: 1 },
+    });
 
     return entity ? InstallationMapper.toDomain(entity) : null;
   }
