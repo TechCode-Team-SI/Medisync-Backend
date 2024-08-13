@@ -60,7 +60,7 @@ export class <%= name %>RelationalRepository implements <%= name %>Repository {
     );
   }
 
-  async findById(id: <%= name %>['id'], options?; findOptions): Promise<NullableType<<%= name %>>> {
+  async findById(id: <%= name %>['id'], options?: findOptions): Promise<NullableType<<%= name %>>> {
     let relations = this.relations;
     if (options?.minimal) relations = [];
 
