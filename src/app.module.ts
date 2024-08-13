@@ -35,8 +35,11 @@ import { TicketsModule } from './tickets/tickets.module';
 
 import { TicketCommentsModule } from './ticket-comments/ticket-comments.module';
 
+import { InstallationsModule } from './installations/installations.module';
+
 @Module({
   imports: [
+    InstallationsModule,
     TicketCommentsModule,
     TicketsModule,
     SpecialtiesModule,

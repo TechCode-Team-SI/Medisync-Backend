@@ -1,4 +1,5 @@
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
+import { RolesEnum } from 'src/roles/roles.enum';
 
 type Roles = Array<{
   name: string;
@@ -25,6 +26,19 @@ const roles: Roles = [
     name: 'Paciente',
     slug: 'patient',
     permissions: [PermissionsEnum.ACCESS_MOBILE, PermissionsEnum.USE_MOBILE],
+  },
+];
+
+export const rolesProduction: Roles = [
+  {
+    name: RolesEnum.MOBILE_USER,
+    slug: RolesEnum.MOBILE_USER,
+    permissions: [PermissionsEnum.ACCESS_MOBILE, PermissionsEnum.USE_MOBILE],
+  },
+  {
+    name: RolesEnum.UNCONFIRMED_MOBILE_USER,
+    slug: RolesEnum.UNCONFIRMED_MOBILE_USER,
+    permissions: [PermissionsEnum.ACCESS_MOBILE],
   },
 ];
 
