@@ -7,7 +7,7 @@ import { HTTPErrorMessage } from 'src/utils/types/http-error-message.type';
 export const exceptionResponses: HTTPErrorMessage = {
   NotFound: {
     status: HttpStatus.NOT_FOUND,
-    error: '<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %> not found',
+    error: '<%= h.inflection.transform(name, ['pluralize', 'underscore']) %>_not_found',
     message: '<%= h.inflection.transform(name, ['capitalize']) %> not found'
   },
 } as const;
