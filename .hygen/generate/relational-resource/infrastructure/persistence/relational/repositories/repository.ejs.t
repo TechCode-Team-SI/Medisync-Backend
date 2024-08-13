@@ -45,6 +45,7 @@ export class <%= name %>RelationalRepository implements <%= name %>Repository {
     const [entities, count] = await this.<%= h.inflection.camelize(name, true) %>Repository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
+      relations,
     });
     const items = entities.map((entity) =>
       <%= name %>Mapper.toDomain(entity),
@@ -66,6 +67,7 @@ export class <%= name %>RelationalRepository implements <%= name %>Repository {
 
     const entity = await this.<%= h.inflection.camelize(name, true) %>Repository.findOne({
       where: { id },
+      relations,
     });
 
     return entity ? <%= name %>Mapper.toDomain(entity) : null;
