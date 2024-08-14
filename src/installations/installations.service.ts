@@ -1,13 +1,24 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { CreateInstallationDto } from './dto/create-installation.dto';
 import { UpdateInstallationDto } from './dto/update-installation.dto';
 import { InstallationRepository } from './infrastructure/persistence/installation.repository';
 import { exceptionResponses } from './installations.messages';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { UsersService } from 'src/users/users.service';
+import { RolesService } from 'src/roles/roles.service';
+import { RolesEnum } from 'src/roles/roles.enum';
+import { InstallationStepEnum } from './installations.enum';
 
 @Injectable()
 export class InstallationsService {
   constructor(
     private readonly installationRepository: InstallationRepository,
+    private readonly usersService: UsersService,
+    private readonly rolesService: RolesService,
   ) {}
 
   async create(createInstallationDto: CreateInstallationDto) {
@@ -35,5 +46,46 @@ export class InstallationsService {
       installationStep.id,
       updateInstallationDto,
     );
+  }
+
+  //CREATE FIRST USER
+  async processStepOne(createUserDto: CreateUserDto) {
+    const userCount = await this.usersService.count();
+    if (userCount > 0) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.UserAlreadyExists,
+      );
+    }
+
+    const role = await this.rolesService.findbySlug(RolesEnum.OWNER);
+
+    if (!role) {
+      throw new NotFoundException(exceptionResponses.RoleNotExists);
+    }
+
+    const userDto = {
+      ...createUserDto,
+      roles: [{ id: role.id }],
+    };
+
+    const user = await this.usersService.create(userDto);
+
+    if (!user) {
+      throw new UnprocessableEntityException(exceptionResponses.UserNotCreated);
+    }
+
+    return this.update({ step: InstallationStepEnum.CONFIGURE_COMPANY });
+  }
+
+  //CREATE MEDICAL CENTER
+  //TODO: Implement this method
+  async processStepTwo() {
+    return this.update({ step: InstallationStepEnum.CONFIGURE_MODULES });
+  }
+
+  //INSTALL MODULES
+  //TODO: Implement this method
+  async processStepThree() {
+    return this.update({ step: InstallationStepEnum.FINISHED });
   }
 }

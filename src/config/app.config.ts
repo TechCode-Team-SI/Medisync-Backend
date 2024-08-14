@@ -67,5 +67,6 @@ export default registerAs<AppConfig>('app', () => {
     fallbackLanguage: process.env.APP_FALLBACK_LANGUAGE || 'en',
     headerLanguage: process.env.APP_HEADER_LANGUAGE || 'x-custom-lang',
     installToken: process.env.INSTALL_SECRET || 'secret',
+    installInitialStep: process.env.INSTALL_STEP || 'FINISHED',
   };
 });

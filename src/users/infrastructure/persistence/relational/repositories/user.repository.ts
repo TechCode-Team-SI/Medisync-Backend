@@ -86,6 +86,10 @@ export class UsersRelationalRepository implements UserRepository {
     return entity ? UserMapper.toDomain(entity) : null;
   }
 
+  async count(): Promise<number> {
+    return this.usersRepository.count();
+  }
+
   async findByEmail(
     email: User['email'],
     options?: findOptions,

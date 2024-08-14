@@ -8,4 +8,6 @@ export type AppConfig = {
   apiPrefix: string;
   fallbackLanguage: string;
   headerLanguage: string;
+  installToken: string;
+  installInitialStep: string;
 };

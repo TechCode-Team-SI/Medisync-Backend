@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { InstallationsService } from './installations.service';
 import { RelationalInstallationPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
+import { UsersModule } from 'src/users/users.module';
+import { RolesModule } from 'src/roles/roles.module';
+import { InstallationsController } from './installations.controller';
 
 @Module({
-  imports: [RelationalInstallationPersistenceModule],
+  imports: [RelationalInstallationPersistenceModule, UsersModule, RolesModule],
+  controllers: [InstallationsController],
   providers: [InstallationsService],
   exports: [InstallationsService, RelationalInstallationPersistenceModule],
 })

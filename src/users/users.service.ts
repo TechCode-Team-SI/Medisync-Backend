@@ -88,6 +88,10 @@ export class UsersService {
     return this.usersRepository.findByEmail(email);
   }
 
+  count(): Promise<number> {
+    return this.usersRepository.count();
+  }
+
   async update(
     id: User['id'],
     payload: DeepPartial<User>,

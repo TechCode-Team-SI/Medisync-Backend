@@ -32,6 +32,8 @@ export abstract class UserRepository {
   ): Promise<NullableType<User>>;
   abstract findByEmail(email: User['email']): Promise<NullableType<User>>;
 
+  abstract count(): Promise<number>;
+
   abstract update(
     id: User['id'],
     payload: DeepPartial<User>,
