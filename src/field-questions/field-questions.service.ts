@@ -1,12 +1,16 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { CreateFieldQuestionDto } from './dto/create-field-question.dto';
-import { UpdateFieldQuestionDto } from './dto/update-field-question.dto';
-import { FieldQuestionRepository } from './infrastructure/persistence/field-question.repository';
-import { IPaginationOptions } from '../utils/types/pagination-options';
-import { FieldQuestion } from './domain/field-question';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { slugify } from 'src/utils/utils';
+import { IPaginationOptions } from '../utils/types/pagination-options';
+import { FieldQuestion } from './domain/field-question';
+import { SelectionConfiguration } from './domain/selection-configuration';
+import { CreateSelectionFieldQuestionDto } from './dto/create-selection-field-question.dto';
+import { CreateTextfieldFieldQuestionDto } from './dto/create-textfield-field-question.dto';
+import { UpdateSelectionFieldQuestionDto } from './dto/update-selection-field-question.dto';
+import { FieldQuestionTypeEnum } from './field-questions.enum';
 import { exceptionResponses } from './field-questions.messages';
+import { FieldQuestionRepository } from './infrastructure/persistence/field-question.repository';
+import { UpdateTextfieldFieldQuestionDto } from './dto/update-textfield-field-question.dto';
 
 @Injectable()
 export class FieldQuestionsService {
@@ -14,7 +18,32 @@ export class FieldQuestionsService {
     private readonly fieldQuestionRepository: FieldQuestionRepository,
   ) {}
 
-  async create(createFieldQuestionDto: CreateFieldQuestionDto) {
+  async createSelection(
+    createFieldQuestionDto: CreateSelectionFieldQuestionDto,
+  ) {
+    const slug = slugify(createFieldQuestionDto.name);
+
+    const question = await this.fieldQuestionRepository.findBySlug(slug);
+    if (question) {
+      throw new UnprocessableEntityException(exceptionResponses.AlreadyExists);
+    }
+    const selectionConfig = new SelectionConfiguration();
+    selectionConfig.isMultiple =
+      createFieldQuestionDto.selectionConfig.isMultiple;
+
+    const clonedPayload = {
+      ...createFieldQuestionDto,
+      slug,
+      type: FieldQuestionTypeEnum.SELECTION,
+      selectionConfig,
+    };
+
+    return this.fieldQuestionRepository.create(clonedPayload);
+  }
+
+  async createTextField(
+    createFieldQuestionDto: CreateTextfieldFieldQuestionDto,
+  ) {
     const slug = slugify(createFieldQuestionDto.name);
 
     const question = await this.fieldQuestionRepository.findBySlug(slug);
@@ -50,9 +79,16 @@ export class FieldQuestionsService {
     return this.fieldQuestionRepository.findById(id, options);
   }
 
-  update(
+  updateSelection(
     id: FieldQuestion['id'],
-    updateFieldQuestionDto: UpdateFieldQuestionDto,
+    updateFieldQuestionDto: UpdateSelectionFieldQuestionDto,
+  ) {
+    return this.fieldQuestionRepository.update(id, updateFieldQuestionDto);
+  }
+
+  updateTextField(
+    id: FieldQuestion['id'],
+    updateFieldQuestionDto: UpdateTextfieldFieldQuestionDto,
   ) {
     return this.fieldQuestionRepository.update(id, updateFieldQuestionDto);
   }

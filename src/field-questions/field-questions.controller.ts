@@ -1,18 +1,15 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  Query,
+  Get,
   NotFoundException,
+  Param,
+  Post,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
-import { FieldQuestionsService } from './field-questions.service';
-import { CreateFieldQuestionDto } from './dto/create-field-question.dto';
-import { UpdateFieldQuestionDto } from './dto/update-field-question.dto';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -20,15 +17,17 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { FieldQuestion } from './domain/field-question';
-import { AuthGuard } from '@nestjs/passport';
+import { exceptionResponses } from 'src/field-questions/field-questions.messages';
+import { getPagination } from 'src/utils/get-pagination';
 import {
   PaginationResponse,
   PaginationResponseDto,
 } from '../utils/dto/pagination-response.dto';
+import { FieldQuestion } from './domain/field-question';
+import { CreateSelectionFieldQuestionDto } from './dto/create-selection-field-question.dto';
+import { CreateTextfieldFieldQuestionDto } from './dto/create-textfield-field-question.dto';
 import { FindAllFieldQuestionsDto } from './dto/find-all-field-questions.dto';
-import { exceptionResponses } from 'src/field-questions/field-questions.messages';
-import { getPagination } from 'src/utils/get-pagination';
+import { FieldQuestionsService } from './field-questions.service';
 
 @ApiTags('FieldQuestions')
 @ApiBearerAuth()
@@ -40,12 +39,24 @@ import { getPagination } from 'src/utils/get-pagination';
 export class FieldQuestionsController {
   constructor(private readonly fieldQuestionsService: FieldQuestionsService) {}
 
-  @Post()
+  @Post('selection')
   @ApiCreatedResponse({
     type: FieldQuestion,
   })
-  create(@Body() createFieldQuestionDto: CreateFieldQuestionDto) {
-    return this.fieldQuestionsService.create(createFieldQuestionDto);
+  createSelection(
+    @Body() createFieldQuestionDto: CreateSelectionFieldQuestionDto,
+  ) {
+    return this.fieldQuestionsService.createSelection(createFieldQuestionDto);
+  }
+
+  @Post('textfield')
+  @ApiCreatedResponse({
+    type: FieldQuestion,
+  })
+  createTextField(
+    @Body() createFieldQuestionDto: CreateTextfieldFieldQuestionDto,
+  ) {
+    return this.fieldQuestionsService.createTextField(createFieldQuestionDto);
   }
 
   @Get()
@@ -79,22 +90,6 @@ export class FieldQuestionsController {
     }
 
     return entity;
-  }
-
-  @Patch(':id')
-  @ApiParam({
-    name: 'id',
-    type: String,
-    required: true,
-  })
-  @ApiOkResponse({
-    type: FieldQuestion,
-  })
-  update(
-    @Param('id') id: string,
-    @Body() updateFieldQuestionDto: UpdateFieldQuestionDto,
-  ) {
-    return this.fieldQuestionsService.update(id, updateFieldQuestionDto);
   }
 
   @Delete(':id')

@@ -3,12 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 import { FieldQuestionTypeEnum } from 'src/field-questions/field-questions.enum';
+import { SelectionConfigurationEntity } from './selection-configuration.entity';
 
 @Entity({
   name: 'field_question',
@@ -38,6 +40,17 @@ export class FieldQuestionEntity extends EntityRelationalHelper {
   @ApiProperty()
   @Column()
   type: FieldQuestionTypeEnum;
+
+  @ApiProperty()
+  @OneToOne(
+    () => SelectionConfigurationEntity,
+    (selectionConfig) => selectionConfig.fieldQuestion,
+    {
+      nullable: true,
+      cascade: true,
+    },
+  )
+  selectionConfig?: SelectionConfigurationEntity;
 
   @ApiProperty()
   @Column()

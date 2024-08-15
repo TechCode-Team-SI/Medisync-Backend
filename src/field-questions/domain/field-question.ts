@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { FieldQuestionTypeEnum } from '../field-questions.enum';
+import { SelectionConfiguration } from './selection-configuration';
 
 export class FieldQuestion {
   @ApiProperty({
@@ -21,6 +22,9 @@ export class FieldQuestion {
 
   @ApiProperty()
   type: FieldQuestionTypeEnum;
+
+  @ApiProperty({ type: () => SelectionConfiguration })
+  selectionConfig?: SelectionConfiguration | null;
 
   @ApiProperty()
   isRequired: boolean;

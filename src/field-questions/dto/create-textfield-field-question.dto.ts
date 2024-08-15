@@ -5,10 +5,12 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  Validate,
 } from 'class-validator';
+import { IsPartOfArray } from 'src/utils/validators/is-part-of-array';
 import { FieldQuestionTypeEnum } from '../field-questions.enum';
 
-export class CreateFieldQuestionDto {
+export class CreateTextfieldFieldQuestionDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
@@ -27,6 +29,10 @@ export class CreateFieldQuestionDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsEnum(FieldQuestionTypeEnum)
+  @Validate(IsPartOfArray, [
+    FieldQuestionTypeEnum.TEXT,
+    FieldQuestionTypeEnum.NUMBER,
+  ])
   type: FieldQuestionTypeEnum;
 
   @ApiProperty()
