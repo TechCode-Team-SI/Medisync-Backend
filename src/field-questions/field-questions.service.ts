@@ -6,11 +6,10 @@ import { FieldQuestion } from './domain/field-question';
 import { SelectionConfiguration } from './domain/selection-configuration';
 import { CreateSelectionFieldQuestionDto } from './dto/create-selection-field-question.dto';
 import { CreateTextfieldFieldQuestionDto } from './dto/create-textfield-field-question.dto';
-import { UpdateSelectionFieldQuestionDto } from './dto/update-selection-field-question.dto';
 import { FieldQuestionTypeEnum } from './field-questions.enum';
 import { exceptionResponses } from './field-questions.messages';
 import { FieldQuestionRepository } from './infrastructure/persistence/field-question.repository';
-import { UpdateTextfieldFieldQuestionDto } from './dto/update-textfield-field-question.dto';
+import { Selection } from './domain/selection';
 
 @Injectable()
 export class FieldQuestionsService {
@@ -31,11 +30,18 @@ export class FieldQuestionsService {
     selectionConfig.isMultiple =
       createFieldQuestionDto.selectionConfig.isMultiple;
 
+    const selections = createFieldQuestionDto.selections.map((selection) => {
+      const selectionData = new Selection();
+      selectionData.value = selection.value;
+      return selectionData;
+    });
+
     const clonedPayload = {
       ...createFieldQuestionDto,
       slug,
       type: FieldQuestionTypeEnum.SELECTION,
       selectionConfig,
+      selections,
     };
 
     return this.fieldQuestionRepository.create(clonedPayload);
@@ -77,20 +83,6 @@ export class FieldQuestionsService {
 
   findOne(id: FieldQuestion['id'], options?: findOptions) {
     return this.fieldQuestionRepository.findById(id, options);
-  }
-
-  updateSelection(
-    id: FieldQuestion['id'],
-    updateFieldQuestionDto: UpdateSelectionFieldQuestionDto,
-  ) {
-    return this.fieldQuestionRepository.update(id, updateFieldQuestionDto);
-  }
-
-  updateTextField(
-    id: FieldQuestion['id'],
-    updateFieldQuestionDto: UpdateTextfieldFieldQuestionDto,
-  ) {
-    return this.fieldQuestionRepository.update(id, updateFieldQuestionDto);
   }
 
   remove(id: FieldQuestion['id']) {

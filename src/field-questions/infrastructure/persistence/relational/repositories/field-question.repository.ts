@@ -21,7 +21,7 @@ export class FieldQuestionRelationalRepository
     private readonly fieldQuestionRepository: Repository<FieldQuestionEntity>,
   ) {}
 
-  private relations = [];
+  private relations = ['selectionConfig', 'selections'];
 
   async create(data: FieldQuestion): Promise<FieldQuestion> {
     const persistenceModel = FieldQuestionMapper.toPersistence(data);
