@@ -39,8 +39,11 @@ import { InstallationsModule } from './installations/installations.module';
 import { APP_GUARD } from '@nestjs/core';
 import { InstallationsGuard } from './installations/installations.guard';
 
+import { FieldQuestionsModule } from './field-questions/field-questions.module';
+
 @Module({
   imports: [
+    FieldQuestionsModule,
     InstallationsModule,
     TicketCommentsModule,
     TicketsModule,
