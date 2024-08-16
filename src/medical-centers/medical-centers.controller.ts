@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Query,
   NotFoundException,
 } from '@nestjs/common';
 import { MedicalCentersService } from './medical-centers.service';
@@ -22,13 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { MedicalCenter } from './domain/medical-center';
 import { AuthGuard } from '@nestjs/passport';
-import {
-  PaginationResponse,
-  PaginationResponseDto,
-} from '../utils/dto/pagination-response.dto';
-import { FindAllMedicalCentersDto } from './dto/find-all-medical-centers.dto';
 import { exceptionResponses } from 'src/medical-centers/medical-centers.messages';
-import { getPagination } from 'src/utils/get-pagination';
 
 @ApiTags('Medicalcenters')
 @ApiBearerAuth()
@@ -46,20 +39,6 @@ export class MedicalCentersController {
   })
   create(@Body() createMedicalCenterDto: CreateMedicalCenterDto) {
     return this.medicalCentersService.create(createMedicalCenterDto);
-  }
-
-  @Get()
-  @ApiOkResponse({
-    type: PaginationResponse(MedicalCenter),
-  })
-  async findAll(
-    @Query() query: FindAllMedicalCentersDto,
-  ): Promise<PaginationResponseDto<MedicalCenter>> {
-    const paginationOptions = getPagination(query);
-
-    return this.medicalCentersService.findAllWithPagination({
-      paginationOptions,
-    });
   }
 
   @Get(':id')
