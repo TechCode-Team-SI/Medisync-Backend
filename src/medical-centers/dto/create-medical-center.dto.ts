@@ -1,50 +1,50 @@
-import {
-  // decorators here
+import { IsString, IsEmpty } from 'class-validator';
 
-  IsString,
-} from 'class-validator';
-
-import {
-  // decorators here
-  ApiProperty,
-} from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateMedicalCenterDto {
   @ApiProperty()
+  @IsEmpty()
   @IsString()
   name: string;
 
   @ApiProperty()
+  @IsEmpty()
   @IsString()
   address: string;
 
   @ApiProperty()
+  @IsEmpty()
   @IsString()
   state: string;
 
   @ApiProperty()
+  @IsEmpty()
   @IsString()
   municipality: string;
 
   @ApiProperty()
+  @IsEmpty()
   @IsString()
   parish: string;
 
   @ApiProperty()
+  @IsEmpty()
   @IsString()
   local_phone: string;
 
   @ApiProperty()
+  @IsEmpty()
   @IsString()
   mobile_phone: string;
 
   @ApiProperty()
+  @IsEmpty()
   @IsString()
   mission: string;
 
   @ApiProperty()
+  @IsEmpty()
   @IsString()
   vision: string;
-
-  // Don't forget to use the class-validator decorators in the DTO properties.
 }
