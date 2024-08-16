@@ -1,3 +1,5 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { FieldQuestionTypeEnum } from 'src/field-questions/field-questions.enum';
 import {
   Column,
   CreateDateColumn,
@@ -9,8 +11,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
-import { ApiProperty } from '@nestjs/swagger';
-import { FieldQuestionTypeEnum } from 'src/field-questions/field-questions.enum';
 import { SelectionConfigurationEntity } from './selection-configuration.entity';
 import { SelectionEntity } from './selection.entity';
 

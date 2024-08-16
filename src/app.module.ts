@@ -41,8 +41,11 @@ import { InstallationsGuard } from './installations/installations.guard';
 
 import { FieldQuestionsModule } from './field-questions/field-questions.module';
 
+import { RequestTemplatesModule } from './request-templates/request-templates.module';
+
 @Module({
   imports: [
+    RequestTemplatesModule,
     FieldQuestionsModule,
     InstallationsModule,
     TicketCommentsModule,

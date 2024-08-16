@@ -19,7 +19,7 @@ export class FieldQuestionMapper {
         raw.selectionConfig,
       );
     }
-    if (raw.selections) {
+    if (raw.selections && raw.type === FieldQuestionTypeEnum.SELECTION) {
       domainEntity.selections = raw.selections.map((selection) =>
         SelectionMapper.toDomain(selection),
       );
