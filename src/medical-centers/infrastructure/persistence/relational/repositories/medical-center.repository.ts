@@ -6,10 +6,7 @@ import { NullableType } from '../../../../../utils/types/nullable.type';
 import { MedicalCenter } from '../../../../domain/medical-center';
 import { MedicalCenterRepository } from '../../medical-center.repository';
 import { MedicalCenterMapper } from '../mappers/medical-center.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { exceptionResponses } from 'src/medical-centers/medical-centers.messages';
-import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
-import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
@@ -29,35 +26,6 @@ export class MedicalCenterRelationalRepository
       this.medicalCenterRepository.create(persistenceModel),
     );
     return MedicalCenterMapper.toDomain(newEntity);
-  }
-
-  async findAllWithPagination({
-    paginationOptions,
-    options,
-  }: {
-    paginationOptions: IPaginationOptions;
-    options?: findOptions;
-  }): Promise<PaginationResponseDto<MedicalCenter>> {
-    let relations = this.relations;
-    if (options?.minimal) relations = [];
-
-    const [entities, count] = await this.medicalCenterRepository.findAndCount({
-      skip: (paginationOptions.page - 1) * paginationOptions.limit,
-      take: paginationOptions.limit,
-      relations,
-    });
-    const items = entities.map((entity) =>
-      MedicalCenterMapper.toDomain(entity),
-    );
-
-    return Pagination(
-      { items, count },
-      {
-        limit: paginationOptions.limit,
-        page: paginationOptions.page,
-        domain: 'medical-centers',
-      },
-    );
   }
 
   async findById(
