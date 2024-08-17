@@ -28,27 +28,21 @@ export class MedicalCenterRelationalRepository
     return MedicalCenterMapper.toDomain(newEntity);
   }
 
-  async findById(
-    id: MedicalCenter['id'],
-    options?: findOptions,
-  ): Promise<NullableType<MedicalCenter>> {
+  async findById(options?: findOptions): Promise<NullableType<MedicalCenter>> {
     let relations = this.relations;
     if (options?.minimal) relations = [];
 
     const entity = await this.medicalCenterRepository.findOne({
-      where: { id },
+      where: { id: 1 },
       relations,
     });
 
     return entity ? MedicalCenterMapper.toDomain(entity) : null;
   }
 
-  async update(
-    id: MedicalCenter['id'],
-    payload: Partial<MedicalCenter>,
-  ): Promise<MedicalCenter> {
+  async update(payload: Partial<MedicalCenter>): Promise<MedicalCenter> {
     const entity = await this.medicalCenterRepository.findOne({
-      where: { id },
+      where: { id: 1 },
     });
 
     if (!entity) {
@@ -67,7 +61,7 @@ export class MedicalCenterRelationalRepository
     return MedicalCenterMapper.toDomain(updatedEntity);
   }
 
-  async remove(id: MedicalCenter['id']): Promise<void> {
-    await this.medicalCenterRepository.delete(id);
+  async remove(): Promise<void> {
+    await this.medicalCenterRepository.delete(1);
   }
 }

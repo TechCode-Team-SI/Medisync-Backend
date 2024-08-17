@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { CreateMedicalCenterDto } from './dto/create-medical-center.dto';
 import { UpdateMedicalCenterDto } from './dto/update-medical-center.dto';
 import { MedicalCenterRepository } from './infrastructure/persistence/medical-center.repository';
-import { MedicalCenter } from './domain/medical-center';
 import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
@@ -15,18 +14,15 @@ export class MedicalCentersService {
     return this.medicalCenterRepository.create(createMedicalCenterDto);
   }
 
-  findOne(id: MedicalCenter['id'], options?: findOptions) {
-    return this.medicalCenterRepository.findById(id, options);
+  findOne(options?: findOptions) {
+    return this.medicalCenterRepository.findById(options);
   }
 
-  update(
-    id: MedicalCenter['id'],
-    updateMedicalCenterDto: UpdateMedicalCenterDto,
-  ) {
-    return this.medicalCenterRepository.update(id, updateMedicalCenterDto);
+  update(updateMedicalCenterDto: UpdateMedicalCenterDto) {
+    return this.medicalCenterRepository.update(updateMedicalCenterDto);
   }
 
-  remove(id: MedicalCenter['id']) {
-    return this.medicalCenterRepository.remove(id);
+  remove() {
+    return this.medicalCenterRepository.remove();
   }
 }

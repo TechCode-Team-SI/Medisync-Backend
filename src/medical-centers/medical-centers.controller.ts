@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
   UseGuards,
   NotFoundException,
@@ -16,7 +15,6 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
-  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { MedicalCenter } from './domain/medical-center';
@@ -37,21 +35,22 @@ export class MedicalCentersController {
   @ApiCreatedResponse({
     type: MedicalCenter,
   })
-  create(@Body() createMedicalCenterDto: CreateMedicalCenterDto) {
+  async create(@Body() createMedicalCenterDto: CreateMedicalCenterDto) {
+    const entity = await this.medicalCentersService.findOne();
+
+    if (entity) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+
     return this.medicalCentersService.create(createMedicalCenterDto);
   }
 
-  @Get(':id')
-  @ApiParam({
-    name: 'id',
-    type: String,
-    required: true,
-  })
+  @Get()
   @ApiOkResponse({
     type: MedicalCenter,
   })
-  async findOne(@Param('id') id: number) {
-    const entity = await this.medicalCentersService.findOne(id);
+  async findOne() {
+    const entity = await this.medicalCentersService.findOne();
 
     if (!entity) {
       throw new NotFoundException(exceptionResponses.NotFound);
@@ -60,29 +59,16 @@ export class MedicalCentersController {
     return entity;
   }
 
-  @Patch(':id')
-  @ApiParam({
-    name: 'id',
-    type: String,
-    required: true,
-  })
+  @Patch()
   @ApiOkResponse({
     type: MedicalCenter,
   })
-  update(
-    @Param('id') id: number,
-    @Body() updateMedicalCenterDto: UpdateMedicalCenterDto,
-  ) {
-    return this.medicalCentersService.update(id, updateMedicalCenterDto);
+  update(@Body() updateMedicalCenterDto: UpdateMedicalCenterDto) {
+    return this.medicalCentersService.update(updateMedicalCenterDto);
   }
 
-  @Delete(':id')
-  @ApiParam({
-    name: 'id',
-    type: String,
-    required: true,
-  })
-  remove(@Param('id') id: number) {
-    return this.medicalCentersService.remove(id);
+  @Delete()
+  remove() {
+    return this.medicalCentersService.remove();
   }
 }
