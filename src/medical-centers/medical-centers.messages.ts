@@ -7,4 +7,10 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'medical_centers_not_found',
     message: 'Medicalcenter not found',
   },
+
+  Created: {
+    status: HttpStatus.CREATED,
+    error: 'medical_centers_already_created',
+    message: 'Medicalcenter already created',
+  },
 } as const;

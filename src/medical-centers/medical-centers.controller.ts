@@ -39,7 +39,7 @@ export class MedicalCentersController {
     const entity = await this.medicalCentersService.findOne();
 
     if (entity) {
-      throw new NotFoundException(exceptionResponses.NotFound);
+      throw new NotFoundException(exceptionResponses.Created);
     }
 
     return this.medicalCentersService.create(createMedicalCenterDto);
