@@ -1,50 +1,50 @@
-import { IsString, IsEmpty } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateMedicalCenterDto {
   @ApiProperty()
-  @IsEmpty()
+  @IsNotEmpty()
   @IsString()
   name: string;
 
   @ApiProperty()
-  @IsEmpty()
+  @IsNotEmpty()
   @IsString()
   address: string;
 
   @ApiProperty()
-  @IsEmpty()
+  @IsNotEmpty()
   @IsString()
   state: string;
 
   @ApiProperty()
-  @IsEmpty()
+  @IsNotEmpty()
   @IsString()
   municipality: string;
 
   @ApiProperty()
-  @IsEmpty()
+  @IsNotEmpty()
   @IsString()
   parish: string;
 
   @ApiProperty()
-  @IsEmpty()
+  @IsNotEmpty()
   @IsString()
   local_phone: string;
 
   @ApiProperty()
-  @IsEmpty()
+  @IsNotEmpty()
   @IsString()
   mobile_phone: string;
 
   @ApiProperty()
-  @IsEmpty()
+  @IsNotEmpty()
   @IsString()
   mission: string;
 
   @ApiProperty()
-  @IsEmpty()
+  @IsNotEmpty()
   @IsString()
   vision: string;
 }

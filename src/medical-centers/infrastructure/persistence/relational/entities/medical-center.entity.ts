@@ -7,7 +7,7 @@ import { ApiProperty } from '@nestjs/swagger';
 })
 export class MedicalCenterEntity extends EntityRelationalHelper {
   @ApiProperty()
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @ApiProperty()
