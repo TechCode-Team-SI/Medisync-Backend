@@ -30,6 +30,18 @@ export const exceptionResponses: HTTPErrorMessage = {
     message:
       'First Admin User not created, it should not be possible, please contact technical support',
   },
+  MedicalCenterAlreadyExists: {
+    status: HttpStatus.NOT_FOUND,
+    error: 'installation_step_two_medical_center_already_exists',
+    message:
+      'Medical center already exists, it should not be possible, please contact technical support',
+  },
+  MedicalCenterNotCreated: {
+    status: HttpStatus.NOT_FOUND,
+    error: 'installation_step_two_medical_center_not_created',
+    message:
+      'Medical center not created, it should not be possible, please contact technical support',
+  },
   InstallationNotComplete: {
     status: HttpStatus.FORBIDDEN,
     error: 'installation_pending',
