@@ -45,8 +45,11 @@ import { RequestTemplatesModule } from './request-templates/request-templates.mo
 
 import { MedicalCentersModule } from './medical-centers/medical-centers.module';
 
+import { RoomsModule } from './rooms/rooms.module';
+
 @Module({
   imports: [
+    RoomsModule,
     MedicalCentersModule,
     RequestTemplatesModule,
     FieldQuestionsModule,
