@@ -22,10 +22,10 @@ export class MedicalCenter {
   parish: string;
 
   @ApiProperty()
-  local_phone: string;
+  localPhone: string;
 
   @ApiProperty()
-  mobile_phone: string;
+  mobilePhone: string;
 
   @ApiProperty()
   mission: string;

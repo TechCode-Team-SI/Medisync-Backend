@@ -10,8 +10,8 @@ export class MedicalCenterMapper {
     domainEntity.state = raw.state;
     domainEntity.municipality = raw.municipality;
     domainEntity.parish = raw.parish;
-    domainEntity.local_phone = raw.local_phone;
-    domainEntity.mobile_phone = raw.mobile_phone;
+    domainEntity.localPhone = raw.localPhone;
+    domainEntity.mobilePhone = raw.mobilePhone;
     domainEntity.mission = raw.mission;
     domainEntity.vision = raw.vision;
 
@@ -28,8 +28,8 @@ export class MedicalCenterMapper {
     persistenceEntity.state = domainEntity.state;
     persistenceEntity.municipality = domainEntity.municipality;
     persistenceEntity.parish = domainEntity.parish;
-    persistenceEntity.local_phone = domainEntity.local_phone;
-    persistenceEntity.mobile_phone = domainEntity.mobile_phone;
+    persistenceEntity.localPhone = domainEntity.localPhone;
+    persistenceEntity.mobilePhone = domainEntity.mobilePhone;
     persistenceEntity.mission = domainEntity.mission;
     persistenceEntity.vision = domainEntity.vision;
 
