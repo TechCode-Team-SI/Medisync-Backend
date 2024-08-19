@@ -43,8 +43,11 @@ import { FieldQuestionsModule } from './field-questions/field-questions.module';
 
 import { RequestTemplatesModule } from './request-templates/request-templates.module';
 
+import { MedicalCentersModule } from './medical-centers/medical-centers.module';
+
 @Module({
   imports: [
+    MedicalCentersModule,
     RequestTemplatesModule,
     FieldQuestionsModule,
     InstallationsModule,

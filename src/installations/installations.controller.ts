@@ -8,6 +8,7 @@ import {
 } from './installations.decorator';
 import { InstallationStepEnum } from './installations.enum';
 import { InstallationsService } from './installations.service';
+import { CreateMedicalCenterDto } from 'src/medical-centers/dto/create-medical-center.dto';
 
 @ApiTags('Installation')
 @ApiBearerAuth()
@@ -33,8 +34,8 @@ export class InstallationsController {
     type: Installation,
   })
   @CurrentInstallationStep(InstallationStepEnum.CONFIGURE_COMPANY)
-  processStepTwo() {
-    return this.installationsService.processStepTwo();
+  processStepTwo(@Body() createMedicalCenterDto: CreateMedicalCenterDto) {
+    return this.installationsService.processStepTwo(createMedicalCenterDto);
   }
 
   @Post('/three')

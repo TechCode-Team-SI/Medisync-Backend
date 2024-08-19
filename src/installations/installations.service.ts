@@ -11,6 +11,8 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { RolesService } from 'src/roles/roles.service';
 import { RolesEnum } from 'src/roles/roles.enum';
+import { CreateMedicalCenterDto } from 'src/medical-centers/dto/create-medical-center.dto';
+import { MedicalCentersService } from 'src/medical-centers/medical-centers.service';
 import { InstallationStepEnum } from './installations.enum';
 
 @Injectable()
@@ -19,6 +21,7 @@ export class InstallationsService {
     private readonly installationRepository: InstallationRepository,
     private readonly usersService: UsersService,
     private readonly rolesService: RolesService,
+    private readonly medicalCentersService: MedicalCentersService,
   ) {}
 
   async create(createInstallationDto: CreateInstallationDto) {
@@ -78,8 +81,27 @@ export class InstallationsService {
   }
 
   //CREATE MEDICAL CENTER
-  //TODO: Implement this method
-  async processStepTwo() {
+  async processStepTwo(createMedicalCenterDto: CreateMedicalCenterDto) {
+    let medicalCenter = await this.medicalCentersService.findOne();
+
+    if (medicalCenter) {
+      throw new NotFoundException(
+        exceptionResponses.MedicalCenterAlreadyExists,
+      );
+    }
+
+    const medicalCenterDto = {
+      ...createMedicalCenterDto,
+    };
+
+    medicalCenter = await this.medicalCentersService.create(medicalCenterDto);
+
+    if (!medicalCenter) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.MedicalCenterNotCreated,
+      );
+    }
+
     return this.update({ step: InstallationStepEnum.CONFIGURE_MODULES });
   }
 
