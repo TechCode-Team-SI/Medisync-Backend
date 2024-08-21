@@ -44,10 +44,12 @@ import { FieldQuestionsModule } from './field-questions/field-questions.module';
 import { RequestTemplatesModule } from './request-templates/request-templates.module';
 
 import { MedicalCentersModule } from './medical-centers/medical-centers.module';
+import { RequestsModule } from './requests/requests.module';
 
 @Module({
   imports: [
     MedicalCentersModule,
+    RequestsModule,
     RequestTemplatesModule,
     FieldQuestionsModule,
     InstallationsModule,

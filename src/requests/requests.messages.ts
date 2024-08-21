@@ -1,0 +1,30 @@
+import { HttpStatus } from '@nestjs/common';
+import { HTTPErrorMessage } from 'src/utils/types/http-error-message.type';
+
+export const exceptionResponses: HTTPErrorMessage = {
+  NotFound: {
+    status: HttpStatus.NOT_FOUND,
+    error: 'requests_not_found',
+    message: 'Request not found',
+  },
+  RequestTemplateNotExists: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'requests_template_not_exist',
+    message: 'Request template does not exists',
+  },
+  SpecialtyNotExists: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'specialty_not_exist',
+    message: 'Specialty does not exists',
+  },
+  InvalidAnswer: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'invalid_request_answer',
+    message: 'The answer you provided for one of the fields is invalid',
+  },
+  MedicNotExists: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'medic_not_exist',
+    message: 'The medic does not exist',
+  },
+} as const;
