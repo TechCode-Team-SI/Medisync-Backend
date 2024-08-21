@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { FindOptionsRelations, FindOptionsWhere, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { FilterUserDto, SortUserDto } from '../../../../dto/query-user.dto';
@@ -21,7 +21,10 @@ export class UsersRelationalRepository implements UserRepository {
     private readonly usersRepository: Repository<UserEntity>,
   ) {}
 
-  private relations = ['roles', 'employeeProfile'];
+  private relations: FindOptionsRelations<UserEntity> = {
+    roles: true,
+    employeeProfile: true,
+  };
 
   async create(data: User): Promise<User> {
     const persistenceModel = UserMapper.toPersistence(data);
@@ -43,7 +46,7 @@ export class UsersRelationalRepository implements UserRepository {
     options?: findOptions;
   }): Promise<PaginationResponseDto<User>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const where: FindOptionsWhere<UserEntity> = {};
     if (filterOptions?.roles?.length) {
@@ -74,10 +77,19 @@ export class UsersRelationalRepository implements UserRepository {
 
   async findById(
     id: User['id'],
-    options?: findOptions,
+    options?: findOptions & { withProfile?: boolean; withSpecialty?: boolean },
   ): Promise<NullableType<User>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options) relations = {};
+    if (options?.withProfile) {
+      relations.employeeProfile = true;
+    }
+    if (options?.withSpecialty) {
+      relations.employeeProfile = {
+        specialties: true,
+      };
+    }
+    if (options?.minimal) relations = {};
     const entity = await this.usersRepository.findOne({
       where: { id },
       relations,
@@ -95,7 +107,7 @@ export class UsersRelationalRepository implements UserRepository {
     options?: findOptions,
   ): Promise<NullableType<User>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.usersRepository.findOne({
       where: { email },

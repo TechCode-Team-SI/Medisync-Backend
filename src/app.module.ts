@@ -44,6 +44,11 @@ import { FieldQuestionsModule } from './field-questions/field-questions.module';
 import { RequestTemplatesModule } from './request-templates/request-templates.module';
 
 import { MedicalCentersModule } from './medical-centers/medical-centers.module';
+import { RequestsModule } from './requests/requests.module';
+
+import { DiagnosticsModule } from './diagnostics/diagnostics.module';
+
+import { InstructionsModule } from './instructions/instructions.module';
 
 import { RoomsModule } from './rooms/rooms.module';
 
@@ -53,7 +58,10 @@ import { EmployeeProfilesModule } from './employee-profiles/employee-profiles.mo
   imports: [
     EmployeeProfilesModule,
     RoomsModule,
+    InstructionsModule,
+    DiagnosticsModule,
     MedicalCentersModule,
+    RequestsModule,
     RequestTemplatesModule,
     FieldQuestionsModule,
     InstallationsModule,
