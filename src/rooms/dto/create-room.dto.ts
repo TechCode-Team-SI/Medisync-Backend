@@ -1,22 +1,27 @@
-import {
-  // decorators here
-
-  IsString,
-} from 'class-validator';
-
-import {
-  // decorators here
-  ApiProperty,
-} from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
+import { EmployeeProfileDto } from 'src/users/dto/employee-profile.dto';
 
 export class CreateRoomDto {
   @ApiProperty()
-  @IsString()
-  address: string;
-
-  @ApiProperty()
+  @IsNotEmpty()
   @IsString()
   name: string;
 
-  // Don't forget to use the class-validator decorators in the DTO properties.
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  address: string;
+
+  @ApiPropertyOptional({ type: () => SpecialtyDto })
+  @IsOptional()
+  @Type(() => SpecialtyDto)
+  specialty?: SpecialtyDto | null;
+
+  @ApiPropertyOptional({ type: () => EmployeeProfileDto })
+  @IsOptional()
+  @Type(() => EmployeeProfileDto)
+  employeeProfile?: EmployeeProfileDto | null;
 }

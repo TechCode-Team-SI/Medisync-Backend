@@ -7,4 +7,14 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'rooms_not_found',
     message: 'Room not found',
   },
+  SpecialtyNotExist: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'specialty_not_exist',
+    message: 'Specialty not exist',
+  },
+  EmployeeProfileNotExistNotExist: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'employee_profile_not_exist',
+    message: 'Employee profile not exist',
+  },
 } as const;

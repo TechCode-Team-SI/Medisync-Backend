@@ -19,7 +19,7 @@ export class RoomRelationalRepository implements RoomRepository {
     private readonly roomRepository: Repository<RoomEntity>,
   ) {}
 
-  private relations = [];
+  private relations = ['specialty', 'employeeProfile'];
 
   async create(data: Room): Promise<Room> {
     const persistenceModel = RoomMapper.toPersistence(data);

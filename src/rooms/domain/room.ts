@@ -1,20 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Specialty } from 'src/specialties/domain/specialty';
+import { EmployeeProfile } from 'src/users/domain/employee-profile';
 
 export class Room {
-  @ApiProperty()
-  address: string;
-
-  @ApiProperty()
-  name: string;
-
   @ApiProperty({
     type: String,
   })
   id: string;
 
   @ApiProperty()
-  createdAt: Date;
+  name: string;
 
   @ApiProperty()
-  updatedAt: Date;
+  address: string;
+
+  @ApiProperty({
+    type: () => Specialty,
+  })
+  specialty?: Specialty | null;
+
+  @ApiProperty({
+    type: () => EmployeeProfile,
+  })
+  employeeProfile?: EmployeeProfile | null;
 }
