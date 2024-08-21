@@ -47,8 +47,11 @@ import { MedicalCentersModule } from './medical-centers/medical-centers.module';
 
 import { RoomsModule } from './rooms/rooms.module';
 
+import { EmployeeProfilesModule } from './employee-profiles/employee-profiles.module';
+
 @Module({
   imports: [
+    EmployeeProfilesModule,
     RoomsModule,
     MedicalCentersModule,
     RequestTemplatesModule,
