@@ -11,6 +11,7 @@ import { CreateRequestDto } from './dto/create-request.dto';
 import { RequestRepository } from './infrastructure/persistence/request.repository';
 import { RequestStatusEnum } from './requests.enum';
 import { exceptionResponses } from './requests.messages';
+import { findOptions } from 'src/utils/types/fine-options.type';
 @Injectable()
 export class RequestsService {
   constructor(
@@ -48,10 +49,26 @@ export class RequestsService {
     }
 
     const foundMedic = await this.usersService.findById(requestedMedic.id, {
-      minimal: true,
+      withProfile: true,
+      withSpecialty: true,
     });
     if (!foundMedic) {
       throw new UnprocessableEntityException(exceptionResponses.MedicNotExists);
+    }
+    if (!foundMedic.employeeProfile) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.SelectedMedicNotAllowed,
+      );
+    }
+
+    const isMedicInRequestedSpecialty =
+      foundMedic.employeeProfile.specialties?.some(
+        (specialty) => specialty.id === requestedSpecialty.id,
+      );
+    if (!isMedicInRequestedSpecialty) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.SelectedMedicNotAllowed,
+      );
     }
 
     const requestValuesUpdated = foundRequestTemplate.fields.reduce<
@@ -143,5 +160,16 @@ export class RequestsService {
 
   findOneDetailed(id: Request['id']) {
     return this.requestRepository.findByIdFormatted(id);
+  }
+
+  findOne(
+    id: Request['id'],
+    options?: findOptions & { withSpecialty?: boolean; withMedic?: boolean },
+  ) {
+    return this.requestRepository.findById(id, options);
+  }
+
+  finish(id: Request['id'], status: RequestStatusEnum) {
+    return this.requestRepository.update(id, { status });
   }
 }

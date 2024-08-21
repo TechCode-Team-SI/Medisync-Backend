@@ -42,6 +42,9 @@ export class UserSeedService {
               {
                 id: '3f50c3e6-8f1e-4d3b-9b8b-1f2e4d3b9b8b',
               },
+              {
+                id: '3f50c3e6-8f1e-4d3b-9b8b-1f2e4d3b9b4d',
+              },
             ],
           },
         }),
@@ -67,7 +70,7 @@ export class UserSeedService {
             address: 'Av Vargas',
             specialties: [
               {
-                id: '3f50c3e6-8f1e-4d3b-9b8b-1f2e4d3b9b8b',
+                id: '3f50c3e6-8f1e-4d3b-9b8b-1f2e4d3b9b6c',
               },
             ],
           },

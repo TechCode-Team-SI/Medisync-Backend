@@ -46,8 +46,14 @@ import { RequestTemplatesModule } from './request-templates/request-templates.mo
 import { MedicalCentersModule } from './medical-centers/medical-centers.module';
 import { RequestsModule } from './requests/requests.module';
 
+import { DiagnosticsModule } from './diagnostics/diagnostics.module';
+
+import { InstructionsModule } from './instructions/instructions.module';
+
 @Module({
   imports: [
+    InstructionsModule,
+    DiagnosticsModule,
     MedicalCentersModule,
     RequestsModule,
     RequestTemplatesModule,

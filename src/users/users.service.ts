@@ -80,7 +80,10 @@ export class UsersService {
     });
   }
 
-  findById(id: User['id'], options?: findOptions): Promise<NullableType<User>> {
+  findById(
+    id: User['id'],
+    options?: findOptions & { withProfile?: boolean; withSpecialty?: boolean },
+  ): Promise<NullableType<User>> {
     return this.usersRepository.findById(id, options);
   }
 

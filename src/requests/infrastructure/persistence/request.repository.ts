@@ -19,7 +19,7 @@ export abstract class RequestRepository {
 
   abstract findById(
     id: Request['id'],
-    options?: findOptions,
+    options?: findOptions & { withSpecialty?: boolean; withMedic?: boolean },
   ): Promise<NullableType<Request>>;
 
   abstract findByIdFormatted(

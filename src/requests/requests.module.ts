@@ -5,6 +5,8 @@ import { RelationalRequestPersistenceModule } from './infrastructure/persistence
 import { RequestTemplatesModule } from 'src/request-templates/request-templates.module';
 import { SpecialtiesModule } from 'src/specialties/specialties.module';
 import { UsersModule } from 'src/users/users.module';
+import { DiagnosticsModule } from 'src/diagnostics/diagnostics.module';
+import { InstructionsModule } from 'src/instructions/instructions.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { UsersModule } from 'src/users/users.module';
     RequestTemplatesModule,
     SpecialtiesModule,
     UsersModule,
+    DiagnosticsModule,
+    InstructionsModule,
   ],
   controllers: [RequestsController],
   providers: [RequestsService],

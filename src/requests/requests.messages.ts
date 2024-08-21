@@ -27,4 +27,14 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'medic_not_exist',
     message: 'The medic does not exist',
   },
+  SelectedMedicNotAllowed: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'selected_medic_not_allowed',
+    message: 'The medic you selected is not valid',
+  },
+  CurrentMedicNotAllowed: {
+    status: HttpStatus.FORBIDDEN,
+    error: 'current_medic_not_allowed',
+    message: 'The current medic is not allowed to perform this action',
+  },
 } as const;

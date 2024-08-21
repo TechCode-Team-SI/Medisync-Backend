@@ -70,9 +70,22 @@ export class RequestRelationalRepository implements RequestRepository {
 
   async findById(
     id: Request['id'],
-    options?: findOptions,
+    options?: findOptions & { withSpecialty?: boolean; withMedic?: boolean },
   ): Promise<NullableType<Request>> {
     let relations = this.relations;
+    if (options) relations = {};
+    if (options?.withSpecialty) {
+      relations = {
+        ...relations,
+        requestedSpecialty: true,
+      };
+    }
+    if (options?.withSpecialty) {
+      relations = {
+        ...relations,
+        requestedMedic: true,
+      };
+    }
     if (options?.minimal) relations = {};
 
     const entity = await this.requestRepository.findOne({
