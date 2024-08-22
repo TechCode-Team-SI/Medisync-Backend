@@ -10,7 +10,6 @@ import { Room } from './domain/room';
 //import { exceptionResponses } from './rooms.messages';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { UserRepository } from 'src/users/infrastructure/persistence/user.repository';
-import { EmployeeProfileEntity } from 'src/employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
 import { EmployeeProfileDto } from 'src/employee-profiles/dto/employee-profile.dto';
 
@@ -21,7 +20,6 @@ export class RoomsService {
     private readonly specialtyService: SpecialtiesService,
     private readonly userService: UsersService,
     private readonly usersRepository: UserRepository,
-    private readonly employeeProfileEntity: EmployeeProfileEntity,
   ) {}
 
   async create(createRoomDto: CreateRoomDto) {
