@@ -2,8 +2,8 @@ import { Room } from '../../../../domain/room';
 import { RoomEntity } from '../entities/room.entity';
 import { SpecialtyMapper } from 'src/specialties/infrastructure/persistence/relational/mappers/specialty.mapper';
 import { SpecialtyEntity } from 'src/specialties/infrastructure/persistence/relational/entities/specialty.entity';
-import { EmployeeProfileMapper } from 'src/users/infrastructure/persistence/relational/mappers/employee-profile.mapper';
-import { EmployeeProfileEntity } from 'src/users/infrastructure/persistence/relational/entities/employee-profile.entity';
+import { EmployeeProfileMapper } from 'src/employee-profiles/infrastructure/persistence/relational/mappers/employee-profile.mapper';
+import { EmployeeProfileEntity } from 'src/employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
 
 export class RoomMapper {
   static toDomain(raw: RoomEntity): Room {

@@ -1,11 +1,16 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import {
-  CreateDateColumn,
+  Column,
   Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
-import { ApiProperty } from '@nestjs/swagger';
+import { SpecialtyEntity } from 'src/specialties/infrastructure/persistence/relational/entities/specialty.entity';
 
 @Entity({
   name: 'employee_profile',
@@ -16,10 +21,26 @@ export class EmployeeProfileEntity extends EntityRelationalHelper {
   id: string;
 
   @ApiProperty()
-  @CreateDateColumn()
-  createdAt: Date;
+  @Column({ unique: true })
+  dni: string;
 
   @ApiProperty()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @OneToOne(() => UserEntity, (user) => user.employeeProfile)
+  @JoinColumn()
+  user: UserEntity;
+
+  @ApiProperty({
+    type: () => SpecialtyEntity,
+  })
+  @ManyToMany(() => SpecialtyEntity)
+  @JoinTable({ name: 'employee_specialty' })
+  specialties: SpecialtyEntity[];
+
+  @ApiProperty()
+  @Column()
+  birthday: Date;
+
+  @ApiProperty()
+  @Column()
+  address: string;
 }

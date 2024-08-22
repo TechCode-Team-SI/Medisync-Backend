@@ -4,8 +4,8 @@ import { FileMapper } from '../../../../../files/infrastructure/persistence/rela
 import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
 import { User } from '../../../../domain/user';
 import { UserEntity } from '../entities/user.entity';
-import { EmployeeProfileMapper } from './employee-profile.mapper';
-import { EmployeeProfileEntity } from '../entities/employee-profile.entity';
+import { EmployeeProfileMapper } from 'src/employee-profiles/infrastructure/persistence/relational/mappers/employee-profile.mapper';
+import { EmployeeProfileEntity } from '../../../../../employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
 
 export class UserMapper {
   static toDomain(raw: UserEntity): User {

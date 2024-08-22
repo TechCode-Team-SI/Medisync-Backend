@@ -24,7 +24,7 @@ import { Exclude } from 'class-transformer';
 import { ArticleEntity } from 'src/articles/infrastructure/persistence/relational/entities/article.entity';
 import { ConfirmEmailTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/confirm-email-token.entity';
 import { PasswordTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/password-token.entity';
-import { EmployeeProfileEntity } from './employee-profile.entity';
+import { EmployeeProfileEntity } from '../../../../../employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
 
 @Entity({
   name: 'user',

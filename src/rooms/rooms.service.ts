@@ -10,9 +10,9 @@ import { Room } from './domain/room';
 //import { exceptionResponses } from './rooms.messages';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { UserRepository } from 'src/users/infrastructure/persistence/user.repository';
-import { EmployeeProfileEntity } from 'src/users/infrastructure/persistence/relational/entities/employee-profile.entity';
+import { EmployeeProfileEntity } from 'src/employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
-import { EmployeeProfileDto } from 'src/users/dto/employee-profile.dto';
+import { EmployeeProfileDto } from 'src/employee-profiles/dto/employee-profile.dto';
 
 @Injectable()
 export class RoomsService {

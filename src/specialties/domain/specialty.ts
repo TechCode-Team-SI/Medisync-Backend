@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { FileType } from 'src/files/domain/file';
-import { EmployeeProfile } from 'src/users/domain/employee-profile';
+import { EmployeeProfile } from 'src/employee-profiles/domain/employee-profile';
 
 export class Specialty {
   @ApiProperty({

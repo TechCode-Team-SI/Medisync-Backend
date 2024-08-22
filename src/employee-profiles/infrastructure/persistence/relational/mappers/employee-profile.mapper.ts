@@ -1,12 +1,19 @@
-import { EmployeeProfile } from '../../../../domain/employee-profile';
-import { EmployeeProfileEntity } from '../entities/employee-profile.entity';
+import { SpecialtyMapper } from 'src/specialties/infrastructure/persistence/relational/mappers/specialty.mapper';
+import { EmployeeProfile } from '../../../../../employee-profiles/domain/employee-profile';
+import { EmployeeProfileEntity } from '../../../../../employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
 
 export class EmployeeProfileMapper {
   static toDomain(raw: EmployeeProfileEntity): EmployeeProfile {
     const domainEntity = new EmployeeProfile();
     domainEntity.id = raw.id;
-    domainEntity.createdAt = raw.createdAt;
-    domainEntity.updatedAt = raw.updatedAt;
+    domainEntity.address = raw.address;
+    domainEntity.birthday = raw.birthday;
+    domainEntity.dni = raw.dni;
+    if (raw.specialties) {
+      domainEntity.specialties = raw.specialties.map((specialty) =>
+        SpecialtyMapper.toDomain(specialty),
+      );
+    }
 
     return domainEntity;
   }
@@ -16,8 +23,14 @@ export class EmployeeProfileMapper {
     if (domainEntity.id) {
       persistenceEntity.id = domainEntity.id;
     }
-    persistenceEntity.createdAt = domainEntity.createdAt;
-    persistenceEntity.updatedAt = domainEntity.updatedAt;
+    persistenceEntity.address = domainEntity.address;
+    persistenceEntity.birthday = domainEntity.birthday;
+    persistenceEntity.dni = domainEntity.dni;
+    if (domainEntity.specialties) {
+      persistenceEntity.specialties = domainEntity.specialties.map(
+        (specialty) => SpecialtyMapper.toPersistence(specialty),
+      );
+    }
 
     return persistenceEntity;
   }

@@ -1,7 +1,7 @@
 import {
   Controller,
   Get,
-  Post,
+  //Post,
   Body,
   Patch,
   Param,
@@ -11,11 +11,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { EmployeeProfilesService } from './employee-profiles.service';
-import { CreateEmployeeProfileDto } from './dto/create-employee-profile.dto';
+//import { CreateEmployeeProfileDto } from './dto/create-employee-profile.dto';
 import { UpdateEmployeeProfileDto } from './dto/update-employee-profile.dto';
 import {
   ApiBearerAuth,
-  ApiCreatedResponse,
+  //ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
@@ -42,6 +42,7 @@ export class EmployeeProfilesController {
     private readonly employeeProfilesService: EmployeeProfilesService,
   ) {}
 
+  /*
   @Post()
   @ApiCreatedResponse({
     type: EmployeeProfile,
@@ -49,7 +50,7 @@ export class EmployeeProfilesController {
   create(@Body() createEmployeeProfileDto: CreateEmployeeProfileDto) {
     return this.employeeProfilesService.create(createEmployeeProfileDto);
   }
-
+*/
   @Get()
   @ApiOkResponse({
     type: PaginationResponse(EmployeeProfile),

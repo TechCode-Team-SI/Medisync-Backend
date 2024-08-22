@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateEmployeeProfileDto } from './dto/create-employee-profile.dto';
+//import { CreateEmployeeProfileDto } from './dto/create-employee-profile.dto';
 import { UpdateEmployeeProfileDto } from './dto/update-employee-profile.dto';
 import { EmployeeProfileRepository } from './infrastructure/persistence/employee-profile.repository';
 import { IPaginationOptions } from '../utils/types/pagination-options';
@@ -12,8 +12,14 @@ export class EmployeeProfilesService {
     private readonly employeeProfileRepository: EmployeeProfileRepository,
   ) {}
 
+  /*
   create(createEmployeeProfileDto: CreateEmployeeProfileDto) {
     return this.employeeProfileRepository.create(createEmployeeProfileDto);
+  }
+  */
+
+  create() {
+    return null;
   }
 
   findAllWithPagination({
