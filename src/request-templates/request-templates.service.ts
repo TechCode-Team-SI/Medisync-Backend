@@ -10,6 +10,7 @@ import { FieldQuestionMapper } from 'src/field-questions/infrastructure/persiste
 import { FieldQuestionsService } from 'src/field-questions/field-questions.service';
 import { exceptionResponses } from './request-templates.messages';
 import { slugify } from 'src/utils/utils';
+import { CreateMultipleRequestTemplateDto } from './dto/create-multiple-request-template.dto';
 
 @Injectable()
 export class RequestTemplatesService {
@@ -56,6 +57,58 @@ export class RequestTemplatesService {
     };
 
     return this.requestTemplateRepository.create(clonedPayload);
+  }
+
+  async createMultiple({ templates }: CreateMultipleRequestTemplateDto) {
+    const slugs = templates.map((template) => {
+      if (template.slug) return template.slug;
+      return slugify(template.name);
+    });
+    const foundTemplates =
+      await this.requestTemplateRepository.findAllBySlug(slugs);
+    if (foundTemplates.length > 0) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.RequestTemplateAlreadyExists,
+      );
+    }
+
+    const payloads: {
+      fields: RequestTemplateField[];
+      slug: string;
+      id?: string;
+      name: string;
+    }[] = [];
+
+    for (const template of templates) {
+      const fields = await Promise.all(
+        template.fields.map(async (field) => {
+          const fieldQuestion = await this.fieldQuestionsService.findOne(
+            field.fieldQuestion.id,
+          );
+
+          if (!fieldQuestion) {
+            throw new UnprocessableEntityException(
+              exceptionResponses.FieldQuestionNotExists,
+            );
+          }
+
+          const requestTemplateField = new RequestTemplateField();
+          requestTemplateField.order = field.order;
+          requestTemplateField.fieldQuestion =
+            FieldQuestionMapper.toPersistence(fieldQuestion);
+
+          return requestTemplateField;
+        }),
+      );
+
+      payloads.push({
+        ...template,
+        fields,
+        slug: template.slug || slugify(template.name),
+      });
+    }
+
+    return this.requestTemplateRepository.createMultiple(payloads);
   }
 
   findAllWithPagination({

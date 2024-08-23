@@ -2,6 +2,7 @@ import { FileMapper } from 'src/files/infrastructure/persistence/relational/mapp
 import { Specialty } from '../../../../domain/specialty';
 import { SpecialtyEntity } from '../entities/specialty.entity';
 import { EmployeeProfileMapper } from 'src/users/infrastructure/persistence/relational/mappers/employee-profile.mapper';
+import { RequestTemplateMapper } from 'src/request-templates/infrastructure/persistence/relational/mappers/request-template.mapper';
 
 export class SpecialtyMapper {
   static toDomain(raw: SpecialtyEntity): Specialty {
@@ -15,6 +16,11 @@ export class SpecialtyMapper {
     if (raw.employees) {
       domainEntity.employees = raw.employees.map((employee) =>
         EmployeeProfileMapper.toDomain(employee),
+      );
+    }
+    if (raw.requestTemplate) {
+      domainEntity.requestTemplate = RequestTemplateMapper.toDomain(
+        raw.requestTemplate,
       );
     }
     domainEntity.isGroup = raw.isGroup;
@@ -35,6 +41,11 @@ export class SpecialtyMapper {
     persistenceEntity.description = domainEntity.description;
     if (domainEntity.image) {
       persistenceEntity.image = FileMapper.toPersistence(domainEntity.image);
+    }
+    if (domainEntity.requestTemplate) {
+      persistenceEntity.requestTemplate = RequestTemplateMapper.toPersistence(
+        domainEntity.requestTemplate,
+      );
     }
     persistenceEntity.isGroup = domainEntity.isGroup;
     persistenceEntity.isPublic = domainEntity.isPublic;

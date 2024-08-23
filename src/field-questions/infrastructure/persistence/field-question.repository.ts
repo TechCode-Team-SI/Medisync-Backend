@@ -10,6 +10,10 @@ export abstract class FieldQuestionRepository {
     data: Omit<FieldQuestion, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<FieldQuestion>;
 
+  abstract createMultiple(
+    data: Omit<FieldQuestion, 'id' | 'createdAt' | 'updatedAt'>[],
+  ): Promise<FieldQuestion[]>;
+
   abstract findAllWithPagination({
     paginationOptions,
     options,
@@ -27,6 +31,11 @@ export abstract class FieldQuestionRepository {
     slug: FieldQuestion['slug'],
     options?: findOptions,
   ): Promise<NullableType<FieldQuestion>>;
+
+  abstract findAllBySlug(
+    slugs: FieldQuestion['slug'][],
+    options?: findOptions,
+  ): Promise<FieldQuestion[]>;
 
   abstract update(
     id: FieldQuestion['id'],

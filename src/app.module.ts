@@ -50,8 +50,11 @@ import { DiagnosticsModule } from './diagnostics/diagnostics.module';
 
 import { InstructionsModule } from './instructions/instructions.module';
 
+import { PackagesModule } from './packages/packages.module';
+
 @Module({
   imports: [
+    PackagesModule,
     InstructionsModule,
     DiagnosticsModule,
     MedicalCentersModule,

@@ -10,6 +10,10 @@ export abstract class RequestTemplateRepository {
     data: Omit<RequestTemplate, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<RequestTemplate>;
 
+  abstract createMultiple(
+    data: Omit<RequestTemplate, 'id' | 'createdAt' | 'updatedAt'>[],
+  ): Promise<RequestTemplate[]>;
+
   abstract findAllWithPagination({
     paginationOptions,
     options,
@@ -27,6 +31,11 @@ export abstract class RequestTemplateRepository {
     slug: RequestTemplate['slug'],
     options?: findOptions,
   ): Promise<NullableType<RequestTemplate>>;
+
+  abstract findAllBySlug(
+    slugs: RequestTemplate['slug'][],
+    options?: findOptions,
+  ): Promise<RequestTemplate[]>;
 
   abstract update(
     id: RequestTemplate['id'],

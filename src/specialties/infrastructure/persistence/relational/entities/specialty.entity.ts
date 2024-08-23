@@ -1,3 +1,7 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { FileEntity } from 'src/files/infrastructure/persistence/relational/entities/file.entity';
+import { RequestTemplateEntity } from 'src/request-templates/infrastructure/persistence/relational/entities/request-template.entity';
+import { EmployeeProfileEntity } from 'src/users/infrastructure/persistence/relational/entities/employee-profile.entity';
 import {
   Column,
   CreateDateColumn,
@@ -5,14 +9,12 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
-import { ApiProperty } from '@nestjs/swagger';
-import { FileEntity } from 'src/files/infrastructure/persistence/relational/entities/file.entity';
-import { EmployeeProfileEntity } from 'src/users/infrastructure/persistence/relational/entities/employee-profile.entity';
 
 @Entity({
   name: 'specialty',
@@ -55,6 +57,12 @@ export class SpecialtyEntity extends EntityRelationalHelper {
   @ManyToMany(() => EmployeeProfileEntity)
   @JoinTable({ name: 'employee_specialty' })
   employees: EmployeeProfileEntity[];
+
+  @ApiProperty({
+    type: () => EmployeeProfileEntity,
+  })
+  @ManyToOne(() => RequestTemplateEntity)
+  requestTemplate?: RequestTemplateEntity;
 
   @ApiProperty()
   @CreateDateColumn()

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { FieldQuestionEntity } from '../entities/field-question.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { FieldQuestion } from '../../../../domain/field-question';
@@ -29,6 +29,15 @@ export class FieldQuestionRelationalRepository
       this.fieldQuestionRepository.create(persistenceModel),
     );
     return FieldQuestionMapper.toDomain(newEntity);
+  }
+
+  async createMultiple(data: FieldQuestion[]): Promise<FieldQuestion[]> {
+    const entities = data.map((item) => {
+      const persistenceModel = FieldQuestionMapper.toPersistence(item);
+      return this.fieldQuestionRepository.create(persistenceModel);
+    });
+    const newEntities = await this.fieldQuestionRepository.save(entities);
+    return newEntities.map((entity) => FieldQuestionMapper.toDomain(entity));
   }
 
   async findAllWithPagination({
@@ -73,6 +82,21 @@ export class FieldQuestionRelationalRepository
     });
 
     return entity ? FieldQuestionMapper.toDomain(entity) : null;
+  }
+
+  async findAllBySlug(
+    slugs: FieldQuestion['slug'][],
+    options?: findOptions,
+  ): Promise<FieldQuestion[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
+    const entities = await this.fieldQuestionRepository.find({
+      where: { slug: In(slugs) },
+      relations,
+    });
+
+    return entities.map((entity) => FieldQuestionMapper.toDomain(entity));
   }
 
   async findBySlug(

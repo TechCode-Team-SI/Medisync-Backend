@@ -13,6 +13,7 @@ export class RequestTemplateMapper {
         RequestTemplateFieldMapper.toDomain(field),
       );
     }
+    domainEntity.fields.sort((a, b) => a.order - b.order);
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
 

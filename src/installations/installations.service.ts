@@ -14,6 +14,7 @@ import { RolesEnum } from 'src/roles/roles.enum';
 import { CreateMedicalCenterDto } from 'src/medical-centers/dto/create-medical-center.dto';
 import { MedicalCentersService } from 'src/medical-centers/medical-centers.service';
 import { InstallationStepEnum } from './installations.enum';
+import { PackagesService } from 'src/packages/packages.service';
 
 @Injectable()
 export class InstallationsService {
@@ -22,6 +23,7 @@ export class InstallationsService {
     private readonly usersService: UsersService,
     private readonly rolesService: RolesService,
     private readonly medicalCentersService: MedicalCentersService,
+    private readonly packagesService: PackagesService,
   ) {}
 
   async create(createInstallationDto: CreateInstallationDto) {
@@ -106,8 +108,11 @@ export class InstallationsService {
   }
 
   //INSTALL MODULES
-  //TODO: Implement this method
-  async processStepThree() {
-    return this.update({ step: InstallationStepEnum.FINISHED });
+  async processStepThree(...slugs: string[]) {
+    await this.packagesService.seed(...slugs);
+    await this.update({
+      step: InstallationStepEnum.FINISHED,
+    });
+    return { success: true };
   }
 }
