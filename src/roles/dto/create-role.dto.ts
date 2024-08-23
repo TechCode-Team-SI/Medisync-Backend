@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+
 import { IsArray, IsNotEmpty } from 'class-validator';
 import { PermissionDto } from 'src/permissions/dto/permission.dto';
 

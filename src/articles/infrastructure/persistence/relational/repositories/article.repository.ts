@@ -10,6 +10,7 @@ import { IPaginationOptions } from '../../../../../utils/types/pagination-option
 import { exceptionResponses } from 'src/articles/articles.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class ArticleRelationalRepository implements ArticleRepository {
@@ -17,6 +18,8 @@ export class ArticleRelationalRepository implements ArticleRepository {
     @InjectRepository(ArticleEntity)
     private readonly articleRepository: Repository<ArticleEntity>,
   ) {}
+
+  private relations = ['updatedBy'];
 
   async create(data: Article): Promise<Article> {
     const persistenceModel = ArticleMapper.toPersistence(data);
@@ -28,13 +31,18 @@ export class ArticleRelationalRepository implements ArticleRepository {
 
   async findAllWithPagination({
     paginationOptions,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }): Promise<PaginationResponseDto<Article>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const [entities, count] = await this.articleRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
-      relations: ['updatedBy'],
+      relations,
     });
     const items = entities.map((entity) => ArticleMapper.toDomain(entity));
 
@@ -48,10 +56,16 @@ export class ArticleRelationalRepository implements ArticleRepository {
     );
   }
 
-  async findById(id: Article['id']): Promise<NullableType<Article>> {
+  async findById(
+    id: Article['id'],
+    options?: findOptions,
+  ): Promise<NullableType<Article>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const entity = await this.articleRepository.findOne({
       where: { id },
-      relations: ['updatedBy'],
+      relations,
     });
 
     return entity ? ArticleMapper.toDomain(entity) : null;

@@ -11,6 +11,7 @@ import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { exceptionResponses } from './users.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class UsersService {
@@ -79,12 +80,19 @@ export class UsersService {
     });
   }
 
-  findById(id: User['id']): Promise<NullableType<User>> {
-    return this.usersRepository.findById(id);
+  findById(
+    id: User['id'],
+    options?: findOptions & { withProfile?: boolean; withSpecialty?: boolean },
+  ): Promise<NullableType<User>> {
+    return this.usersRepository.findById(id, options);
   }
 
   findByEmail(email: User['email']): Promise<NullableType<User>> {
     return this.usersRepository.findByEmail(email);
+  }
+
+  count(): Promise<number> {
+    return this.usersRepository.count();
   }
 
   async update(
@@ -105,6 +113,16 @@ export class UsersService {
 
       if (userObject && userObject.id !== id) {
         throw new UnprocessableEntityException(exceptionResponses.EmailTaken);
+      }
+    }
+
+    if (clonedPayload.employeeProfile) {
+      const user = await this.usersRepository.findById(id);
+
+      if (user?.employeeProfile && !clonedPayload.employeeProfile.id) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.ProfileAlreadyExists,
+        );
       }
     }
 

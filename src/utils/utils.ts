@@ -1,3 +1,6 @@
+import { RolesEnum } from 'src/roles/roles.enum';
+import { StandardEnum } from './types/generic-enum.type';
+
 export async function wait(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -20,4 +23,15 @@ export function genOTPCode() {
     otpCode.push(genRandomNumber(MIN, MAX));
   }
   return otpCode.join('');
+}
+
+export function isRoleMutable(roleSlug: string) {
+  return !Object.values(RolesEnum).some((role) => role === roleSlug);
+}
+
+export function isValueInEnum<T extends StandardEnum<unknown>>(
+  enumLike: T,
+  value: string | number,
+) {
+  return Object.values(enumLike).includes(value);
 }

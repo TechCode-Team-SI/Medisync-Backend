@@ -1,10 +1,12 @@
 import { PermissionMapper } from 'src/permissions/infrastructure/persistence/relational/mappers/permission.mapper';
 import { Role } from '../../../../domain/role';
 import { RoleEntity } from '../entities/role.entity';
+import { isRoleMutable } from 'src/utils/utils';
 
 export class RoleMapper {
   static toDomain(raw: RoleEntity): Role {
     const domainEntity = new Role();
+    domainEntity.slug = raw.slug;
     domainEntity.id = raw.id;
     domainEntity.name = raw.name;
     if (raw.permissions) {
@@ -12,6 +14,7 @@ export class RoleMapper {
         PermissionMapper.toDomain(permission),
       );
     }
+    domainEntity.isMutable = isRoleMutable(raw.slug);
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
 
@@ -20,6 +23,7 @@ export class RoleMapper {
 
   static toPersistence(domainEntity: Role): RoleEntity {
     const persistenceEntity = new RoleEntity();
+    persistenceEntity.slug = domainEntity.slug;
     if (domainEntity.id) {
       persistenceEntity.id = domainEntity.id;
     }

@@ -2,6 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Permission } from 'src/permissions/domain/permission';
 
 export class Role {
+  @ApiProperty()
+  slug: string;
+
   @ApiProperty({
     type: String,
   })
@@ -12,6 +15,9 @@ export class Role {
 
   @ApiProperty()
   permissions?: Permission[];
+
+  @ApiProperty()
+  isMutable?: boolean;
 
   @ApiProperty()
   createdAt: Date;

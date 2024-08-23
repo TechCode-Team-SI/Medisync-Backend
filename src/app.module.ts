@@ -29,8 +29,42 @@ import { RolesModule } from './roles/roles.module';
 
 import { ArticlesModule } from './articles/articles.module';
 
+import { SpecialtiesModule } from './specialties/specialties.module';
+
+import { TicketsModule } from './tickets/tickets.module';
+
+import { TicketCommentsModule } from './ticket-comments/ticket-comments.module';
+
+import { InstallationsModule } from './installations/installations.module';
+import { APP_GUARD } from '@nestjs/core';
+import { InstallationsGuard } from './installations/installations.guard';
+
+import { FieldQuestionsModule } from './field-questions/field-questions.module';
+
+import { RequestTemplatesModule } from './request-templates/request-templates.module';
+
+import { MedicalCentersModule } from './medical-centers/medical-centers.module';
+import { RequestsModule } from './requests/requests.module';
+
+import { DiagnosticsModule } from './diagnostics/diagnostics.module';
+
+import { InstructionsModule } from './instructions/instructions.module';
+
+import { PackagesModule } from './packages/packages.module';
+
 @Module({
   imports: [
+    PackagesModule,
+    InstructionsModule,
+    DiagnosticsModule,
+    MedicalCentersModule,
+    RequestsModule,
+    RequestTemplatesModule,
+    FieldQuestionsModule,
+    InstallationsModule,
+    TicketCommentsModule,
+    TicketsModule,
+    SpecialtiesModule,
     ArticlesModule,
     RolesModule,
     permissionsModule,
@@ -47,6 +81,12 @@ import { ArticlesModule } from './articles/articles.module';
     MailModule,
     MailerModule,
     HomeModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: InstallationsGuard,
+    },
   ],
 })
 export class AppModule {}

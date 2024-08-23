@@ -4,13 +4,17 @@ import { SessionRepository } from './infrastructure/persistence/session.reposito
 import { Session } from './domain/session';
 import { User } from '../users/domain/user';
 import { NullableType } from '../utils/types/nullable.type';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class SessionService {
   constructor(private readonly sessionRepository: SessionRepository) {}
 
-  findById(id: Session['id']): Promise<NullableType<Session>> {
-    return this.sessionRepository.findById(id);
+  findById(
+    id: Session['id'],
+    options?: findOptions,
+  ): Promise<NullableType<Session>> {
+    return this.sessionRepository.findById(id, options);
   }
 
   create(

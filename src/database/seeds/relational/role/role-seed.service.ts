@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PermissionEntity } from 'src/permissions/infrastructure/persistence/relational/entities/permission.entity';
 import { In, Repository } from 'typeorm';
 import { RoleEntity } from '../../../../roles/infrastructure/persistence/relational/entities/role.entity';
-import roles from './role-seed';
+import roles, { rolesProduction } from './role-seed';
 
 @Injectable()
 export class RoleSeedService {
@@ -14,12 +14,14 @@ export class RoleSeedService {
     private permissionRepository: Repository<PermissionEntity>,
   ) {}
 
-  async run() {
+  async run(type: 'development' | 'production') {
     const roleCount = await this.repository.count();
     if (roleCount > 0) return;
 
+    const rolesObjects = type === 'development' ? roles : rolesProduction;
+
     const roleEntities = await Promise.all(
-      roles.map(async (role) => {
+      rolesObjects.map(async (role) => {
         const permissionEntities = await this.permissionRepository.find({
           where: { slug: In(role.permissions) },
           select: ['id'],
@@ -27,6 +29,7 @@ export class RoleSeedService {
 
         return this.repository.create({
           name: role.name,
+          slug: role.slug,
           permissions: permissionEntities,
         });
       }),

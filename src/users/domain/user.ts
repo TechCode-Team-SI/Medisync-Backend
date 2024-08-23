@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { FileType } from '../../files/domain/file';
 import { Role } from '../../roles/domain/role';
+import { EmployeeProfile } from './employee-profile';
 
 const idType = Number;
 
@@ -35,6 +36,11 @@ export class User {
     type: () => Role,
   })
   roles?: Role[] | null;
+
+  @ApiProperty({
+    type: () => EmployeeProfile,
+  })
+  employeeProfile?: EmployeeProfile | null;
 
   @ApiProperty()
   createdAt: Date;

@@ -1,17 +1,21 @@
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
+import { RolesEnum } from 'src/roles/roles.enum';
 
 type Roles = Array<{
   name: string;
+  slug: string;
   permissions: string[];
 }>;
 
 const roles: Roles = [
   {
     name: 'Dueño',
+    slug: 'owner',
     permissions: Object.values(PermissionsEnum),
   },
   {
     name: 'Medico',
+    slug: 'medic',
     permissions: [
       PermissionsEnum.ACCESS_DESKTOP,
       PermissionsEnum.ACCESS_MOBILE,
@@ -20,7 +24,27 @@ const roles: Roles = [
   },
   {
     name: 'Paciente',
+    slug: 'patient',
     permissions: [PermissionsEnum.ACCESS_MOBILE, PermissionsEnum.USE_MOBILE],
+  },
+];
+
+export const rolesProduction: Roles = [
+  {
+    name: 'Usuario movil',
+    slug: RolesEnum.MOBILE_USER,
+    permissions: [PermissionsEnum.ACCESS_MOBILE, PermissionsEnum.USE_MOBILE],
+  },
+  {
+    name: 'Usuario movil no confirmado',
+    slug: RolesEnum.UNCONFIRMED_MOBILE_USER,
+    permissions: [PermissionsEnum.ACCESS_MOBILE],
+  },
+  {
+    name: 'Dueño',
+    slug: RolesEnum.OWNER,
+    //TODO: Update permissions to match the actual permissions
+    permissions: Object.values(PermissionsEnum),
   },
 ];
 

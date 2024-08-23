@@ -6,6 +6,7 @@ import { Article } from './domain/article';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticleRepository } from './infrastructure/persistence/article.repository';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class ArticlesService {
@@ -29,19 +30,22 @@ export class ArticlesService {
 
   findAllWithPagination({
     paginationOptions,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }) {
     return this.articleRepository.findAllWithPagination({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
+      options,
     });
   }
 
-  findOne(id: Article['id']) {
-    return this.articleRepository.findById(id);
+  findOne(id: Article['id'], options?: findOptions) {
+    return this.articleRepository.findById(id, options);
   }
 
   update(id: Article['id'], updateArticleDto: UpdateArticleDto) {

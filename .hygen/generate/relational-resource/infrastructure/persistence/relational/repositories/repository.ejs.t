@@ -13,6 +13,7 @@ import { IPaginationOptions } from '../../../../../utils/types/pagination-option
 import { exceptionResponses } from 'src/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class <%= name %>RelationalRepository implements <%= name %>Repository {
@@ -20,6 +21,8 @@ export class <%= name %>RelationalRepository implements <%= name %>Repository {
     @InjectRepository(<%= name %>Entity)
     private readonly <%= h.inflection.camelize(name, true) %>Repository: Repository<<%= name %>Entity>,
   ) {}
+
+  private relations = [];
 
   async create(data: <%= name %>): Promise<<%= name %>> {
     const persistenceModel = <%= name %>Mapper.toPersistence(data);
@@ -31,12 +34,18 @@ export class <%= name %>RelationalRepository implements <%= name %>Repository {
 
   async findAllWithPagination({
     paginationOptions,
+    options
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }): Promise<PaginationResponseDto<<%= name %>>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const [entities, count] = await this.<%= h.inflection.camelize(name, true) %>Repository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
+      relations,
     });
     const items = entities.map((entity) =>
       <%= name %>Mapper.toDomain(entity),
@@ -52,9 +61,13 @@ export class <%= name %>RelationalRepository implements <%= name %>Repository {
     );
   }
 
-  async findById(id: <%= name %>['id']): Promise<NullableType<<%= name %>>> {
+  async findById(id: <%= name %>['id'], options?: findOptions): Promise<NullableType<<%= name %>>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
     const entity = await this.<%= h.inflection.camelize(name, true) %>Repository.findOne({
       where: { id },
+      relations,
     });
 
     return entity ? <%= name %>Mapper.toDomain(entity) : null;

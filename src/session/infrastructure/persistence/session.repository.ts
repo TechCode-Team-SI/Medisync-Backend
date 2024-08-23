@@ -1,9 +1,13 @@
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { User } from '../../../users/domain/user';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { Session } from '../../domain/session';
 
 export abstract class SessionRepository {
-  abstract findById(id: Session['id']): Promise<NullableType<Session>>;
+  abstract findById(
+    id: Session['id'],
+    options?: findOptions,
+  ): Promise<NullableType<Session>>;
 
   abstract create(
     data: Omit<Session, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>,

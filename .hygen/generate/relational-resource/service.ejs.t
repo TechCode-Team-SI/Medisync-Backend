@@ -7,6 +7,7 @@ import { Update<%= name %>Dto } from './dto/update-<%= h.inflection.transform(na
 import { <%= name %>Repository } from './infrastructure/persistence/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>.repository';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { <%= name %> } from './domain/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>';
+import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class <%= h.inflection.transform(name, ['pluralize']) %>Service {
@@ -18,19 +19,22 @@ export class <%= h.inflection.transform(name, ['pluralize']) %>Service {
 
   findAllWithPagination({
     paginationOptions,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
+    options?: findOptions;
   }) {
     return this.<%= h.inflection.camelize(name, true) %>Repository.findAllWithPagination({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
+      options
     });
   }
 
-  findOne(id: <%= name %>['id']) {
-    return this.<%= h.inflection.camelize(name, true) %>Repository.findById(id);
+  findOne(id: <%= name %>['id'], options?: findOptions) {
+    return this.<%= h.inflection.camelize(name, true) %>Repository.findById(id, options);
   }
 
   update(id: <%= name %>['id'], update<%= name %>Dto: Update<%= name %>Dto) {

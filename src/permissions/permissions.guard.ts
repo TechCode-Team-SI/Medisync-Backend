@@ -1,16 +1,17 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RolesService } from 'src/roles/roles.service';
+import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { PermissionsService } from './permissions.service';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
   constructor(
-    private readonly rolesService: RolesService,
+    private readonly permissionsService: PermissionsService,
     private reflector: Reflector,
   ) {}
 
-  canActivate(context: ExecutionContext): boolean {
-    const permissions = this.reflector.getAllAndOverride<(number | string)[]>(
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const permissions = this.reflector.getAllAndOverride<string[]>(
       'permissions',
       [context.getClass(), context.getHandler()],
     );
@@ -19,12 +20,21 @@ export class PermissionsGuard implements CanActivate {
     }
     const request = context.switchToHttp().getRequest();
 
-    const roles = request.user?.roles;
+    const jwtPayload = request.user as JwtPayloadType;
+    const currentUserPermissions =
+      await this.permissionsService.findAllByRoleSlugs(jwtPayload.roleSlugs, {
+        minimal: true,
+      });
+    const currentUserPermissionSlugs = currentUserPermissions.map(
+      (permission) => permission.slug,
+    );
 
-    if (!roles || roles.length === 0) return true;
+    if (permissions.length === 0) return false;
 
-    //TODO: Finish permissions guard
+    const hasAllPermissions = permissions.every((permission) =>
+      currentUserPermissionSlugs.includes(permission),
+    );
 
-    return permissions.map(String).includes(String(request.user?.role?.id));
+    return hasAllPermissions;
   }
 }
