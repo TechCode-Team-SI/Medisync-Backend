@@ -25,9 +25,6 @@ export const AppDataSource = new DataSource({
   extra: {
     // based on https://node-postgres.com/api/pool
     // max connection pool size
-    max: process.env.DATABASE_MAX_CONNECTIONS
-      ? parseInt(process.env.DATABASE_MAX_CONNECTIONS, 10)
-      : 100,
     ssl:
       process.env.DATABASE_SSL_ENABLED === 'true'
         ? {
