@@ -9,11 +9,13 @@ import {
 } from 'class-validator';
 import { IsPartOfArray } from 'src/utils/validators/is-part-of-array';
 import { FieldQuestionTypeEnum } from '../field-questions.enum';
+import { SystemPrefixNotAllowed } from 'src/utils/validators/system-prefix-not-allowed';
 
 export class CreateTextfieldFieldQuestionDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @Validate(SystemPrefixNotAllowed)
   name: string;
 
   @ApiProperty()

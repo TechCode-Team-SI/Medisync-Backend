@@ -66,15 +66,9 @@ export class PackagesController {
     return role;
   }
 
-  @Post(':id')
-  @ApiParam({
-    name: 'id',
-    type: String,
-    required: true,
-  })
+  @Post()
   @ApiOkResponse()
   async seed(
-    @Param('id') id: string,
     @Body() applyPackagesDto: ApplyPackagesDto,
   ): Promise<SuccessResponseDto> {
     await this.packagesService.seed(...applyPackagesDto.slugs);
