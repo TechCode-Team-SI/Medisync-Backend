@@ -38,7 +38,7 @@
     "release": "release-it",
     "check-types": "tsc --project tsconfig.json --pretty --noEmit",
     "validate": "lint-staged",
-    "postinstall": "husky install"
+    "postinstall": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install ; fi"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.616.0",
