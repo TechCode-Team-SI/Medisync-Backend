@@ -1,1 +1,1 @@
-release: npm run migration:run && npm run seed:run:production
+release: npm run migration:run:production && npm run seed:run:production

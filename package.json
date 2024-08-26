@@ -6,11 +6,13 @@
   "license": "MIT",
   "scripts": {
     "db:reset": "npm run schema:drop && npm run migration:run && npm run seed:run",
-    "db:reset:production": "npm run schema:drop && npm run migration:run && npm run seed:run:production",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "db:reset:production": "npm run schema:drop && npm run migration:run:production && npm run seed:run:production",
+    "typeorm": "env-cmd ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "typeorm:production": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "migration:generate": "npm run typeorm -- --dataSource=src/database/data-source.ts migration:generate ./src/database/migrations/migration",
     "migration:create": "npm run typeorm -- migration:create",
     "migration:run": "npm run typeorm -- --dataSource=src/database/data-source.ts migration:run",
+    "migration:run:production": "npm run typeorm:production -- --dataSource=src/database/data-source.ts migration:run",
     "migration:revert": "npm run typeorm -- --dataSource=src/database/data-source.ts migration:revert",
     "schema:drop": "npm run typeorm -- --dataSource=src/database/data-source.ts schema:drop",
     "seed:create": "hygen seeds create-relational",
@@ -19,7 +21,7 @@
     "add:property:to-db": "hygen property add-to-relational",
     "postadd:property:to-db": "npm run lint -- --fix",
     "seed:run": "ts-node -r tsconfig-paths/register ./src/database/seeds/relational/run-seed.ts",
-    "seed:run:production": "ts-node -r tsconfig-paths/register ./src/database/seeds/relational/run-seed.ts",
+    "seed:run:production": "ts-node -r tsconfig-paths/register ./src/database/seeds/relational/run-seed.production.ts",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -74,7 +76,8 @@
     "rxjs": "7.8.1",
     "source-map-support": "0.5.21",
     "swagger-ui-express": "5.0.1",
-    "typeorm": "0.3.20"
+    "typeorm": "0.3.20",
+    "env-cmd": "10.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "19.3.0",
@@ -95,7 +98,6 @@
     "@types/supertest": "6.0.2",
     "@typescript-eslint/eslint-plugin": "7.16.1",
     "@typescript-eslint/parser": "7.16.1",
-    "env-cmd": "10.1.0",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-import": "2.29.1",
