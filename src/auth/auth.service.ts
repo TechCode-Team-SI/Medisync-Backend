@@ -113,8 +113,6 @@ export class AuthService {
       hash,
     });
 
-    void this.generateCodeConfirmEmail(user.email);
-
     return {
       refreshToken,
       token,
