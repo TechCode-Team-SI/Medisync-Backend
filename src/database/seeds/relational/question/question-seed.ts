@@ -1,6 +1,6 @@
 import { FieldQuestionTypeEnum } from 'src/field-questions/field-questions.enum';
 
-type FieldQuestionType = {
+export type FieldQuestionType = {
   id: string;
   name: string;
   slug: string;
@@ -12,7 +12,7 @@ type FieldQuestionType = {
     isMultiple: boolean;
   };
   selections?: {
-    id: string;
+    id?: string;
     value: string;
   }[];
 };

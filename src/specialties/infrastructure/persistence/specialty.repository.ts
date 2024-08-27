@@ -14,6 +14,8 @@ type CreateSpecialty = Omit<
 export abstract class SpecialtyRepository {
   abstract create(data: CreateSpecialty): Promise<Specialty>;
 
+  abstract createMultiple(data: CreateSpecialty[]): Promise<Specialty[]>;
+
   abstract findAllWithPagination({
     paginationOptions,
     options,
@@ -21,6 +23,11 @@ export abstract class SpecialtyRepository {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
   }): Promise<PaginationResponseDto<Specialty>>;
+
+  abstract findAllWithNames(
+    names: Specialty['name'][],
+    options?: findOptions,
+  ): Promise<Specialty[]>;
 
   abstract findById(
     id: Specialty['id'],

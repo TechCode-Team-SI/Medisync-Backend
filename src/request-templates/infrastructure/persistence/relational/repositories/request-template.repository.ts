@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, Repository } from 'typeorm';
+import { FindOptionsRelations, In, Repository } from 'typeorm';
 import { RequestTemplateEntity } from '../entities/request-template.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { RequestTemplate } from '../../../../domain/request-template';
@@ -36,6 +36,18 @@ export class RequestTemplateRelationalRepository
       this.requestTemplateRepository.create(persistenceModel),
     );
     return RequestTemplateMapper.toDomain(newEntity);
+  }
+
+  async createMultiple(data: RequestTemplate[]): Promise<RequestTemplate[]> {
+    const persistenceModels = data.map((template) =>
+      RequestTemplateMapper.toPersistence(template),
+    );
+    const newEntities = await this.requestTemplateRepository.save(
+      this.requestTemplateRepository.create(persistenceModels),
+    );
+    return newEntities.map((newEntity) =>
+      RequestTemplateMapper.toDomain(newEntity),
+    );
   }
 
   async findAllWithPagination({
@@ -97,6 +109,21 @@ export class RequestTemplateRelationalRepository
     });
 
     return entity ? RequestTemplateMapper.toDomain(entity) : null;
+  }
+
+  async findAllBySlug(
+    slugs: RequestTemplate['slug'][],
+    options?: findOptions,
+  ): Promise<RequestTemplate[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entities = await this.requestTemplateRepository.find({
+      where: { slug: In(slugs) },
+      relations,
+    });
+
+    return entities.map((entity) => RequestTemplateMapper.toDomain(entity));
   }
 
   async update(

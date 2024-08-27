@@ -14,51 +14,13 @@ export class MailService {
     private readonly configService: ConfigService<AllConfigType>,
   ) {}
 
-  async userSignUp(mailData: MailData<{ hash: string }>): Promise<void> {
-    let emailConfirmTitle: MaybeType<string>;
-    let text1: MaybeType<string>;
-    let text2: MaybeType<string>;
-    let text3: MaybeType<string>;
-
-    const url = new URL(
-      this.configService.getOrThrow('app.frontendDomain', {
-        infer: true,
-      }) + '/confirm-email',
-    );
-    url.searchParams.set('hash', mailData.data.hash);
-
-    await this.mailerService.sendMail({
-      to: mailData.to,
-      subject: emailConfirmTitle,
-      text: `${url.toString()} ${emailConfirmTitle}`,
-      templatePath: path.join(
-        this.configService.getOrThrow('app.workingDirectory', {
-          infer: true,
-        }),
-        'src',
-        'mail',
-        'mail-templates',
-        'activation.hbs',
-      ),
-      context: {
-        title: emailConfirmTitle,
-        url: url.toString(),
-        actionTitle: emailConfirmTitle,
-        app_name: this.configService.get('app.name', { infer: true }),
-        text1,
-        text2,
-        text3,
-      },
-    });
-  }
-
   async forgotPassword(mailData: MailData<{ code: string }>): Promise<void> {
     const resetPasswordTitle: MaybeType<string> = 'Reset Password';
-    const text1: MaybeType<string> =
-      'You have requested to reset your password.';
-    const text2: MaybeType<string> = `Please use the following code to reset your password: ${mailData.data.code}`;
+    const text1: MaybeType<string> = 'Has solicitado cambiar la contrasena.';
+    const text2: MaybeType<string> = `Por favor usa el siguiente codigo para resetear la contrasena:`;
     let text3: MaybeType<string>;
-    let text4: MaybeType<string>;
+    const footerText1: MaybeType<string> =
+      'Si no has solicitado este correo, por favor ignóralo.';
 
     const url = new URL(
       this.configService.getOrThrow('app.frontendDomain', {
@@ -77,19 +39,16 @@ export class MailService {
         'src',
         'mail',
         'mail-templates',
-        'reset-password.hbs',
+        'code.hbs',
       ),
       context: {
         title: resetPasswordTitle,
-        url: url.toString(),
-        actionTitle: resetPasswordTitle,
-        app_name: this.configService.get('app.name', {
-          infer: true,
-        }),
+        code: mailData.data.code,
+        app_name: this.configService.get('app.name', { infer: true }),
         text1,
         text2,
         text3,
-        text4,
+        footerText1,
       },
     });
   }
@@ -101,7 +60,7 @@ export class MailService {
       'Confirmación de correo electrónico';
     const text1: MaybeType<string> = `Hola, ${mailData.data.fullName}`;
     const text2: MaybeType<string> =
-      '¡Gracias por registrarte con nosotros! Para completar tu registro, por favor confirma tu dirección de correo electrónico haciendo clic en el botón de abajo:';
+      '¡Gracias por registrarte con nosotros! Para completar tu registro, por favor confirma tu dirección de correo electrónico con este codigo a continuacion';
     let text3: MaybeType<string>;
     const footerText1: MaybeType<string> =
       'Si no has solicitado este correo, por favor ignóralo.';
@@ -117,7 +76,7 @@ export class MailService {
         'src',
         'mail',
         'mail-templates',
-        'confirm-new-email.hbs',
+        'code.hbs',
       ),
       context: {
         title: emailConfirmTitle,

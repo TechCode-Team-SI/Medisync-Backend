@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { SpecialtyEntity } from '../entities/specialty.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { Specialty } from '../../../../domain/specialty';
@@ -27,6 +27,16 @@ export class SpecialtyRelationalRepository implements SpecialtyRepository {
       this.specialtyRepository.create(persistenceModel),
     );
     return SpecialtyMapper.toDomain(newEntity);
+  }
+
+  async createMultiple(data: Specialty[]): Promise<Specialty[]> {
+    const persistenceModels = data.map((specialty) =>
+      SpecialtyMapper.toPersistence(specialty),
+    );
+    const newEntities = await this.specialtyRepository.save(
+      this.specialtyRepository.create(persistenceModels),
+    );
+    return newEntities.map((newEntity) => SpecialtyMapper.toDomain(newEntity));
   }
 
   async findAllWithPagination({
@@ -69,6 +79,21 @@ export class SpecialtyRelationalRepository implements SpecialtyRepository {
     });
 
     return entity ? SpecialtyMapper.toDomain(entity) : null;
+  }
+
+  async findAllWithNames(
+    names: Specialty['name'][],
+    options?: findOptions,
+  ): Promise<Specialty[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = [];
+
+    const entities = await this.specialtyRepository.find({
+      where: { name: In(names) },
+      relations,
+    });
+
+    return entities.map((entity) => SpecialtyMapper.toDomain(entity));
   }
 
   async update(

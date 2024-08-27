@@ -12,4 +12,10 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'field_questions_already_exists',
     message: 'Field Question already exists',
   },
+  SelectionInputsNotProvided: {
+    status: HttpStatus.BAD_REQUEST,
+    error: 'selection_inputs_not_provided',
+    message:
+      'some expected selection properties were not provided in the request',
+  },
 } as const;

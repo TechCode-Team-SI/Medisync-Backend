@@ -10,4 +10,5 @@ export type AppConfig = {
   headerLanguage: string;
   installToken: string;
   installInitialStep: string;
+  installPrefix: string;
 };

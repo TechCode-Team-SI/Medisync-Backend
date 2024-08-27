@@ -1,5 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
+import { CreateMedicalCenterDto } from 'src/medical-centers/dto/create-medical-center.dto';
+import { ApplyPackagesDto } from '../packages/dto/apply-packages.dto';
 import { Installation } from './domain/installation';
 import { StepOneInstallationDto } from './dto/step-one-installation.dto';
 import {
@@ -8,7 +11,6 @@ import {
 } from './installations.decorator';
 import { InstallationStepEnum } from './installations.enum';
 import { InstallationsService } from './installations.service';
-import { CreateMedicalCenterDto } from 'src/medical-centers/dto/create-medical-center.dto';
 
 @ApiTags('Installation')
 @ApiBearerAuth()
@@ -43,7 +45,11 @@ export class InstallationsController {
     type: Installation,
   })
   @CurrentInstallationStep(InstallationStepEnum.CONFIGURE_MODULES)
-  processStepThree() {
-    return this.installationsService.processStepThree();
+  processStepThree(
+    @Body() installationThreeDto: ApplyPackagesDto,
+  ): Promise<SuccessResponseDto> {
+    return this.installationsService.processStepThree(
+      ...installationThreeDto.slugs,
+    );
   }
 }

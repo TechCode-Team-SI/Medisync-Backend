@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -51,6 +52,6 @@ export class InstallationsGuard implements CanActivate {
 
     if (installationStep.step === InstallationStepEnum.FINISHED) return true;
 
-    return false;
+    throw new ForbiddenException(exceptionResponses.SystemNotInstalled);
   }
 }

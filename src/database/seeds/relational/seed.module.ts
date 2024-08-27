@@ -13,6 +13,7 @@ import { UserSeedModule } from './user/user-seed.module';
 import { FieldQuestionSeedModule } from './question/question-seed.module';
 import { RequestTemplateSeedModule } from './request-template/request-template-seed.module';
 import { SpecialtySeedModule } from './specialty/specialty-seed.module';
+import { PackageSeedModule } from './package/package-seed.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { SpecialtySeedModule } from './specialty/specialty-seed.module';
     FieldQuestionSeedModule,
     RequestTemplateSeedModule,
     SpecialtySeedModule,
+    PackageSeedModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, appConfig],

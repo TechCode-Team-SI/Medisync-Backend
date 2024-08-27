@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { slugify } from 'src/utils/utils';
 import { IPaginationOptions } from '../utils/types/pagination-options';
@@ -10,12 +14,71 @@ import { FieldQuestionTypeEnum } from './field-questions.enum';
 import { exceptionResponses } from './field-questions.messages';
 import { FieldQuestionRepository } from './infrastructure/persistence/field-question.repository';
 import { Selection } from './domain/selection';
+import { CreateMultipleFieldQuestionDto } from './dto/create-multiple-field-question.dto';
 
 @Injectable()
 export class FieldQuestionsService {
   constructor(
     private readonly fieldQuestionRepository: FieldQuestionRepository,
   ) {}
+
+  async createMultiple({ fields }: CreateMultipleFieldQuestionDto) {
+    const slugs = fields.map((field) => {
+      if (field.slug) return field.slug;
+      return slugify(field.name);
+    });
+    const foundFields = await this.fieldQuestionRepository.findAllBySlug(slugs);
+    if (foundFields.length > 0) {
+      throw new UnprocessableEntityException(exceptionResponses.AlreadyExists);
+    }
+    const payloads: {
+      slug: string;
+      name: string;
+      label: string;
+      type: FieldQuestionTypeEnum;
+      isRequired: boolean;
+      description?: string;
+      selectionConfig?: SelectionConfiguration;
+      selections?: Selection[];
+    }[] = [];
+    for (const field of fields) {
+      if (field.type === FieldQuestionTypeEnum.SELECTION) {
+        if (!field.selectionConfig || !field.selections) {
+          throw new BadRequestException(
+            exceptionResponses.SelectionInputsNotProvided,
+          );
+        }
+        const selectionConfig = new SelectionConfiguration();
+        selectionConfig.isMultiple = field.selectionConfig.isMultiple;
+
+        const selections = field.selections.map((selection) => {
+          const selectionData = new Selection();
+          selectionData.value = selection.value;
+          return selectionData;
+        });
+
+        payloads.push({
+          ...field,
+          slug: field.slug || slugify(field.name),
+          type: FieldQuestionTypeEnum.SELECTION,
+          selectionConfig,
+          selections,
+        });
+      } else {
+        const clonedPayload = {
+          id: field.id,
+          name: field.name,
+          label: field.label,
+          type: field.type,
+          description: field.description,
+          isRequired: field.isRequired,
+          slug: field.slug || slugify(field.name),
+        };
+        payloads.push(clonedPayload);
+      }
+    }
+    return this.fieldQuestionRepository.createMultiple(payloads);
+  }
 
   async createSelection(
     createFieldQuestionDto: CreateSelectionFieldQuestionDto,

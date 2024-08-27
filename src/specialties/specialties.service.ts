@@ -7,6 +7,8 @@ import { Specialty } from './domain/specialty';
 import { FilesService } from 'src/files/files.service';
 import { exceptionResponses } from './specialties.messages';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { CreateMultipleSpecialtyInternalDto } from './dto/create-multiple-specialty-internal.dto';
+import { CreateSpecialtyInternalDto } from './dto/create-specialty-internal.dto';
 
 @Injectable()
 export class SpecialtiesService {
@@ -30,6 +32,26 @@ export class SpecialtiesService {
     return this.specialtyRepository.create(createSpecialtyDto);
   }
 
+  async createMultiple({ specialties }: CreateMultipleSpecialtyInternalDto) {
+    const payloads: CreateSpecialtyInternalDto[] = await Promise.all(
+      specialties.map(async (specialty) => {
+        const data = { ...specialty };
+        if (data.image?.id) {
+          const fileObject = await this.filesService.findById(data.image.id);
+          if (!fileObject) {
+            throw new UnprocessableEntityException(
+              exceptionResponses.ImageNotExist,
+            );
+          }
+          data.image = fileObject;
+        }
+        return data;
+      }),
+    );
+
+    return this.specialtyRepository.createMultiple(payloads);
+  }
+
   findAllWithPagination({
     paginationOptions,
     options,
@@ -48,6 +70,10 @@ export class SpecialtiesService {
 
   findOne(id: Specialty['id'], options?: findOptions) {
     return this.specialtyRepository.findById(id, options);
+  }
+
+  findAllWithNames(names: Specialty['name'][], options?: findOptions) {
+    return this.specialtyRepository.findAllWithNames(names, options);
   }
 
   update(id: Specialty['id'], updateSpecialtyDto: UpdateSpecialtyDto) {

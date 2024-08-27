@@ -53,4 +53,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'installation_already_finished',
     message: 'System already installed',
   },
+  SystemNotInstalled: {
+    status: HttpStatus.FORBIDDEN,
+    error: 'system_not_installed',
+    message: 'System not installed',
+  },
 } as const;
