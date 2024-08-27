@@ -13,11 +13,15 @@ export class RoomMapper {
     domainEntity.address = raw.address;
     if (raw.specialty) {
       domainEntity.specialty = SpecialtyMapper.toDomain(raw.specialty);
+    } else {
+      domainEntity.specialty = null;
     }
     if (raw.employeeProfile) {
       domainEntity.employeeProfile = EmployeeProfileMapper.toDomain(
         raw.employeeProfile,
       );
+    } else {
+      domainEntity.employeeProfile = null;
     }
     return domainEntity;
   }

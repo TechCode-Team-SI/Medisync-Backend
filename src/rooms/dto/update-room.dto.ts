@@ -1,7 +1,26 @@
-// Don't forget to use the class-validator decorators in the DTO properties.
-// import { Allow } from 'class-validator';
-
-import { PartialType } from '@nestjs/swagger';
+import { PartialType, ApiPropertyOptional } from '@nestjs/swagger';
 import { CreateRoomDto } from './create-room.dto';
+import { Type } from 'class-transformer';
+import { IsOptional } from 'class-validator';
+import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
+import { EmployeeProfileIdDto } from 'src/employee-profiles/dto/employee-profile-id.dto';
 
-export class UpdateRoomDto extends PartialType(CreateRoomDto) {}
+export class UpdateRoomDto extends PartialType(CreateRoomDto) {
+  @ApiPropertyOptional()
+  @IsOptional()
+  name: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  address: string;
+
+  @ApiPropertyOptional({ type: () => SpecialtyDto })
+  @IsOptional()
+  @Type(() => SpecialtyDto)
+  specialty?: SpecialtyDto | null;
+
+  @ApiPropertyOptional({ type: () => EmployeeProfileIdDto })
+  @IsOptional()
+  @Type(() => EmployeeProfileIdDto)
+  employeeProfile?: EmployeeProfileIdDto | null;
+}

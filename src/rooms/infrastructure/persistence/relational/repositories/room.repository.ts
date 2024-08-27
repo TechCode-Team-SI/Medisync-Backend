@@ -83,14 +83,22 @@ export class RoomRelationalRepository implements RoomRepository {
       throw new NotFoundException(exceptionResponses.NotFound);
     }
 
-    const updatedEntity = await this.roomRepository.save(
-      this.roomRepository.create(
-        RoomMapper.toPersistence({
-          ...RoomMapper.toDomain(entity),
-          ...payload,
-        }),
-      ),
+    const room = this.roomRepository.create(
+      RoomMapper.toPersistence({
+        ...RoomMapper.toDomain(entity),
+        ...payload,
+      }),
     );
+
+    if (!room.employeeProfile) {
+      room.employeeProfile = null;
+    }
+
+    if (!room.specialty) {
+      room.specialty = null;
+    }
+
+    const updatedEntity = await this.roomRepository.save(room);
 
     return RoomMapper.toDomain(updatedEntity);
   }
