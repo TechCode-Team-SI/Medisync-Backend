@@ -12,9 +12,14 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'specialty_not_exist',
     message: 'Specialty not exist',
   },
-  EmployeeProfileNotExistNotExist: {
+  EmployeeProfileNotExist: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     error: 'employee_profile_not_exist',
     message: 'Employee profile not exist',
+  },
+  UsingEmployeeAndSpecialty: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'using_employee_and_specialty',
+    message: 'Using Employee and Specialty',
   },
 } as const;

@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
-import { EmployeeProfileDto } from 'src/employee-profiles/dto/employee-profile.dto';
+import { EmployeeProfileIdDto } from 'src/employee-profiles/dto/employee-profile-id.dto';
 
 export class CreateRoomDto {
   @ApiProperty()
@@ -20,8 +20,8 @@ export class CreateRoomDto {
   @Type(() => SpecialtyDto)
   specialty?: SpecialtyDto | null;
 
-  @ApiPropertyOptional({ type: () => EmployeeProfileDto })
+  @ApiPropertyOptional({ type: () => EmployeeProfileIdDto })
   @IsOptional()
-  @Type(() => EmployeeProfileDto)
-  employeeProfile?: EmployeeProfileDto | null;
+  @Type(() => EmployeeProfileIdDto)
+  employeeProfile?: EmployeeProfileIdDto | null;
 }

@@ -4,14 +4,10 @@ import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Room } from '../../domain/room';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
-import { EmployeeProfileDto } from 'src/employee-profiles/dto/employee-profile.dto';
 
 export abstract class RoomRepository {
   abstract create(
     data: Omit<Room, 'id' | 'specialty' | 'employeeProfile'>,
-    specialty: SpecialtyDto,
-    employeeProfile: EmployeeProfileDto,
   ): Promise<Room>;
 
   abstract findAllWithPagination({

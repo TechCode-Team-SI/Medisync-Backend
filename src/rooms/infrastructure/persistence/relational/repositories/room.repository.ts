@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, FindOptionsRelations } from 'typeorm';
 import { RoomEntity } from '../entities/room.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { Room } from '../../../../domain/room';
@@ -19,7 +19,10 @@ export class RoomRelationalRepository implements RoomRepository {
     private readonly roomRepository: Repository<RoomEntity>,
   ) {}
 
-  private relations = ['specialty', 'employeeProfile'];
+  private relations: FindOptionsRelations<RoomEntity> = {
+    specialty: true,
+    employeeProfile: true,
+  };
 
   async create(data: Room): Promise<Room> {
     const persistenceModel = RoomMapper.toPersistence(data);
@@ -37,7 +40,7 @@ export class RoomRelationalRepository implements RoomRepository {
     options?: findOptions;
   }): Promise<PaginationResponseDto<Room>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const [entities, count] = await this.roomRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
@@ -61,7 +64,7 @@ export class RoomRelationalRepository implements RoomRepository {
     options?: findOptions,
   ): Promise<NullableType<Room>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.roomRepository.findOne({
       where: { id },

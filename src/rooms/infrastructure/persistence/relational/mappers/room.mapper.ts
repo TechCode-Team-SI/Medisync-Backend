@@ -23,12 +23,12 @@ export class RoomMapper {
   }
 
   static toPersistence(domainEntity: Room): RoomEntity {
-    let specialty: SpecialtyEntity | undefined = undefined;
+    let specialty: SpecialtyEntity | undefined | null = undefined;
     if (domainEntity.specialty) {
       specialty = SpecialtyMapper.toPersistence(domainEntity.specialty);
     }
 
-    let employeeProfile: EmployeeProfileEntity | undefined = undefined;
+    let employeeProfile: EmployeeProfileEntity | undefined | null = undefined;
     if (domainEntity.employeeProfile) {
       employeeProfile = EmployeeProfileMapper.toPersistence(
         domainEntity.employeeProfile,
