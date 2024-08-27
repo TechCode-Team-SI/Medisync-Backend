@@ -31,12 +31,12 @@ export class CreateMedicalCenterDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  local_phone: string;
+  localPhone: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  mobile_phone: string;
+  mobilePhone: string;
 
   @ApiProperty()
   @IsNotEmpty()

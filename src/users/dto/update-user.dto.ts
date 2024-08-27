@@ -6,7 +6,7 @@ import { IsEmail, IsOptional, MinLength } from 'class-validator';
 import { FileDto } from '../../files/dto/file.dto';
 import { RoleDto } from '../../roles/dto/role.dto';
 import { lowerCaseTransformer } from '../../utils/transformers/lower-case.transformer';
-import { EmployeeProfileDto } from './employee-profile.dto';
+import { EmployeeProfileDto } from '../../employee-profiles/dto/employee-profile.dto';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiPropertyOptional({ example: 'test1@example.com', type: String })

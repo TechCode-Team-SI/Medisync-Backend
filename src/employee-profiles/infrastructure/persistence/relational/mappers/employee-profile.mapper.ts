@@ -1,6 +1,6 @@
 import { SpecialtyMapper } from 'src/specialties/infrastructure/persistence/relational/mappers/specialty.mapper';
-import { EmployeeProfile } from '../../../../domain/employee-profile';
-import { EmployeeProfileEntity } from '../entities/employee-profile.entity';
+import { EmployeeProfile } from '../../../../../employee-profiles/domain/employee-profile';
+import { EmployeeProfileEntity } from '../../../../../employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
 
 export class EmployeeProfileMapper {
   static toDomain(raw: EmployeeProfileEntity): EmployeeProfile {

@@ -32,11 +32,11 @@ export class MedicalCenterEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @Column()
-  local_phone: string;
+  localPhone: string;
 
   @ApiProperty()
   @Column()
-  mobile_phone: string;
+  mobilePhone: string;
 
   @ApiProperty()
   @Column()

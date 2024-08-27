@@ -52,9 +52,15 @@ import { InstructionsModule } from './instructions/instructions.module';
 
 import { PackagesModule } from './packages/packages.module';
 
+import { RoomsModule } from './rooms/rooms.module';
+
+import { EmployeeProfilesModule } from './employee-profiles/employee-profiles.module';
+
 @Module({
   imports: [
     PackagesModule,
+    EmployeeProfilesModule,
+    RoomsModule,
     InstructionsModule,
     DiagnosticsModule,
     MedicalCentersModule,

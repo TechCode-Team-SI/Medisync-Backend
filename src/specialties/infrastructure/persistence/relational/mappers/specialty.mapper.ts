@@ -1,7 +1,7 @@
 import { FileMapper } from 'src/files/infrastructure/persistence/relational/mappers/file.mapper';
 import { Specialty } from '../../../../domain/specialty';
 import { SpecialtyEntity } from '../entities/specialty.entity';
-import { EmployeeProfileMapper } from 'src/users/infrastructure/persistence/relational/mappers/employee-profile.mapper';
+import { EmployeeProfileMapper } from 'src/employee-profiles/infrastructure/persistence/relational/mappers/employee-profile.mapper';
 import { RequestTemplateMapper } from 'src/request-templates/infrastructure/persistence/relational/mappers/request-template.mapper';
 
 export class SpecialtyMapper {

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { FileEntity } from 'src/files/infrastructure/persistence/relational/entities/file.entity';
 import { RequestTemplateEntity } from 'src/request-templates/infrastructure/persistence/relational/entities/request-template.entity';
-import { EmployeeProfileEntity } from 'src/users/infrastructure/persistence/relational/entities/employee-profile.entity';
+import { EmployeeProfileEntity } from 'src/employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
 import {
   Column,
   CreateDateColumn,

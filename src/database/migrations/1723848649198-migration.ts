@@ -8,7 +8,7 @@ export class Migration1723848649198 implements MigrationInterface {
       `DROP INDEX \`IDX_30b498d38d1b4b7f7768d08f02\` ON \`field_question\``,
     );
     await queryRunner.query(
-      `CREATE TABLE \`medical_center\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(255) NOT NULL, \`address\` varchar(255) NOT NULL, \`state\` varchar(255) NOT NULL, \`municipality\` varchar(255) NOT NULL, \`parish\` varchar(255) NOT NULL, \`local_phone\` varchar(255) NOT NULL, \`mobile_phone\` varchar(255) NOT NULL, \`mission\` varchar(255) NOT NULL, \`vision\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`medical_center\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(255) NOT NULL, \`address\` varchar(255) NOT NULL, \`state\` varchar(255) NOT NULL, \`municipality\` varchar(255) NOT NULL, \`parish\` varchar(255) NOT NULL, \`localPhone\` varchar(255) NOT NULL, \`mobilePhone\` varchar(255) NOT NULL, \`mission\` varchar(255) NOT NULL, \`vision\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `ALTER TABLE \`field_question\` ADD UNIQUE INDEX \`IDX_30b498d38d1b4b7f7768d08f02\` (\`slug\`)`,

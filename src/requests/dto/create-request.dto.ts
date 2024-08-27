@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, Validate } from 'class-validator';
 import { RequestTemplateDto } from 'src/request-templates/dto/request-template.dto';
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
-import { EmployeeProfileIdDto } from 'src/users/dto/employee-profile-id.dto';
+import { EmployeeProfileIdDto } from 'src/employee-profiles/dto/employee-profile-id.dto';
 import { RequestValueDto } from './request-value.dto';
 import { IsHourFormat } from 'src/utils/validators/is-hour-format';
 
