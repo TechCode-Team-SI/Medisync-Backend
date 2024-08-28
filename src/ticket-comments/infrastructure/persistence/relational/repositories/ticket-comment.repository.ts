@@ -1,27 +1,37 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { TicketCommentEntity } from '../entities/ticket-comment.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { TicketComment } from '../../../../domain/ticket-comment';
-import { TicketCommentRepository } from '../../ticket-comment.repository';
-import { TicketCommentMapper } from '../mappers/ticket-comment.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/ticket-comments/ticket-comments.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { TicketComment } from '../../../../domain/ticket-comment';
+import { TicketCommentRepository } from '../../ticket-comment.repository';
+import { TicketCommentEntity } from '../entities/ticket-comment.entity';
+import { TicketCommentMapper } from '../mappers/ticket-comment.mapper';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class TicketCommentRelationalRepository
+  extends BaseRepository
   implements TicketCommentRepository
 {
   constructor(
-    @InjectRepository(TicketCommentEntity)
-    private readonly ticketCommentRepository: Repository<TicketCommentEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
 
-  private relations = [];
+  private get ticketCommentRepository(): Repository<TicketCommentEntity> {
+    return this.getRepository(TicketCommentEntity);
+  }
+
+  private relations: FindOptionsRelations<TicketCommentEntity> = {};
 
   async create(data: TicketComment): Promise<TicketComment> {
     const persistenceModel = TicketCommentMapper.toPersistence(data);
@@ -39,7 +49,7 @@ export class TicketCommentRelationalRepository
     options?: findOptions;
   }): Promise<PaginationResponseDto<TicketComment>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const [entities, count] = await this.ticketCommentRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
@@ -65,7 +75,7 @@ export class TicketCommentRelationalRepository
     options?: findOptions,
   ): Promise<NullableType<TicketComment>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.ticketCommentRepository.findOne({
       where: { id },

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Scope } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
@@ -91,6 +91,7 @@ import { EmployeeProfilesModule } from './employee-profiles/employee-profiles.mo
   providers: [
     {
       provide: APP_GUARD,
+      scope: Scope.REQUEST,
       useClass: InstallationsGuard,
     },
   ],

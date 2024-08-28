@@ -1,25 +1,37 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { ArticleEntity } from '../entities/article.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { Article } from '../../../../domain/article';
-import { ArticleRepository } from '../../article.repository';
-import { ArticleMapper } from '../mappers/article.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 import { exceptionResponses } from 'src/articles/articles.messages';
+import { BaseRepository } from 'src/common/base.repository';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Article } from '../../../../domain/article';
+import { ArticleRepository } from '../../article.repository';
+import { ArticleEntity } from '../entities/article.entity';
+import { ArticleMapper } from '../mappers/article.mapper';
 
-@Injectable()
-export class ArticleRelationalRepository implements ArticleRepository {
+@Injectable({ scope: Scope.REQUEST })
+export class ArticleRelationalRepository
+  extends BaseRepository
+  implements ArticleRepository
+{
   constructor(
-    @InjectRepository(ArticleEntity)
-    private readonly articleRepository: Repository<ArticleEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
 
-  private relations = ['updatedBy'];
+  private get articleRepository(): Repository<ArticleEntity> {
+    return this.getRepository(ArticleEntity);
+  }
+
+  private relations: FindOptionsRelations<ArticleEntity> = { updatedBy: true };
 
   async create(data: Article): Promise<Article> {
     const persistenceModel = ArticleMapper.toPersistence(data);
@@ -37,7 +49,7 @@ export class ArticleRelationalRepository implements ArticleRepository {
     options?: findOptions;
   }): Promise<PaginationResponseDto<Article>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const [entities, count] = await this.articleRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
@@ -61,7 +73,7 @@ export class ArticleRelationalRepository implements ArticleRepository {
     options?: findOptions,
   ): Promise<NullableType<Article>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.articleRepository.findOne({
       where: { id },

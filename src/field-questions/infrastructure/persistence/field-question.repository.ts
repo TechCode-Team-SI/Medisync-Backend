@@ -4,8 +4,9 @@ import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { FieldQuestion } from '../../domain/field-question';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
 
-export abstract class FieldQuestionRepository {
+export abstract class FieldQuestionRepository extends BaseRepository {
   abstract create(
     data: Omit<FieldQuestion, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<FieldQuestion>;

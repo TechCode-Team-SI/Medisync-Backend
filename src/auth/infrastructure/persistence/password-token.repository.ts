@@ -1,7 +1,8 @@
 import { PasswordToken } from 'src/auth/domain/password-token';
 import { NullableType } from '../../../utils/types/nullable.type';
+import { BaseRepository } from 'src/common/base.repository';
 
-export abstract class PasswordTokenRepository {
+export abstract class PasswordTokenRepository extends BaseRepository {
   abstract create(
     email: PasswordToken['email'],
     expiresAt: Date,

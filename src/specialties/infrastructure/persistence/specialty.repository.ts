@@ -1,9 +1,10 @@
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Specialty } from '../../domain/specialty';
-import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
 
 type CreateSpecialty = Omit<
   Specialty,
@@ -11,7 +12,7 @@ type CreateSpecialty = Omit<
 > &
   Partial<Pick<Specialty, 'isDisabled' | 'isGroup' | 'isPublic'>>;
 
-export abstract class SpecialtyRepository {
+export abstract class SpecialtyRepository extends BaseRepository {
   abstract create(data: CreateSpecialty): Promise<Specialty>;
 
   abstract createMultiple(data: CreateSpecialty[]): Promise<Specialty[]>;

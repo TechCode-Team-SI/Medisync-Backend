@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -26,6 +27,7 @@ import { ApplyPackagesDto } from './dto/apply-packages.dto';
 import { FindAllPackagesDto } from './dto/find-all-packages.dto';
 import { exceptionResponses } from './packages.messages';
 import { PackagesService } from './packages.service';
+import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 
 @ApiTags('Packages')
 @ApiBearerAuth()
@@ -67,6 +69,7 @@ export class PackagesController {
   }
 
   @Post()
+  @UseInterceptors(TransactionInterceptor)
   @ApiOkResponse()
   async seed(
     @Body() applyPackagesDto: ApplyPackagesDto,

@@ -4,8 +4,9 @@ import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Room } from '../../domain/room';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
 
-export abstract class RoomRepository {
+export abstract class RoomRepository extends BaseRepository {
   abstract create(
     data: Omit<Room, 'id' | 'specialty' | 'employeeProfile'>,
   ): Promise<Room>;

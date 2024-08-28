@@ -1,25 +1,42 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 
-import { FindOptionsRelations, FindOptionsWhere, Repository } from 'typeorm';
-import { UserEntity } from '../entities/user.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { FilterUserDto, SortUserDto } from '../../../../dto/query-user.dto';
-import { User } from '../../../../domain/user';
-import { UserRepository } from '../../user.repository';
-import { UserMapper } from '../mappers/user.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/users/users.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import {
+  DataSource,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { User } from '../../../../domain/user';
+import { FilterUserDto, SortUserDto } from '../../../../dto/query-user.dto';
+import { UserRepository } from '../../user.repository';
+import { UserEntity } from '../entities/user.entity';
+import { UserMapper } from '../mappers/user.mapper';
 
-@Injectable()
-export class UsersRelationalRepository implements UserRepository {
+@Injectable({ scope: Scope.REQUEST })
+export class UsersRelationalRepository
+  extends BaseRepository
+  implements UserRepository
+{
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly usersRepository: Repository<UserEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
+
+  private get usersRepository(): Repository<UserEntity> {
+    return this.getRepository(UserEntity);
+  }
 
   private relations: FindOptionsRelations<UserEntity> = {
     roles: true,

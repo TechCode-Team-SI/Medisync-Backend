@@ -4,8 +4,9 @@ import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { TicketComment } from '../../domain/ticket-comment';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
 
-export abstract class TicketCommentRepository {
+export abstract class TicketCommentRepository extends BaseRepository {
   abstract create(
     data: Omit<TicketComment, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<TicketComment>;

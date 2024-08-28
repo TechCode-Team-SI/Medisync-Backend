@@ -1,25 +1,35 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { FieldQuestionEntity } from '../entities/field-question.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { FieldQuestion } from '../../../../domain/field-question';
-import { FieldQuestionRepository } from '../../field-question.repository';
-import { FieldQuestionMapper } from '../mappers/field-question.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/field-questions/field-questions.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { DataSource, In, Repository } from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { FieldQuestion } from '../../../../domain/field-question';
+import { FieldQuestionRepository } from '../../field-question.repository';
+import { FieldQuestionEntity } from '../entities/field-question.entity';
+import { FieldQuestionMapper } from '../mappers/field-question.mapper';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class FieldQuestionRelationalRepository
+  extends BaseRepository
   implements FieldQuestionRepository
 {
   constructor(
-    @InjectRepository(FieldQuestionEntity)
-    private readonly fieldQuestionRepository: Repository<FieldQuestionEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
+
+  private get fieldQuestionRepository(): Repository<FieldQuestionEntity> {
+    return this.getRepository(FieldQuestionEntity);
+  }
 
   private relations = ['selectionConfig', 'selections'];
 

@@ -4,8 +4,9 @@ import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Instructions } from '../../domain/instructions';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
 
-export abstract class InstructionsRepository {
+export abstract class InstructionsRepository extends BaseRepository {
   abstract create(
     data: Omit<Instructions, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Instructions>;

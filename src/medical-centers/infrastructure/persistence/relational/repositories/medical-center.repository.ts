@@ -1,24 +1,34 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { MedicalCenterEntity } from '../entities/medical-center.entity';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
+import { exceptionResponses } from 'src/medical-centers/medical-centers.messages';
+import { findOptions } from 'src/utils/types/fine-options.type';
+import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { MedicalCenter } from '../../../../domain/medical-center';
 import { MedicalCenterRepository } from '../../medical-center.repository';
+import { MedicalCenterEntity } from '../entities/medical-center.entity';
 import { MedicalCenterMapper } from '../mappers/medical-center.mapper';
-import { exceptionResponses } from 'src/medical-centers/medical-centers.messages';
-import { findOptions } from 'src/utils/types/fine-options.type';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class MedicalCenterRelationalRepository
+  extends BaseRepository
   implements MedicalCenterRepository
 {
   constructor(
-    @InjectRepository(MedicalCenterEntity)
-    private readonly medicalCenterRepository: Repository<MedicalCenterEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
 
-  private relations = [];
+  private get medicalCenterRepository(): Repository<MedicalCenterEntity> {
+    return this.getRepository(MedicalCenterEntity);
+  }
+
+  private relations: FindOptionsRelations<MedicalCenterEntity> = {};
 
   async create(data: MedicalCenter): Promise<MedicalCenter> {
     const persistenceModel = MedicalCenterMapper.toPersistence(data);
@@ -30,7 +40,7 @@ export class MedicalCenterRelationalRepository
 
   async findById(options?: findOptions): Promise<NullableType<MedicalCenter>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.medicalCenterRepository.findOne({
       where: { id: 1 },

@@ -1,27 +1,37 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { InstructionsEntity } from '../entities/instructions.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { Instructions } from '../../../../domain/instructions';
-import { InstructionsRepository } from '../../instructions.repository';
-import { InstructionsMapper } from '../mappers/instructions.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/instructions/instructions.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Instructions } from '../../../../domain/instructions';
+import { InstructionsRepository } from '../../instructions.repository';
+import { InstructionsEntity } from '../entities/instructions.entity';
+import { InstructionsMapper } from '../mappers/instructions.mapper';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class InstructionsRelationalRepository
+  extends BaseRepository
   implements InstructionsRepository
 {
   constructor(
-    @InjectRepository(InstructionsEntity)
-    private readonly instructionsRepository: Repository<InstructionsEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
 
-  private relations = [];
+  private get instructionsRepository(): Repository<InstructionsEntity> {
+    return this.getRepository(InstructionsEntity);
+  }
+
+  private relations: FindOptionsRelations<InstructionsEntity> = {};
 
   async create(data: Instructions): Promise<Instructions> {
     const persistenceModel = InstructionsMapper.toPersistence(data);
@@ -39,7 +49,7 @@ export class InstructionsRelationalRepository
     options?: findOptions;
   }): Promise<PaginationResponseDto<Instructions>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const [entities, count] = await this.instructionsRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
@@ -63,7 +73,7 @@ export class InstructionsRelationalRepository
     options?: findOptions,
   ): Promise<NullableType<Instructions>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.instructionsRepository.findOne({
       where: { id },

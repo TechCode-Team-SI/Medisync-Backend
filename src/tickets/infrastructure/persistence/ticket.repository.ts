@@ -5,6 +5,7 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Ticket } from '../../domain/ticket';
 import { TicketTypeEnum } from 'src/tickets/tickets.enum';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
 
 type CreateTicketType = Omit<
   Ticket,
@@ -12,7 +13,7 @@ type CreateTicketType = Omit<
 > &
   Partial<Pick<Ticket, 'status' | 'type'>>;
 
-export abstract class TicketRepository {
+export abstract class TicketRepository extends BaseRepository {
   abstract create(data: CreateTicketType): Promise<Ticket>;
 
   abstract findAllWithPagination({

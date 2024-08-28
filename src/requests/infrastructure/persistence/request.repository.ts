@@ -5,8 +5,9 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Request } from '../../domain/request';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { RequestFormatted } from 'src/requests/domain/request-formatted';
+import { BaseRepository } from 'src/common/base.repository';
 
-export abstract class RequestRepository {
+export abstract class RequestRepository extends BaseRepository {
   abstract create(
     data: Omit<Request, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Request>;

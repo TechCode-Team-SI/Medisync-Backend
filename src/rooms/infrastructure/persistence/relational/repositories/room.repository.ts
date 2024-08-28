@@ -1,23 +1,35 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsRelations } from 'typeorm';
-import { RoomEntity } from '../entities/room.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { Room } from '../../../../domain/room';
-import { RoomRepository } from '../../room.repository';
-import { RoomMapper } from '../mappers/room.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/rooms/rooms.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Room } from '../../../../domain/room';
+import { RoomRepository } from '../../room.repository';
+import { RoomEntity } from '../entities/room.entity';
+import { RoomMapper } from '../mappers/room.mapper';
 
-@Injectable()
-export class RoomRelationalRepository implements RoomRepository {
+@Injectable({ scope: Scope.REQUEST })
+export class RoomRelationalRepository
+  extends BaseRepository
+  implements RoomRepository
+{
   constructor(
-    @InjectRepository(RoomEntity)
-    private readonly roomRepository: Repository<RoomEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
+
+  private get roomRepository(): Repository<RoomEntity> {
+    return this.getRepository(RoomEntity);
+  }
 
   private relations: FindOptionsRelations<RoomEntity> = {
     specialty: true,

@@ -1,23 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Inject, Injectable, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
+import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { Pagination } from 'src/utils/pagination';
+import { findOptions } from 'src/utils/types/fine-options.type';
+import { DataSource, FindOptionsRelations, In, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Permission } from '../../../../domain/permission';
 import { PermissionRepository } from '../../permission.repository';
 import { PermissionEntity } from '../entities/permission.entity';
 import { PermissionMapper } from '../mappers/permission.mapper';
-import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
-import { Pagination } from 'src/utils/pagination';
-import { findOptions } from 'src/utils/types/fine-options.type';
-@Injectable()
-export class permissionRelationalRepository implements PermissionRepository {
+@Injectable({ scope: Scope.REQUEST })
+export class permissionRelationalRepository
+  extends BaseRepository
+  implements PermissionRepository
+{
   constructor(
-    @InjectRepository(PermissionEntity)
-    private readonly PermissionRepository: Repository<PermissionEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
 
-  private relations = [];
+  private get PermissionRepository(): Repository<PermissionEntity> {
+    return this.getRepository(PermissionEntity);
+  }
+
+  private relations: FindOptionsRelations<PermissionEntity> = {};
 
   async findAllWithPagination({
     paginationOptions,
@@ -27,7 +39,7 @@ export class permissionRelationalRepository implements PermissionRepository {
     options?: findOptions;
   }): Promise<PaginationResponseDto<Permission>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const [permissions, count] = await this.PermissionRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
@@ -53,7 +65,7 @@ export class permissionRelationalRepository implements PermissionRepository {
     options?: findOptions,
   ): Promise<NullableType<Permission>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const permission = await this.PermissionRepository.findOne({
       where: { id },
@@ -68,7 +80,7 @@ export class permissionRelationalRepository implements PermissionRepository {
     options?: findOptions,
   ): Promise<Permission[]> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const permissions = await this.PermissionRepository.find({
       where: {

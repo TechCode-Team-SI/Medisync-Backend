@@ -1,23 +1,35 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { PackageEntity } from '../entities/package.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { Package } from '../../../../domain/package';
-import { PackageRepository } from '../../package.repository';
-import { PackageMapper } from '../mappers/package.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/packages/packages.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { DataSource, In, Repository } from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Package } from '../../../../domain/package';
+import { PackageRepository } from '../../package.repository';
+import { PackageEntity } from '../entities/package.entity';
+import { PackageMapper } from '../mappers/package.mapper';
 
-@Injectable()
-export class PackageRelationalRepository implements PackageRepository {
+@Injectable({ scope: Scope.REQUEST })
+export class PackageRelationalRepository
+  extends BaseRepository
+  implements PackageRepository
+{
   constructor(
-    @InjectRepository(PackageEntity)
-    private readonly packageRepository: Repository<PackageEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
+
+  private get packageRepository(): Repository<PackageEntity> {
+    return this.getRepository(PackageEntity);
+  }
 
   private relations = [];
 

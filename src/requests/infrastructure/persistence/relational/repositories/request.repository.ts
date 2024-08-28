@@ -1,24 +1,36 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, Repository } from 'typeorm';
-import { RequestEntity } from '../entities/request.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { Request } from '../../../../domain/request';
-import { RequestRepository } from '../../request.repository';
-import { RequestMapper } from '../mappers/request.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { BaseRepository } from 'src/common/base.repository';
+import { RequestFormatted } from 'src/requests/domain/request-formatted';
 import { exceptionResponses } from 'src/requests/requests.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { RequestFormatted } from 'src/requests/domain/request-formatted';
+import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Request } from '../../../../domain/request';
+import { RequestRepository } from '../../request.repository';
+import { RequestEntity } from '../entities/request.entity';
+import { RequestMapper } from '../mappers/request.mapper';
+import { Request as ExpressRequest } from 'express';
 
-@Injectable()
-export class RequestRelationalRepository implements RequestRepository {
+@Injectable({ scope: Scope.REQUEST })
+export class RequestRelationalRepository
+  extends BaseRepository
+  implements RequestRepository
+{
   constructor(
-    @InjectRepository(RequestEntity)
-    private readonly requestRepository: Repository<RequestEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: ExpressRequest,
+  ) {
+    super(datasource, request);
+  }
+
+  private get requestRepository(): Repository<RequestEntity> {
+    return this.getRepository(RequestEntity);
+  }
 
   private relations: FindOptionsRelations<RequestEntity> = {
     requestValues: {

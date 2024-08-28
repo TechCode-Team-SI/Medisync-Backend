@@ -4,8 +4,9 @@ import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Package } from '../../domain/package';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
 
-export abstract class PackageRepository {
+export abstract class PackageRepository extends BaseRepository {
   abstract create(
     data: Omit<Package, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Package>;

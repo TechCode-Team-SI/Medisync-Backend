@@ -1,23 +1,35 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { SpecialtyEntity } from '../entities/specialty.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { Specialty } from '../../../../domain/specialty';
-import { SpecialtyRepository } from '../../specialty.repository';
-import { SpecialtyMapper } from '../mappers/specialty.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/specialties/specialties.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { DataSource, In, Repository } from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Specialty } from '../../../../domain/specialty';
+import { SpecialtyRepository } from '../../specialty.repository';
+import { SpecialtyEntity } from '../entities/specialty.entity';
+import { SpecialtyMapper } from '../mappers/specialty.mapper';
 
-@Injectable()
-export class SpecialtyRelationalRepository implements SpecialtyRepository {
+@Injectable({ scope: Scope.REQUEST })
+export class SpecialtyRelationalRepository
+  extends BaseRepository
+  implements SpecialtyRepository
+{
   constructor(
-    @InjectRepository(SpecialtyEntity)
-    private readonly specialtyRepository: Repository<SpecialtyEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
+
+  private get specialtyRepository(): Repository<SpecialtyEntity> {
+    return this.getRepository(SpecialtyEntity);
+  }
 
   private relations = ['image'];
 

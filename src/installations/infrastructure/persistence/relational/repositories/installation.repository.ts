@@ -1,21 +1,30 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/installations/installations.messages';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { Installation } from '../../../../domain/installation';
 import { InstallationRepository } from '../../installation.repository';
 import { InstallationEntity } from '../entities/installation.entity';
 import { InstallationMapper } from '../mappers/installation.mapper';
-
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class InstallationRelationalRepository
+  extends BaseRepository
   implements InstallationRepository
 {
   constructor(
-    @InjectRepository(InstallationEntity)
-    private readonly installationRepository: Repository<InstallationEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
+
+  private get installationRepository(): Repository<InstallationEntity> {
+    return this.getRepository(InstallationEntity);
+  }
 
   async create(data: Installation): Promise<Installation> {
     const persistenceModel = InstallationMapper.toPersistence(data);

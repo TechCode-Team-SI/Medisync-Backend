@@ -7,8 +7,9 @@ import { RoleDto } from 'src/roles/dto/role.dto';
 import { FilterUserDto, SortUserDto } from '../../dto/query-user.dto';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
 
-export abstract class UserRepository {
+export abstract class UserRepository extends BaseRepository {
   abstract create(
     data: Omit<User, 'id' | 'createdAt' | 'deletedAt' | 'updatedAt' | 'roles'>,
     roles: RoleDto[],
