@@ -7,8 +7,9 @@ import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { <%= name %> } from '../../domain/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
 
-export abstract class <%= name %>Repository {
+export abstract class <%= name %>Repository extends BaseRepository {
   abstract create(
     data: Omit<<%= name %>, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<<%= name %>>;
