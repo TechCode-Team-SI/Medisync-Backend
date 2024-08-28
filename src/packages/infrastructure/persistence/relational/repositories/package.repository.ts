@@ -6,7 +6,7 @@ import { exceptionResponses } from 'src/packages/packages.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, FindOptionsRelations, In, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Package } from '../../../../domain/package';
@@ -31,7 +31,7 @@ export class PackageRelationalRepository
     return this.getRepository(PackageEntity);
   }
 
-  private relations = [];
+  private relations: FindOptionsRelations<PackageEntity> = {};
 
   async create(data: Package): Promise<Package> {
     const persistenceModel = PackageMapper.toPersistence(data);
@@ -49,7 +49,7 @@ export class PackageRelationalRepository
     options?: findOptions;
   }): Promise<PaginationResponseDto<Package>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const [entities, count] = await this.packageRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
@@ -73,7 +73,7 @@ export class PackageRelationalRepository
     options?: findOptions,
   ): Promise<NullableType<Package>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.packageRepository.findOne({
       where: { id },
@@ -88,7 +88,7 @@ export class PackageRelationalRepository
     options?: findOptions,
   ): Promise<NullableType<Package[]>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entities = await this.packageRepository.find({
       where: { slug: In(slugs) },

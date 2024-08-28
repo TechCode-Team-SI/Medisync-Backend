@@ -6,7 +6,7 @@ import { exceptionResponses } from 'src/field-questions/field-questions.messages
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, FindOptionsRelations, In, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { FieldQuestion } from '../../../../domain/field-question';
@@ -31,7 +31,10 @@ export class FieldQuestionRelationalRepository
     return this.getRepository(FieldQuestionEntity);
   }
 
-  private relations = ['selectionConfig', 'selections'];
+  private relations: FindOptionsRelations<FieldQuestionEntity> = {
+    selections: true,
+    selectionConfig: true,
+  };
 
   async create(data: FieldQuestion): Promise<FieldQuestion> {
     const persistenceModel = FieldQuestionMapper.toPersistence(data);
@@ -58,7 +61,7 @@ export class FieldQuestionRelationalRepository
     options?: findOptions;
   }): Promise<PaginationResponseDto<FieldQuestion>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const [entities, count] = await this.fieldQuestionRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
@@ -84,7 +87,7 @@ export class FieldQuestionRelationalRepository
     options?: findOptions,
   ): Promise<NullableType<FieldQuestion>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.fieldQuestionRepository.findOne({
       where: { id },
@@ -99,7 +102,7 @@ export class FieldQuestionRelationalRepository
     options?: findOptions,
   ): Promise<FieldQuestion[]> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entities = await this.fieldQuestionRepository.find({
       where: { slug: In(slugs) },
@@ -114,7 +117,7 @@ export class FieldQuestionRelationalRepository
     options?: findOptions,
   ): Promise<NullableType<FieldQuestion>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.fieldQuestionRepository.findOne({
       where: { slug },

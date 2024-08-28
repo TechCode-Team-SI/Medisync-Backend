@@ -6,7 +6,7 @@ import { exceptionResponses } from 'src/specialties/specialties.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, FindOptionsRelations, In, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Specialty } from '../../../../domain/specialty';
@@ -31,7 +31,9 @@ export class SpecialtyRelationalRepository
     return this.getRepository(SpecialtyEntity);
   }
 
-  private relations = ['image'];
+  private relations: FindOptionsRelations<SpecialtyEntity> = {
+    image: true,
+  };
 
   async create(data: Specialty): Promise<Specialty> {
     const persistenceModel = SpecialtyMapper.toPersistence(data);
@@ -59,7 +61,7 @@ export class SpecialtyRelationalRepository
     options?: findOptions;
   }): Promise<PaginationResponseDto<Specialty>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const [entities, count] = await this.specialtyRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
@@ -83,7 +85,7 @@ export class SpecialtyRelationalRepository
     options?: findOptions,
   ): Promise<NullableType<Specialty>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.specialtyRepository.findOne({
       where: { id },
@@ -98,7 +100,7 @@ export class SpecialtyRelationalRepository
     options?: findOptions,
   ): Promise<Specialty[]> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entities = await this.specialtyRepository.find({
       where: { name: In(names) },

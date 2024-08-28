@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FileEntity } from '../entities/file.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsRelations, Repository } from 'typeorm';
 import { FileRepository } from '../../file.repository';
 
 import { FileMapper } from '../mappers/file.mapper';
@@ -16,7 +16,7 @@ export class FileRelationalRepository implements FileRepository {
     private readonly fileRepository: Repository<FileEntity>,
   ) {}
 
-  private relations = [];
+  private relations: FindOptionsRelations<FileType> = {};
 
   async create(data: FileType): Promise<FileType> {
     const persistenceModel = FileMapper.toPersistence(data);
@@ -30,7 +30,7 @@ export class FileRelationalRepository implements FileRepository {
     options?: findOptions,
   ): Promise<NullableType<FileType>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.fileRepository.findOne({
       where: {
