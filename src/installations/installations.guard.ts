@@ -21,11 +21,11 @@ export class InstallationsGuard implements CanActivate {
     const installationStep = await this.installationsService.findOne();
     if (!installationStep) return false;
 
-    const isInstallationEndpoint = this.reflector.getAllAndOverride<boolean>(
-      'isInstallationEndpoint',
+    const isUnguarded = this.reflector.getAllAndOverride<boolean>(
+      'isUnguarded',
       [context.getClass(), context.getHandler()],
     );
-    if (isInstallationEndpoint) {
+    if (isUnguarded) {
       if (installationStep.step === InstallationStepEnum.FINISHED) {
         throw new UnprocessableEntityException(
           exceptionResponses.InstallationAlreadyComplete,

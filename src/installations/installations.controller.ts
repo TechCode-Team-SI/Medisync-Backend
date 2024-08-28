@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
 import { CreateMedicalCenterDto } from 'src/medical-centers/dto/create-medical-center.dto';
@@ -7,14 +7,15 @@ import { Installation } from './domain/installation';
 import { StepOneInstallationDto } from './dto/step-one-installation.dto';
 import {
   CurrentInstallationStep,
-  IsInstallationEndpoint,
+  IsUnguarded,
 } from './installations.decorator';
 import { InstallationStepEnum } from './installations.enum';
 import { InstallationsService } from './installations.service';
+import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 
 @ApiTags('Installation')
 @ApiBearerAuth()
-@IsInstallationEndpoint()
+@IsUnguarded()
 @Controller({
   path: 'installation',
   version: '1',
@@ -45,6 +46,7 @@ export class InstallationsController {
     type: Installation,
   })
   @CurrentInstallationStep(InstallationStepEnum.CONFIGURE_MODULES)
+  @UseInterceptors(TransactionInterceptor)
   processStepThree(
     @Body() installationThreeDto: ApplyPackagesDto,
   ): Promise<SuccessResponseDto> {
