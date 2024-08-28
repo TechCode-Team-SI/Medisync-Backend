@@ -1,7 +1,7 @@
 ---
 to: src/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>/infrastructure/persistence/relational/repositories/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>.repository.ts
 ---
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, Scope } from '@nestjs/common';
 import { Repository, FindOptionsRelations, DataSource } from 'typeorm';
 import { <%= name %>Entity } from '../entities/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -17,7 +17,7 @@ import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { REQUEST } from '@nestjs/core';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class <%= name %>RelationalRepository extends BaseRepository implements <%= name %>Repository {
   constructor(
     datasource: DataSource,
