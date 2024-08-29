@@ -108,6 +108,18 @@ export class RequestRelationalRepository
     return entity ? RequestMapper.toDomain(entity) : null;
   }
 
+  async findRating(id: Request['id']): Promise<NullableType<Request>> {
+    let relations = this.relations;
+    relations = { rating: true };
+
+    const entity = await this.requestRepository.findOne({
+      where: { id },
+      relations,
+    });
+
+    return entity?.rating ? RequestMapper.toDomain(entity) : null;
+  }
+
   async findByIdFormatted(
     id: Request['id'],
   ): Promise<NullableType<RequestFormatted>> {

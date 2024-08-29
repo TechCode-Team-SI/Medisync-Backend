@@ -56,8 +56,11 @@ import { RoomsModule } from './rooms/rooms.module';
 
 import { EmployeeProfilesModule } from './employee-profiles/employee-profiles.module';
 
+import { RatingsModule } from './ratings/ratings.module';
+
 @Module({
   imports: [
+    RatingsModule,
     PackagesModule,
     EmployeeProfilesModule,
     RoomsModule,
