@@ -1,15 +1,14 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { CreateRatingDto } from './dto/create-rating.dto';
-import { UpdateRatingDto } from './dto/update-rating.dto';
-import { RatingRepository } from './infrastructure/persistence/rating.repository';
+import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { RequestStatusEnum } from 'src/requests/requests.enum';
+import { RequestsService } from 'src/requests/requests.service';
+import { UsersService } from 'src/users/users.service';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Rating } from './domain/rating';
-import { findOptions } from 'src/utils/types/fine-options.type';
-import { RequestsService } from 'src/requests/requests.service';
-import { RequestStatusEnum } from 'src/requests/requests.enum';
-import { UsersService } from 'src/users/users.service';
+import { UpdateRatingDto } from './dto/update-rating.dto';
+import { RatingRepository } from './infrastructure/persistence/rating.repository';
 import { exceptionResponses } from './ratings.messages';
-import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
 
 @Injectable()
 export class RatingsService {
@@ -19,32 +18,30 @@ export class RatingsService {
     private readonly usersService: UsersService,
   ) {}
 
-  async create(createRatingDto: CreateRatingDto, userPayload: JwtPayloadType) {
-    const { ratedBy, request, stars } = createRatingDto;
-
+  async create(stars: number, requestId: string, userPayload: JwtPayloadType) {
     if (!(stars >= 0 && stars <= 5)) {
       throw new UnprocessableEntityException(exceptionResponses.StarsOutRange);
     }
 
-    if (ratedBy.id != userPayload.id) {
-      throw new UnprocessableEntityException(
-        exceptionResponses.UserNotCreateRequest,
-      );
-    }
-
-    const foundUser = await this.usersService.findById(ratedBy.id);
+    const foundUser = await this.usersService.findById(userPayload.id);
     if (!foundUser) {
       throw new UnprocessableEntityException(exceptionResponses.UserNotExists);
     }
 
-    const foundRequest = await this.requestsService.findOne(request.id);
+    const foundRequest = await this.requestsService.findOne(requestId);
     if (!foundRequest) {
       throw new UnprocessableEntityException(
         exceptionResponses.RequestNotExists,
       );
     }
 
-    const foundRating = await this.requestsService.findRating(request.id);
+    if (foundRequest.madeBy.id !== foundUser.id) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.UserNotCreateRequest,
+      );
+    }
+
+    const foundRating = await this.requestsService.findRating(requestId);
     if (foundRating) {
       throw new UnprocessableEntityException(
         exceptionResponses.RequestAlreadyRated,
@@ -58,7 +55,7 @@ export class RatingsService {
     }
 
     const clonedPayload = {
-      ...createRatingDto,
+      stars,
       ratedBy: foundUser,
       request: foundRequest,
     };

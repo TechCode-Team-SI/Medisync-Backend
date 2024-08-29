@@ -38,6 +38,9 @@ import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
 import { InstructionsService } from 'src/instructions/instructions.service';
 import { CreateDiagnosticDto } from 'src/diagnostics/dto/create-diagnostic.dto';
 import { SpecialtiesService } from 'src/specialties/specialties.service';
+import { CreateRatingDto } from 'src/ratings/dto/create-rating.dto';
+import { RatingsService } from 'src/ratings/ratings.service';
+import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
 
 @ApiTags('Requests')
 @ApiBearerAuth()
@@ -52,14 +55,18 @@ export class RequestsController {
     private readonly diagnosticsService: DiagnosticsService,
     private readonly instructionsService: InstructionsService,
     private readonly specialtiesService: SpecialtiesService,
+    private readonly ratingsService: RatingsService,
   ) {}
 
   @Post()
   @ApiCreatedResponse({
     type: Request,
   })
-  create(@Body() createRequestDto: CreateRequestDto) {
-    return this.requestsService.create(createRequestDto);
+  create(
+    @Me() userPayload: JwtPayloadType,
+    @Body() createRequestDto: CreateRequestDto,
+  ) {
+    return this.requestsService.create(createRequestDto, userPayload.id);
   }
 
   @Get()
@@ -73,6 +80,38 @@ export class RequestsController {
 
     return this.requestsService.findAllMinimalWithPagination({
       paginationOptions,
+    });
+  }
+
+  @Get('for-me')
+  @ApiOkResponse({
+    type: PaginationResponse(Request),
+  })
+  findAllRequestedMe(
+    @Me() userPayload: JwtPayloadType,
+    @Query() query: FindAllRequestsDto,
+  ): Promise<PaginationResponseDto<Request>> {
+    const paginationOptions = getPagination(query);
+
+    return this.requestsService.findAllMinimalWithPagination({
+      paginationOptions,
+      requestedMedicId: userPayload.id,
+    });
+  }
+
+  @Get('made-by-me')
+  @ApiOkResponse({
+    type: PaginationResponse(Request),
+  })
+  findAllMine(
+    @Me() userPayload: JwtPayloadType,
+    @Query() query: FindAllRequestsDto,
+  ): Promise<PaginationResponseDto<Request>> {
+    const paginationOptions = getPagination(query);
+
+    return this.requestsService.findAllMinimalWithPagination({
+      paginationOptions,
+      madeById: userPayload.id,
     });
   }
 
@@ -143,5 +182,22 @@ export class RequestsController {
       userPayload.id,
     );
     return this.requestsService.finish(id, RequestStatusEnum.COMPLETED);
+  }
+
+  @Post('rate/:id')
+  @ApiCreatedResponse({
+    type: SuccessResponseDto,
+  })
+  async rate(
+    @Param('id') id: string,
+    @Me() userPayload: JwtPayloadType,
+    @Body() createRatingDto: CreateRatingDto,
+  ) {
+    const rating = await this.ratingsService.create(
+      createRatingDto.stars,
+      id,
+      userPayload,
+    );
+    return { success: !!rating };
   }
 }

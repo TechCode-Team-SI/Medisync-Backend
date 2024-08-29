@@ -6,7 +6,12 @@ import { exceptionResponses } from 'src/requests/requests.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
+import {
+  DataSource,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Request } from '../../../../domain/request';
@@ -41,6 +46,8 @@ export class RequestRelationalRepository
     },
     requestedSpecialty: true,
     requestedMedic: true,
+    rating: true,
+    madeBy: true,
     requestTemplate: {
       fields: {
         fieldQuestion: {
@@ -61,12 +68,26 @@ export class RequestRelationalRepository
 
   async findAllMinimalWithPagination({
     paginationOptions,
+    madeById,
+    requestedMedicId,
   }: {
     paginationOptions: IPaginationOptions;
+    requestedMedicId?: string;
+    madeById?: string;
   }): Promise<PaginationResponseDto<Request>> {
+    let where: FindOptionsWhere<RequestEntity> = {};
+    if (madeById) {
+      where = { ...where, madeBy: { id: madeById } };
+    }
+    if (requestedMedicId) {
+      where = { ...where, requestedMedic: { id: requestedMedicId } };
+    }
+
     const [entities, count] = await this.requestRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
+      where,
+      relations: { rating: true },
     });
     const items = entities.map((entity) => RequestMapper.toDomain(entity));
 

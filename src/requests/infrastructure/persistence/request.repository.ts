@@ -9,13 +9,13 @@ import { BaseRepository } from 'src/common/base.repository';
 
 export abstract class RequestRepository extends BaseRepository {
   abstract create(
-    data: Omit<Request, 'id' | 'createdAt' | 'updatedAt'>,
+    data: Omit<Request, 'id' | 'createdAt' | 'updatedAt' | 'rating'>,
   ): Promise<Request>;
 
-  abstract findAllMinimalWithPagination({
-    paginationOptions,
-  }: {
+  abstract findAllMinimalWithPagination(options: {
     paginationOptions: IPaginationOptions;
+    requestedMedicId?: string;
+    madeById?: string;
   }): Promise<PaginationResponseDto<Request>>;
 
   abstract findById(

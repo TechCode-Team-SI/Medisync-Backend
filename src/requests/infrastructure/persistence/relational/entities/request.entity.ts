@@ -38,6 +38,10 @@ export class RequestEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @ManyToOne(() => UserEntity)
+  madeBy: UserEntity;
+
+  @ApiProperty()
+  @ManyToOne(() => UserEntity)
   requestedMedic: UserEntity;
 
   @ApiProperty()

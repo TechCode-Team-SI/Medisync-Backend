@@ -4,6 +4,7 @@ import { Specialty } from 'src/specialties/domain/specialty';
 import { User } from 'src/users/domain/user';
 import { RequestStatusEnum } from '../requests.enum';
 import { RequestValue } from './request-value';
+import { Rating } from 'src/ratings/domain/rating';
 
 export class Request {
   @ApiProperty({
@@ -21,6 +22,9 @@ export class Request {
   patientAddress: string;
 
   @ApiProperty({ type: () => User })
+  madeBy: User;
+
+  @ApiProperty({ type: () => User })
   requestedMedic: User;
 
   @ApiProperty({ type: () => Specialty })
@@ -31,6 +35,9 @@ export class Request {
 
   @ApiProperty({ type: () => RequestValue })
   requestValues: RequestValue[];
+
+  @ApiProperty({ type: () => Rating })
+  rating: Rating;
 
   @ApiProperty()
   appointmentHour: string;

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { RequestsController } from './requests.controller';
 import { RelationalRequestPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
@@ -7,6 +7,7 @@ import { SpecialtiesModule } from 'src/specialties/specialties.module';
 import { UsersModule } from 'src/users/users.module';
 import { DiagnosticsModule } from 'src/diagnostics/diagnostics.module';
 import { InstructionsModule } from 'src/instructions/instructions.module';
+import { RatingsModule } from 'src/ratings/ratings.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { InstructionsModule } from 'src/instructions/instructions.module';
     UsersModule,
     DiagnosticsModule,
     InstructionsModule,
+    forwardRef(() => RatingsModule),
   ],
   controllers: [RequestsController],
   providers: [RequestsService],

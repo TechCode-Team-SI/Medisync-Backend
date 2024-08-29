@@ -21,13 +21,23 @@ export class RequestsService {
     private readonly usersService: UsersService,
   ) {}
 
-  async create(createRequestDto: CreateRequestDto) {
+  async create(createRequestDto: CreateRequestDto, madeById: string) {
     const {
       requestTemplate,
       requestedSpecialty,
       requestValues,
       requestedMedic,
     } = createRequestDto;
+
+    const foundUser = await this.usersService.findById(madeById, {
+      minimal: true,
+    });
+
+    if (!foundUser) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.CurrentUserNotExists,
+      );
+    }
 
     const foundRequestTemplate = await this.requestTemplateService.findOne(
       requestTemplate.id,
@@ -140,6 +150,7 @@ export class RequestsService {
       requestedSpecialty: foundSpecialty,
       requestedMedic: foundMedic,
       requestValues: requestValuesUpdated,
+      madeBy: foundUser,
     };
 
     return this.requestRepository.create(clonedPayload);
@@ -147,14 +158,20 @@ export class RequestsService {
 
   findAllMinimalWithPagination({
     paginationOptions,
+    requestedMedicId,
+    madeById,
   }: {
     paginationOptions: IPaginationOptions;
+    requestedMedicId?: string;
+    madeById?: string;
   }) {
     return this.requestRepository.findAllMinimalWithPagination({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
+      madeById,
+      requestedMedicId,
     });
   }
 

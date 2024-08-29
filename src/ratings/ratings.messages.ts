@@ -10,7 +10,7 @@ export const exceptionResponses: HTTPErrorMessage = {
   UserNotCreateRequest: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     error: 'user__not_create_request',
-    message: 'user did not create request',
+    message: 'This user is not allowed to rate this request',
   },
   UserNotExists: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,

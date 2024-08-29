@@ -12,6 +12,7 @@ import { Request } from '../../../../domain/request';
 import { RequestEntity } from '../entities/request.entity';
 import { RequestValueMapper } from './request-value.mapper';
 import { SelectionConfiguration } from 'src/field-questions/domain/selection-configuration';
+import { RatingMapper } from 'src/ratings/infrastructure/persistence/relational/mappers/rating.mapper';
 
 export class RequestMapper {
   static toDomain(raw: RequestEntity): Request {
@@ -40,6 +41,12 @@ export class RequestMapper {
         RequestValueMapper.toDomain(value),
       );
     }
+    if (raw.rating) {
+      domainEntity.rating = RatingMapper.toDomain(raw.rating);
+    }
+    if (raw.madeBy) {
+      domainEntity.madeBy = UserMapper.toDomain(raw.madeBy);
+    }
     domainEntity.createdAt = raw.createdAt;
 
     return domainEntity;
@@ -61,6 +68,9 @@ export class RequestMapper {
       persistenceEntity.requestedMedic = UserMapper.toPersistence(
         domainEntity.requestedMedic,
       );
+    }
+    if (domainEntity.madeBy) {
+      persistenceEntity.madeBy = UserMapper.toPersistence(domainEntity.madeBy);
     }
     if (domainEntity.requestedSpecialty) {
       persistenceEntity.requestedSpecialty = SpecialtyMapper.toPersistence(
