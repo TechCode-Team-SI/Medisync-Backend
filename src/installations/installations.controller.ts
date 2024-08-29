@@ -33,9 +33,7 @@ export class InstallationsController {
   @Post('/one')
   @IsInstallationEndpoint()
   @UseGuards(PrivateGuard)
-  @ApiOkResponse({
-    type: Installation,
-  })
+  @ApiOkResponse()
   @CurrentInstallationStep(InstallationStepEnum.CREATE_ADMIN)
   processStepOne(@Body() createUserDto: StepOneInstallationDto) {
     return this.installationsService.processStepOne(createUserDto);

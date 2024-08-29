@@ -17,6 +17,7 @@ import { MedicalCentersService } from 'src/medical-centers/medical-centers.servi
 import { InstallationStepEnum } from './installations.enum';
 import { PackagesService } from 'src/packages/packages.service';
 import { ConfigService } from '@nestjs/config';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class InstallationsService {
@@ -27,6 +28,7 @@ export class InstallationsService {
     private readonly medicalCentersService: MedicalCentersService,
     private readonly packagesService: PackagesService,
     private readonly configService: ConfigService,
+    private readonly authService: AuthService,
   ) {}
 
   async create(createInstallationDto: CreateInstallationDto) {
@@ -82,7 +84,19 @@ export class InstallationsService {
       throw new UnprocessableEntityException(exceptionResponses.UserNotCreated);
     }
 
-    return this.update({ step: InstallationStepEnum.CONFIGURE_COMPANY });
+    const authUser = await this.authService.validateLogin({
+      email: user.email,
+      password: createUserDto.password,
+    });
+
+    const installationInfo = await this.update({
+      step: InstallationStepEnum.CONFIGURE_COMPANY,
+    });
+
+    return {
+      ...installationInfo,
+      user: authUser,
+    };
   }
 
   //CREATE MEDICAL CENTER

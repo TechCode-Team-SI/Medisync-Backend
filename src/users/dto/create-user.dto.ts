@@ -20,7 +20,7 @@ export class CreateUserDto {
 
   @ApiProperty()
   @MinLength(6)
-  password?: string;
+  password: string;
 
   @ApiProperty({ example: 'John', type: String })
   @IsNotEmpty()
