@@ -6,26 +6,32 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { InstallationStepEnum } from './installations.enum';
-import { InstallationsService } from './installations.service';
-import { exceptionResponses } from './installations.messages';
+import { InstallationStepEnum } from '../installations/installations.enum';
+import { InstallationsService } from '../installations/installations.service';
+import { exceptionResponses } from '../installations/installations.messages';
 
 @Injectable()
-export class InstallationsGuard implements CanActivate {
+export class SystemGuard implements CanActivate {
   constructor(
     private readonly installationsService: InstallationsService,
     private reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const installationStep = await this.installationsService.findOne();
-    if (!installationStep) return false;
-
     const isUnguarded = this.reflector.getAllAndOverride<boolean>(
       'isUnguarded',
       [context.getClass(), context.getHandler()],
     );
-    if (isUnguarded) {
+    if (isUnguarded) return true;
+
+    const installationStep = await this.installationsService.findOne();
+    if (!installationStep) return false;
+
+    const isInstallationEndpoint = this.reflector.getAllAndOverride<boolean>(
+      'isInstallationEndpoint',
+      [context.getClass(), context.getHandler()],
+    );
+    if (isInstallationEndpoint) {
       if (installationStep.step === InstallationStepEnum.FINISHED) {
         throw new UnprocessableEntityException(
           exceptionResponses.InstallationAlreadyComplete,

@@ -37,7 +37,7 @@ import { TicketCommentsModule } from './ticket-comments/ticket-comments.module';
 
 import { InstallationsModule } from './installations/installations.module';
 import { APP_GUARD } from '@nestjs/core';
-import { InstallationsGuard } from './installations/installations.guard';
+import { SystemGuard } from './common/system.guard';
 
 import { FieldQuestionsModule } from './field-questions/field-questions.module';
 
@@ -95,7 +95,7 @@ import { RatingsModule } from './ratings/ratings.module';
     {
       provide: APP_GUARD,
       scope: Scope.REQUEST,
-      useClass: InstallationsGuard,
+      useClass: SystemGuard,
     },
   ],
 })

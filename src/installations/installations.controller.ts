@@ -1,4 +1,10 @@
-import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
 import { CreateMedicalCenterDto } from 'src/medical-centers/dto/create-medical-center.dto';
@@ -7,15 +13,16 @@ import { Installation } from './domain/installation';
 import { StepOneInstallationDto } from './dto/step-one-installation.dto';
 import {
   CurrentInstallationStep,
-  IsUnguarded,
+  IsInstallationEndpoint,
 } from './installations.decorator';
 import { InstallationStepEnum } from './installations.enum';
 import { InstallationsService } from './installations.service';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
+import { VerifyTokenDto } from './dto/verify-token.dto';
+import { PrivateGuard } from 'src/common/private.guard';
 
 @ApiTags('Installation')
 @ApiBearerAuth()
-@IsUnguarded()
 @Controller({
   path: 'installation',
   version: '1',
@@ -24,6 +31,8 @@ export class InstallationsController {
   constructor(private readonly installationsService: InstallationsService) {}
 
   @Post('/one')
+  @IsInstallationEndpoint()
+  @UseGuards(PrivateGuard)
   @ApiOkResponse({
     type: Installation,
   })
@@ -33,6 +42,8 @@ export class InstallationsController {
   }
 
   @Post('/two')
+  @IsInstallationEndpoint()
+  @UseGuards(PrivateGuard)
   @ApiOkResponse({
     type: Installation,
   })
@@ -42,6 +53,8 @@ export class InstallationsController {
   }
 
   @Post('/three')
+  @IsInstallationEndpoint()
+  @UseGuards(PrivateGuard)
   @ApiOkResponse({
     type: Installation,
   })
@@ -53,5 +66,12 @@ export class InstallationsController {
     return this.installationsService.processStepThree(
       ...installationThreeDto.slugs,
     );
+  }
+
+  @Post('/token')
+  @ApiOkResponse()
+  verifyToken(@Body() verifyTokenDto: VerifyTokenDto): SuccessResponseDto {
+    //TODO: add rate limiter (low priority)
+    return this.installationsService.verifyToken(verifyTokenDto.token);
   }
 }

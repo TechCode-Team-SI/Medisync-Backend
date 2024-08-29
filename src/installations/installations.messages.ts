@@ -58,4 +58,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'system_not_installed',
     message: 'System not installed',
   },
+  InvalidToken: {
+    status: HttpStatus.FORBIDDEN,
+    error: 'invalid_token',
+    message: 'Invalid token',
+  },
 } as const;

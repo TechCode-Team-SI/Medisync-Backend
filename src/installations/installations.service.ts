@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -15,6 +16,7 @@ import { CreateMedicalCenterDto } from 'src/medical-centers/dto/create-medical-c
 import { MedicalCentersService } from 'src/medical-centers/medical-centers.service';
 import { InstallationStepEnum } from './installations.enum';
 import { PackagesService } from 'src/packages/packages.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class InstallationsService {
@@ -24,6 +26,7 @@ export class InstallationsService {
     private readonly rolesService: RolesService,
     private readonly medicalCentersService: MedicalCentersService,
     private readonly packagesService: PackagesService,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(createInstallationDto: CreateInstallationDto) {
@@ -113,6 +116,19 @@ export class InstallationsService {
     await this.update({
       step: InstallationStepEnum.FINISHED,
     });
+    return { success: true };
+  }
+
+  //VERIFY TOKEN VALIDITY
+  verifyToken(receivedToken: string) {
+    const token = this.configService.getOrThrow('app.installToken', {
+      infer: true,
+    });
+
+    if (receivedToken !== token) {
+      throw new ForbiddenException(exceptionResponses.InvalidToken);
+    }
+
     return { success: true };
   }
 }
