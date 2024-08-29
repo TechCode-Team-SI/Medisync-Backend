@@ -32,9 +32,11 @@ export class TicketsService {
   findAllWithPagination({
     paginationOptions,
     type,
+    createdById,
   }: {
     paginationOptions: IPaginationOptions;
     type?: TicketTypeEnum;
+    createdById?: string;
   }) {
     return this.ticketRepository.findAllWithPagination({
       paginationOptions: {
@@ -42,6 +44,7 @@ export class TicketsService {
         limit: paginationOptions.limit,
       },
       type,
+      createdById,
     });
   }
 

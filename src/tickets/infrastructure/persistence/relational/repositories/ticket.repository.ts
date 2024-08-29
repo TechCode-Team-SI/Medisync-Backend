@@ -7,7 +7,12 @@ import { exceptionResponses } from 'src/tickets/tickets.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
+import {
+  DataSource,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Ticket } from '../../../../domain/ticket';
@@ -46,15 +51,20 @@ export class TicketRelationalRepository
     paginationOptions,
     type,
     options,
+    createdById,
   }: {
     paginationOptions: IPaginationOptions;
     type?: TicketTypeEnum;
     options?: findOptions;
+    createdById?: string;
   }): Promise<PaginationResponseDto<Ticket>> {
+    let where: FindOptionsWhere<TicketEntity> = {};
+    if (type) where = { ...where, type };
+    if (createdById) where = { ...where, createdBy: { id: createdById } };
+
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
-    const where = type ? { type } : {};
     const [entities, count] = await this.ticketRepository.findAndCount({
       where,
       skip: (paginationOptions.page - 1) * paginationOptions.limit,

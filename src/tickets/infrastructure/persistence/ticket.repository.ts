@@ -16,14 +16,11 @@ type CreateTicketType = Omit<
 export abstract class TicketRepository extends BaseRepository {
   abstract create(data: CreateTicketType): Promise<Ticket>;
 
-  abstract findAllWithPagination({
-    paginationOptions,
-    type,
-    options,
-  }: {
+  abstract findAllWithPagination(options: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     type?: TicketTypeEnum;
+    createdById?: string;
   }): Promise<PaginationResponseDto<Ticket>>;
 
   abstract findById(

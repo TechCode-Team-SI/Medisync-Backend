@@ -70,6 +70,24 @@ export class TicketsController {
     });
   }
 
+  @Get('me')
+  @ApiOkResponse({
+    type: PaginationResponse(Ticket),
+  })
+  async findAllMine(
+    @Me() userPayload: JwtPayloadType,
+    @Query() query: FindAllTicketsDto,
+  ): Promise<PaginationResponseDto<Ticket>> {
+    const paginationOptions = getPagination(query);
+    const type = query.type;
+
+    return this.ticketsService.findAllWithPagination({
+      paginationOptions,
+      type,
+      createdById: userPayload.id,
+    });
+  }
+
   @Get(':id')
   @ApiParam({
     name: 'id',
