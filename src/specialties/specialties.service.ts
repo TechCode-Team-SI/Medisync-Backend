@@ -9,12 +9,14 @@ import { exceptionResponses } from './specialties.messages';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { CreateMultipleSpecialtyInternalDto } from './dto/create-multiple-specialty-internal.dto';
 import { CreateSpecialtyInternalDto } from './dto/create-specialty-internal.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class SpecialtiesService {
   constructor(
     private readonly specialtyRepository: SpecialtyRepository,
     private readonly filesService: FilesService,
+    private readonly usersService: UsersService,
   ) {}
 
   async create(createSpecialtyDto: CreateSpecialtyDto) {
@@ -52,19 +54,35 @@ export class SpecialtiesService {
     return this.specialtyRepository.createMultiple(payloads);
   }
 
-  findAllWithPagination({
+  async findAllWithPagination({
     paginationOptions,
     options,
+    userId,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    userId?: string;
   }) {
+    let extraOptions = {};
+    if (userId) {
+      const foundUser = await this.usersService.findById(userId, {
+        withProfile: true,
+      });
+      if (!foundUser) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.UserNotExists,
+        );
+      }
+      extraOptions = { employeeId: foundUser.employeeProfile?.id };
+    }
+
     return this.specialtyRepository.findAllWithPagination({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
       options,
+      ...extraOptions,
     });
   }
 

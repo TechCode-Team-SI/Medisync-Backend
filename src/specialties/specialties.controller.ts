@@ -29,6 +29,8 @@ import {
 import { FindAllSpecialtiesDto } from './dto/find-all-specialties.dto';
 import { exceptionResponses } from 'src/specialties/specialties.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { Me } from 'src/auth/auth.decorator';
+import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
 
 @ApiTags('Specialties')
 @ApiBearerAuth()
@@ -59,6 +61,22 @@ export class SpecialtiesController {
 
     return this.specialtiesService.findAllWithPagination({
       paginationOptions,
+    });
+  }
+
+  @Get('me')
+  @ApiOkResponse({
+    type: PaginationResponse(Specialty),
+  })
+  async findAllMine(
+    @Me() userPayload: JwtPayloadType,
+    @Query() query: FindAllSpecialtiesDto,
+  ): Promise<PaginationResponseDto<Specialty>> {
+    const paginationOptions = getPagination(query);
+
+    return this.specialtiesService.findAllWithPagination({
+      paginationOptions,
+      userId: userPayload.id,
     });
   }
 

@@ -6,7 +6,13 @@ import { exceptionResponses } from 'src/specialties/specialties.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { DataSource, FindOptionsRelations, In, Repository } from 'typeorm';
+import {
+  DataSource,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  In,
+  Repository,
+} from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Specialty } from '../../../../domain/specialty';
@@ -56,16 +62,22 @@ export class SpecialtyRelationalRepository
   async findAllWithPagination({
     paginationOptions,
     options,
+    employeeId,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    employeeId?: string;
   }): Promise<PaginationResponseDto<Specialty>> {
+    let where: FindOptionsWhere<SpecialtyEntity> = {};
+    if (employeeId) where = { ...where, employees: { id: employeeId } };
+
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
     const [entities, count] = await this.specialtyRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
+      where,
       relations,
     });
     const items = entities.map((entity) => SpecialtyMapper.toDomain(entity));

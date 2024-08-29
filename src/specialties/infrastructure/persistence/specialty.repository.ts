@@ -17,12 +17,10 @@ export abstract class SpecialtyRepository extends BaseRepository {
 
   abstract createMultiple(data: CreateSpecialty[]): Promise<Specialty[]>;
 
-  abstract findAllWithPagination({
-    paginationOptions,
-    options,
-  }: {
+  abstract findAllWithPagination(options: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    employeeId?: string;
   }): Promise<PaginationResponseDto<Specialty>>;
 
   abstract findAllWithNames(
