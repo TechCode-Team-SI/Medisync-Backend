@@ -20,31 +20,31 @@ export class RatingsService {
   ) {}
 
   async create(createRatingDto: CreateRatingDto, userPayload: JwtPayloadType) {
-    const { ratingBy, requestId, stars } = createRatingDto;
+    const { ratedBy, request, stars } = createRatingDto;
 
     if (!(stars >= 0 && stars <= 5)) {
       throw new UnprocessableEntityException(exceptionResponses.StarsOutRange);
     }
 
-    if (ratingBy.id != userPayload.id) {
+    if (ratedBy.id != userPayload.id) {
       throw new UnprocessableEntityException(
         exceptionResponses.UserNotCreateRequest,
       );
     }
 
-    const foundUser = await this.usersService.findById(ratingBy.id);
+    const foundUser = await this.usersService.findById(ratedBy.id);
     if (!foundUser) {
       throw new UnprocessableEntityException(exceptionResponses.UserNotExists);
     }
 
-    const foundRequest = await this.requestsService.findOne(requestId.id);
+    const foundRequest = await this.requestsService.findOne(request.id);
     if (!foundRequest) {
       throw new UnprocessableEntityException(
         exceptionResponses.RequestNotExists,
       );
     }
 
-    const foundRating = await this.requestsService.findRating(requestId.id);
+    const foundRating = await this.requestsService.findRating(request.id);
     if (foundRating) {
       throw new UnprocessableEntityException(
         exceptionResponses.RequestAlreadyRated,
@@ -59,8 +59,8 @@ export class RatingsService {
 
     const clonedPayload = {
       ...createRatingDto,
-      ratingBy: foundUser,
-      requestId: foundRequest,
+      ratedBy: foundUser,
+      request: foundRequest,
     };
 
     return this.ratingRepository.create(clonedPayload);

@@ -67,6 +67,6 @@ export class RequestEntity extends EntityRelationalHelper {
   createdAt: Date;
 
   @ApiPropertyOptional()
-  @OneToOne(() => RatingEntity, (rating) => rating.requestId)
+  @OneToOne(() => RatingEntity, (rating) => rating.request)
   rating: RatingEntity;
 }

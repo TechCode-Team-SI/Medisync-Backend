@@ -13,10 +13,10 @@ export class CreateRatingDto {
   @ApiProperty({ type: () => UserIdDto })
   @IsNotEmpty()
   @Type(() => UserIdDto)
-  ratingBy: UserIdDto;
+  ratedBy: UserIdDto;
 
   @ApiProperty({ type: () => RequestIdDto })
   @IsNotEmpty()
   @Type(() => RequestIdDto)
-  requestId: RequestIdDto;
+  request: RequestIdDto;
 }

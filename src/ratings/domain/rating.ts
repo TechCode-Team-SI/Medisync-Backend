@@ -12,8 +12,8 @@ export class Rating {
   stars: number;
 
   @ApiProperty({ type: () => User })
-  ratingBy: User;
+  ratedBy: User;
 
   @ApiProperty({ type: () => Request })
-  requestId: Request;
+  request: Request;
 }

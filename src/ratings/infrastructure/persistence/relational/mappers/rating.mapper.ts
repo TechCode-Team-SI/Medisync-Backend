@@ -9,11 +9,11 @@ export class RatingMapper {
 
     domainEntity.id = raw.id;
     domainEntity.stars = raw.stars;
-    if (raw.ratingBy) {
-      domainEntity.ratingBy = UserMapper.toDomain(raw.ratingBy);
+    if (raw.ratedBy) {
+      domainEntity.ratedBy = UserMapper.toDomain(raw.ratedBy);
     }
-    if (raw.requestId) {
-      domainEntity.requestId = RequestMapper.toDomain(raw.requestId);
+    if (raw.request) {
+      domainEntity.request = RequestMapper.toDomain(raw.request);
     }
 
     return domainEntity;
@@ -26,14 +26,14 @@ export class RatingMapper {
       persistenceEntity.id = domainEntity.id;
     }
     persistenceEntity.stars = domainEntity.stars;
-    if (domainEntity.ratingBy) {
-      persistenceEntity.ratingBy = UserMapper.toPersistence(
-        domainEntity.ratingBy,
+    if (domainEntity.ratedBy) {
+      persistenceEntity.ratedBy = UserMapper.toPersistence(
+        domainEntity.ratedBy,
       );
     }
-    if (domainEntity.requestId) {
-      persistenceEntity.requestId = RequestMapper.toPersistence(
-        domainEntity.requestId,
+    if (domainEntity.request) {
+      persistenceEntity.request = RequestMapper.toPersistence(
+        domainEntity.request,
       );
     }
 

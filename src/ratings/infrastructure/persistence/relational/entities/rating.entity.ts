@@ -27,13 +27,13 @@ export class RatingEntity extends EntityRelationalHelper {
     type: () => UserEntity,
   })
   @ManyToOne(() => UserEntity)
-  @JoinColumn({ name: 'ratingBy' })
-  ratingBy: UserEntity;
+  @JoinColumn({ name: 'ratedBy' })
+  ratedBy: UserEntity;
 
   @ApiProperty({
     type: () => RequestEntity,
   })
   @OneToOne(() => RequestEntity, (requestId) => requestId.rating)
   @JoinColumn({ name: 'requestId' })
-  requestId: RequestEntity;
+  request: RequestEntity;
 }
