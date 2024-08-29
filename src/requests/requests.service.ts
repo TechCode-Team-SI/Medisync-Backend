@@ -169,6 +169,10 @@ export class RequestsService {
     return this.requestRepository.findById(id, options);
   }
 
+  findRating(id: Request['id']) {
+    return this.requestRepository.findRating(id);
+  }
+
   finish(id: Request['id'], status: RequestStatusEnum) {
     return this.requestRepository.update(id, { status });
   }
