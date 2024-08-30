@@ -1,11 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { TicketRepository } from './infrastructure/persistence/ticket.repository';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Ticket } from './domain/ticket';
 import { UsersService } from 'src/users/users.service';
-import { TicketTypeEnum } from './tickets.enum';
+import { TicketStatusEnum, TicketTypeEnum } from './tickets.enum';
+import { exceptionResponses } from './tickets.messages';
 
 @Injectable()
 export class TicketsService {
@@ -18,7 +23,7 @@ export class TicketsService {
     const user = await this.usersService.findById(createdBy);
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(exceptionResponses.TicketOwnerNotFound);
     }
 
     const clonedPayload = {
@@ -58,5 +63,20 @@ export class TicketsService {
 
   remove(id: Ticket['id']) {
     return this.ticketRepository.remove(id);
+  }
+
+  async close(id: Ticket['id']) {
+    const ticket = await this.ticketRepository.findById(id);
+    if (!ticket) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+
+    if (ticket.status === TicketStatusEnum.CLOSED) {
+      throw new UnprocessableEntityException(exceptionResponses.StatusClosed);
+    }
+
+    return this.ticketRepository.update(id, {
+      status: TicketStatusEnum.CLOSED,
+    });
   }
 }

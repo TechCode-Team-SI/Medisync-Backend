@@ -1,13 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TicketsService } from 'src/tickets/tickets.service';
 import { UsersService } from 'src/users/users.service';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { TicketComment } from './domain/ticket-comment';
-import { CreateTicketCommentDto } from './dto/create-ticket-comment.dto';
 import { UpdateTicketCommentDto } from './dto/update-ticket-comment.dto';
 import { TicketCommentRepository } from './infrastructure/persistence/ticket-comment.repository';
 import { exceptionResponses } from './ticket-comments.messages';
-import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class TicketCommentsService {
@@ -18,7 +17,7 @@ export class TicketCommentsService {
   ) {}
 
   async create(
-    createTicketCommentDto: CreateTicketCommentDto,
+    createTicketCommentDto: { ticketId: string; comment: string },
     createdBy: string,
   ) {
     const user = await this.usersService.findById(createdBy, { minimal: true });
@@ -44,9 +43,11 @@ export class TicketCommentsService {
   findAllWithPagination({
     paginationOptions,
     options,
+    ticketId,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    ticketId?: string;
   }) {
     return this.ticketCommentRepository.findAllWithPagination({
       paginationOptions: {
@@ -54,6 +55,7 @@ export class TicketCommentsService {
         limit: paginationOptions.limit,
       },
       options,
+      ticketId,
     });
   }
 

@@ -11,6 +11,7 @@ import {
   DataSource,
   FindOptionsRelations,
   FindOptionsWhere,
+  In,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -65,9 +66,17 @@ export class UsersRelationalRepository
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
-    const where: FindOptionsWhere<UserEntity> = {};
-    if (filterOptions?.roles?.length) {
-      //TODO: Implement filters later
+    let where: FindOptionsWhere<UserEntity> = {};
+    if (filterOptions?.roles && filterOptions.roles.length > 0) {
+      where = { ...where, roles: { id: In(filterOptions.roles) } };
+    }
+    if (filterOptions?.specialties && filterOptions.specialties.length > 0) {
+      where = {
+        ...where,
+        employeeProfile: {
+          specialties: { id: In(filterOptions.specialties) },
+        },
+      };
     }
 
     const [entities, count] = await this.usersRepository.findAndCount({
@@ -75,7 +84,7 @@ export class UsersRelationalRepository
       take: paginationOptions.limit,
       loadEagerRelations: true,
       relations,
-      where: where,
+      where,
       order: sortOptions?.reduce(
         (accumulator, sort) => ({
           ...accumulator,

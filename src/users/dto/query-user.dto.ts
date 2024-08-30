@@ -8,6 +8,7 @@ import {
 import { Transform, Type, plainToInstance } from 'class-transformer';
 import { User } from '../domain/user';
 import { RoleDto } from '../../roles/dto/role.dto';
+import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
 
 export class FilterUserDto {
   @ApiPropertyOptional({ type: RoleDto })
@@ -15,6 +16,12 @@ export class FilterUserDto {
   @ValidateNested({ each: true })
   @Type(() => RoleDto)
   roles?: RoleDto[] | null;
+
+  @ApiPropertyOptional({ type: SpecialtyDto })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => SpecialtyDto)
+  specialties?: SpecialtyDto[] | null;
 }
 
 export class SortUserDto {

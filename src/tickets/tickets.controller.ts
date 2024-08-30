@@ -1,18 +1,15 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  Query,
+  Get,
   NotFoundException,
+  Param,
+  Post,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
-import { TicketsService } from './tickets.service';
-import { CreateTicketDto } from './dto/create-ticket.dto';
-import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -20,17 +17,22 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { Ticket } from './domain/ticket';
-import { AuthGuard } from '@nestjs/passport';
+import { Me } from 'src/auth/auth.decorator';
+import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { TicketComment } from 'src/ticket-comments/domain/ticket-comment';
+import { CreateTicketCommentDto } from 'src/ticket-comments/dto/create-ticket-comment.dto';
+import { FindAllTicketCommentsDto } from 'src/ticket-comments/dto/find-all-ticket-comments.dto';
+import { TicketCommentsService } from 'src/ticket-comments/ticket-comments.service';
+import { exceptionResponses } from 'src/tickets/tickets.messages';
+import { getPagination } from 'src/utils/get-pagination';
 import {
   PaginationResponse,
   PaginationResponseDto,
 } from '../utils/dto/pagination-response.dto';
+import { Ticket } from './domain/ticket';
+import { CreateTicketDto } from './dto/create-ticket.dto';
 import { FindAllTicketsDto } from './dto/find-all-tickets.dto';
-import { exceptionResponses } from 'src/tickets/tickets.messages';
-import { getPagination } from 'src/utils/get-pagination';
-import { Me } from 'src/auth/auth.decorator';
-import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { TicketsService } from './tickets.service';
 
 @ApiTags('Tickets')
 @ApiBearerAuth()
@@ -40,7 +42,10 @@ import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
   version: '1',
 })
 export class TicketsController {
-  constructor(private readonly ticketsService: TicketsService) {}
+  constructor(
+    private readonly ticketsService: TicketsService,
+    private readonly ticketCommentsService: TicketCommentsService,
+  ) {}
 
   @Post()
   @ApiCreatedResponse({
@@ -107,7 +112,7 @@ export class TicketsController {
     return entity;
   }
 
-  @Patch(':id')
+  @Post('close/:id')
   @ApiParam({
     name: 'id',
     type: String,
@@ -116,8 +121,8 @@ export class TicketsController {
   @ApiOkResponse({
     type: Ticket,
   })
-  update(@Param('id') id: string, @Body() updateTicketDto: UpdateTicketDto) {
-    return this.ticketsService.update(id, updateTicketDto);
+  update(@Param('id') id: string) {
+    return this.ticketsService.close(id);
   }
 
   @Delete(':id')
@@ -128,5 +133,34 @@ export class TicketsController {
   })
   remove(@Param('id') id: string) {
     return this.ticketsService.remove(id);
+  }
+
+  @Post('comments/:ticketId')
+  @ApiCreatedResponse({
+    type: TicketComment,
+  })
+  comment(
+    @Me() userPayload: JwtPayloadType,
+    @Param('ticketId') ticketId: string,
+    @Body() { comment }: CreateTicketCommentDto,
+  ) {
+    const { id: createdBy } = userPayload;
+    return this.ticketCommentsService.create({ comment, ticketId }, createdBy);
+  }
+
+  @Get('comments/:ticketId')
+  @ApiOkResponse({
+    type: PaginationResponse(TicketComment),
+  })
+  async findAllComments(
+    @Param('ticketId') ticketId: string,
+    @Query() query: FindAllTicketCommentsDto,
+  ): Promise<PaginationResponseDto<TicketComment>> {
+    const paginationOptions = getPagination(query);
+
+    return this.ticketCommentsService.findAllWithPagination({
+      paginationOptions,
+      ticketId,
+    });
   }
 }

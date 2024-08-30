@@ -7,6 +7,11 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'tickets_not_found',
     message: 'Ticket not found',
   },
+  StatusClosed: {
+    status: HttpStatus.NOT_FOUND,
+    error: 'ticket_already_closed',
+    message: 'Ticket is already closed',
+  },
   TicketOwnerNotFound: {
     status: HttpStatus.NOT_FOUND,
     error: 'ticket_owner_not_found',
