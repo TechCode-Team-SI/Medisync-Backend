@@ -16,7 +16,7 @@ export abstract class TicketCommentRepository extends BaseRepository {
     options,
   }: {
     paginationOptions: IPaginationOptions;
-    options?: findOptions;
+    options?: findOptions & { createdBy?: boolean };
     ticketId?: string;
   }): Promise<PaginationResponseDto<TicketComment>>;
 

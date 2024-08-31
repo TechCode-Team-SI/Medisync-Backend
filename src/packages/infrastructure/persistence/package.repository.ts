@@ -5,6 +5,7 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Package } from '../../domain/package';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
+import { SortPackageDto } from 'src/packages/dto/find-all-packages.dto';
 
 export abstract class PackageRepository extends BaseRepository {
   abstract create(
@@ -17,6 +18,7 @@ export abstract class PackageRepository extends BaseRepository {
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortPackageDto[] | null;
   }): Promise<PaginationResponseDto<Package>>;
 
   abstract findAllBySlug(

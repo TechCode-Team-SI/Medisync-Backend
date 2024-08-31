@@ -2,15 +2,21 @@ import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
-import { TicketTypeEnum } from 'src/tickets/tickets.enum';
+import {
+  FilterTicketDto,
+  SortTicketDto,
+} from 'src/tickets/dto/find-all-tickets.dto';
 import { exceptionResponses } from 'src/tickets/tickets.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { formatOrder } from 'src/utils/utils';
 import {
   DataSource,
+  FindOneOptions,
   FindOptionsRelations,
   FindOptionsWhere,
+  In,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -49,20 +55,28 @@ export class TicketRelationalRepository
 
   async findAllWithPagination({
     paginationOptions,
-    type,
     options,
-    createdById,
+    sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
-    type?: TicketTypeEnum;
-    options?: findOptions;
-    createdById?: string;
+    options?: findOptions & { createdBy: boolean };
+    sortOptions?: SortTicketDto[] | null;
+    filterOptions?: FilterTicketDto | null;
   }): Promise<PaginationResponseDto<Ticket>> {
+    let order: FindOneOptions<TicketEntity>['order'] = { createdAt: 'DESC' };
+    if (sortOptions) order = formatOrder(sortOptions);
+
     let where: FindOptionsWhere<TicketEntity> = {};
-    if (type) where = { ...where, type };
-    if (createdById) where = { ...where, createdBy: { id: createdById } };
+    if (filterOptions?.type) where = { ...where, type: filterOptions.type };
+    if (filterOptions?.status)
+      where = { ...where, status: filterOptions.status };
+    if (filterOptions?.createdByIds)
+      where = { ...where, createdBy: { id: In(filterOptions.createdByIds) } };
 
     let relations = this.relations;
+    if (options) relations = {};
+    if (options?.createdBy) relations = { createdBy: true };
     if (options?.minimal) relations = {};
 
     const [entities, count] = await this.ticketRepository.findAndCount({
@@ -70,6 +84,7 @@ export class TicketRelationalRepository
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       relations,
+      order,
     });
     const items = entities.map((entity) => TicketMapper.toDomain(entity));
 

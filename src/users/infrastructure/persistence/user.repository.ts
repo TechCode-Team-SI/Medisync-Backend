@@ -24,7 +24,7 @@ export abstract class UserRepository extends BaseRepository {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-    options?: findOptions;
+    options?: findOptions & { employeeProfile: boolean };
   }): Promise<PaginationResponseDto<User>>;
 
   abstract findById(

@@ -1,11 +1,14 @@
+import { BaseRepository } from 'src/common/base.repository';
+import {
+  FilterTicketDto,
+  SortTicketDto,
+} from 'src/tickets/dto/find-all-tickets.dto';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Ticket } from '../../domain/ticket';
-import { TicketTypeEnum } from 'src/tickets/tickets.enum';
-import { findOptions } from 'src/utils/types/fine-options.type';
-import { BaseRepository } from 'src/common/base.repository';
 
 type CreateTicketType = Omit<
   Ticket,
@@ -18,9 +21,9 @@ export abstract class TicketRepository extends BaseRepository {
 
   abstract findAllWithPagination(options: {
     paginationOptions: IPaginationOptions;
-    options?: findOptions;
-    type?: TicketTypeEnum;
-    createdById?: string;
+    options?: findOptions & { createdBy: boolean };
+    sortOptions?: SortTicketDto[] | null;
+    filterOptions?: FilterTicketDto | null;
   }): Promise<PaginationResponseDto<Ticket>>;
 
   abstract findById(

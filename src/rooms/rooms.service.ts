@@ -10,6 +10,7 @@ import { findOptions } from 'src/utils/types/fine-options.type';
 import { DeepPartial } from '../utils/types/deep-partial.type';
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
 import { EmployeeProfileIdDto } from 'src/employee-profiles/dto/employee-profile-id.dto';
+import { FilterRoomsDto } from './dto/find-all-rooms.dto';
 
 @Injectable()
 export class RoomsService {
@@ -60,9 +61,11 @@ export class RoomsService {
   findAllWithPagination({
     paginationOptions,
     options,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    filterOptions?: FilterRoomsDto | null;
   }) {
     return this.roomRepository.findAllWithPagination({
       paginationOptions: {
@@ -70,6 +73,7 @@ export class RoomsService {
         limit: paginationOptions.limit,
       },
       options,
+      filterOptions,
     });
   }
 

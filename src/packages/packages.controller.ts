@@ -48,7 +48,10 @@ export class PackagesController {
   ): Promise<PaginationResponseDto<Package>> {
     const paginationOptions = getPagination(query);
 
-    return this.packagesService.findAllWithPagination({ paginationOptions });
+    return this.packagesService.findAllWithPagination({
+      paginationOptions,
+      sortOptions: query.sort,
+    });
   }
 
   @Get(':id')

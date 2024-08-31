@@ -6,13 +6,21 @@ import { exceptionResponses } from 'src/packages/packages.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { DataSource, FindOptionsRelations, In, Repository } from 'typeorm';
+import {
+  DataSource,
+  FindOneOptions,
+  FindOptionsRelations,
+  In,
+  Repository,
+} from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Package } from '../../../../domain/package';
 import { PackageRepository } from '../../package.repository';
 import { PackageEntity } from '../entities/package.entity';
 import { PackageMapper } from '../mappers/package.mapper';
+import { SortPackageDto } from 'src/packages/dto/find-all-packages.dto';
+import { formatOrder } from 'src/utils/utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class PackageRelationalRepository
@@ -44,10 +52,17 @@ export class PackageRelationalRepository
   async findAllWithPagination({
     paginationOptions,
     options,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortPackageDto[] | null;
   }): Promise<PaginationResponseDto<Package>> {
+    let order: FindOneOptions<PackageEntity>['order'] = {
+      name: 'DESC',
+    };
+    if (sortOptions) order = formatOrder(sortOptions);
+
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
@@ -55,6 +70,7 @@ export class PackageRelationalRepository
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       relations,
+      order,
     });
     const items = entities.map((entity) => PackageMapper.toDomain(entity));
 

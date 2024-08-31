@@ -1,6 +1,8 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
 import { RolesService } from 'src/roles/roles.service';
+import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { FilesService } from '../files/files.service';
 import { DeepPartial } from '../utils/types/deep-partial.type';
 import { NullableType } from '../utils/types/nullable.type';
@@ -10,8 +12,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { exceptionResponses } from './users.messages';
-import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
-import { findOptions } from 'src/utils/types/fine-options.type';
 
 @Injectable()
 export class UsersService {
@@ -68,15 +68,18 @@ export class UsersService {
     filterOptions,
     sortOptions,
     paginationOptions,
+    options,
   }: {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
+    options?: findOptions & { employeeProfile: boolean };
   }): Promise<PaginationResponseDto<User>> {
     return this.usersRepository.findManyWithPagination({
       filterOptions,
       sortOptions,
       paginationOptions,
+      options,
     });
   }
 

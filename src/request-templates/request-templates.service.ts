@@ -11,6 +11,7 @@ import { FieldQuestionsService } from 'src/field-questions/field-questions.servi
 import { exceptionResponses } from './request-templates.messages';
 import { slugify } from 'src/utils/utils';
 import { CreateMultipleRequestTemplateDto } from './dto/create-multiple-request-template.dto';
+import { SortRequestTemplateDto } from './dto/find-all-request-templates.dto';
 
 @Injectable()
 export class RequestTemplatesService {
@@ -114,9 +115,11 @@ export class RequestTemplatesService {
   findAllWithPagination({
     paginationOptions,
     options,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortRequestTemplateDto[] | null;
   }) {
     return this.requestTemplateRepository.findAllWithPagination({
       paginationOptions: {
@@ -124,6 +127,7 @@ export class RequestTemplatesService {
         limit: paginationOptions.limit,
       },
       options,
+      sortOptions,
     });
   }
 

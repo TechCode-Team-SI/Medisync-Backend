@@ -67,11 +67,10 @@ export class TicketsController {
     @Query() query: FindAllTicketsDto,
   ): Promise<PaginationResponseDto<Ticket>> {
     const paginationOptions = getPagination(query);
-    const type = query.type;
 
     return this.ticketsService.findAllWithPagination({
       paginationOptions,
-      type,
+      filterOptions: query.filters,
     });
   }
 
@@ -83,13 +82,13 @@ export class TicketsController {
     @Me() userPayload: JwtPayloadType,
     @Query() query: FindAllTicketsDto,
   ): Promise<PaginationResponseDto<Ticket>> {
+    const status = query.filters?.status;
+    const type = query.filters?.type;
     const paginationOptions = getPagination(query);
-    const type = query.type;
 
     return this.ticketsService.findAllWithPagination({
       paginationOptions,
-      type,
-      createdById: userPayload.id,
+      filterOptions: { createdByIds: [userPayload.id], status, type },
     });
   }
 

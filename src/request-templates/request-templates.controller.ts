@@ -58,6 +58,7 @@ export class RequestTemplatesController {
 
     return this.requestTemplatesService.findAllWithPagination({
       paginationOptions,
+      sortOptions: query.sort,
     });
   }
 

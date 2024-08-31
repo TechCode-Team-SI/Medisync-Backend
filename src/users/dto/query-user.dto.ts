@@ -1,27 +1,34 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsArray,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Transform, Type, plainToInstance } from 'class-transformer';
+import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
 import { User } from '../domain/user';
-import { RoleDto } from '../../roles/dto/role.dto';
-import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
 
 export class FilterUserDto {
-  @ApiPropertyOptional({ type: RoleDto })
+  @ApiPropertyOptional()
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => RoleDto)
-  roles?: RoleDto[] | null;
+  @IsArray()
+  @IsString({ each: true })
+  roleIds?: string[] | null;
 
-  @ApiPropertyOptional({ type: SpecialtyDto })
+  @ApiPropertyOptional()
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => SpecialtyDto)
-  specialties?: SpecialtyDto[] | null;
+  @IsArray()
+  @IsString({ each: true })
+  specialtyIds?: string[] | null;
+
+  //Search by name
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
 
 export class SortUserDto {
@@ -50,18 +57,15 @@ export class QueryUserDto {
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @Transform(({ value }) =>
-    value ? plainToInstance(FilterUserDto, JSON.parse(value)) : undefined,
-  )
+  @IsObject()
+  @Transform(ObjectTransformer(FilterUserDto))
   @ValidateNested()
   @Type(() => FilterUserDto)
   filters?: FilterUserDto | null;
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @Transform(({ value }) => {
-    return value ? plainToInstance(SortUserDto, JSON.parse(value)) : undefined;
-  })
+  @Transform(ObjectTransformer(SortUserDto))
   @ValidateNested({ each: true })
   @Type(() => SortUserDto)
   sort?: SortUserDto[] | null;

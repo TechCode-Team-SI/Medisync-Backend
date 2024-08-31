@@ -1,15 +1,23 @@
 import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
+import { Request as ExpressRequest } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { RequestFormatted } from 'src/requests/domain/request-formatted';
+import {
+  FilterRequestDto,
+  SortRequestDto,
+} from 'src/requests/dto/find-all-requests.dto';
 import { exceptionResponses } from 'src/requests/requests.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { formatOrder } from 'src/utils/utils';
 import {
   DataSource,
+  FindOneOptions,
   FindOptionsRelations,
   FindOptionsWhere,
+  In,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -18,7 +26,6 @@ import { Request } from '../../../../domain/request';
 import { RequestRepository } from '../../request.repository';
 import { RequestEntity } from '../entities/request.entity';
 import { RequestMapper } from '../mappers/request.mapper';
-import { Request as ExpressRequest } from 'express';
 
 @Injectable({ scope: Scope.REQUEST })
 export class RequestRelationalRepository
@@ -68,25 +75,40 @@ export class RequestRelationalRepository
 
   async findAllMinimalWithPagination({
     paginationOptions,
-    madeById,
-    requestedMedicId,
+    filterOptions,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
-    requestedMedicId?: string;
-    madeById?: string;
+    sortOptions?: SortRequestDto[] | null;
+    filterOptions?: FilterRequestDto | null;
   }): Promise<PaginationResponseDto<Request>> {
+    let order: FindOneOptions<RequestEntity>['order'] = { createdAt: 'DESC' };
+    if (sortOptions) order = formatOrder<Request>(sortOptions);
+
     let where: FindOptionsWhere<RequestEntity> = {};
-    if (madeById) {
-      where = { ...where, madeBy: { id: madeById } };
+    if (filterOptions?.madeByIds) {
+      where = {
+        ...where,
+        madeBy: { id: In(filterOptions.madeByIds) },
+      };
     }
-    if (requestedMedicId) {
-      where = { ...where, requestedMedic: { id: requestedMedicId } };
+    if (filterOptions?.requestedMedicIds) {
+      where = {
+        ...where,
+        requestedMedic: {
+          id: In(filterOptions.requestedMedicIds),
+        },
+      };
+    }
+    if (filterOptions?.status) {
+      where = { ...where, status: filterOptions.status };
     }
 
     const [entities, count] = await this.requestRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       where,
+      order,
       relations: { rating: true },
     });
     const items = entities.map((entity) => RequestMapper.toDomain(entity));

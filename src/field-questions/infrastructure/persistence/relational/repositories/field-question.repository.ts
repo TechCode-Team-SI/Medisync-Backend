@@ -2,11 +2,24 @@ import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
+import {
+  FilterFieldQuestionDto,
+  SortFieldQuestionDto,
+} from 'src/field-questions/dto/find-all-field-questions.dto';
 import { exceptionResponses } from 'src/field-questions/field-questions.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { DataSource, FindOptionsRelations, In, Repository } from 'typeorm';
+import { formatOrder } from 'src/utils/utils';
+import {
+  DataSource,
+  FindOneOptions,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  In,
+  Like,
+  Repository,
+} from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { FieldQuestion } from '../../../../domain/field-question';
@@ -56,10 +69,23 @@ export class FieldQuestionRelationalRepository
   async findAllWithPagination({
     paginationOptions,
     options,
+    filterOptions,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    filterOptions?: FilterFieldQuestionDto | null;
+    sortOptions?: SortFieldQuestionDto[] | null;
   }): Promise<PaginationResponseDto<FieldQuestion>> {
+    let order: FindOneOptions<FieldQuestionEntity>['order'] = {
+      createdAt: 'DESC',
+    };
+    if (sortOptions) order = formatOrder(sortOptions);
+
+    let where: FindOptionsWhere<FieldQuestionEntity> = {};
+    if (filterOptions?.search)
+      where = { ...where, name: Like(`%${filterOptions?.search}%`) };
+    if (filterOptions?.type) where = { ...where, type: filterOptions?.type };
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
@@ -67,6 +93,8 @@ export class FieldQuestionRelationalRepository
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       relations,
+      where,
+      order,
     });
     const items = entities.map((entity) =>
       FieldQuestionMapper.toDomain(entity),

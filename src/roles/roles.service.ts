@@ -7,6 +7,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleRepository } from './infrastructure/persistence/role.repository';
 import { exceptionResponses } from './roles.messages';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { SortRoleDto } from './dto/find-all-roles.dto';
 
 @Injectable()
 export class RolesService {
@@ -26,9 +27,11 @@ export class RolesService {
   findAllWithPagination({
     paginationOptions,
     options,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortRoleDto[] | null;
   }) {
     return this.roleRepository.findAllWithPagination({
       paginationOptions: {
@@ -36,6 +39,7 @@ export class RolesService {
         limit: paginationOptions.limit,
       },
       options,
+      sortOptions,
     });
   }
 

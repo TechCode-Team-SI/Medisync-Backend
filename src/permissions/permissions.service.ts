@@ -3,6 +3,7 @@ import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Permission } from './domain/permission';
 import { PermissionRepository } from './infrastructure/persistence/permission.repository';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { SortPermissionDto } from './dto/find-all-permissions.dto';
 
 @Injectable()
 export class PermissionsService {
@@ -11,9 +12,13 @@ export class PermissionsService {
   findAllWithPagination({
     paginationOptions,
     options,
+    search,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    search?: string;
+    sortOptions?: SortPermissionDto[] | null;
   }) {
     return this.PermissionRepository.findAllWithPagination({
       paginationOptions: {
@@ -21,6 +26,8 @@ export class PermissionsService {
         limit: paginationOptions.limit,
       },
       options,
+      search,
+      sortOptions,
     });
   }
 

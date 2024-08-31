@@ -8,9 +8,11 @@ import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import {
   DataSource,
+  FindOneOptions,
   FindOptionsRelations,
   FindOptionsWhere,
   In,
+  Like,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -19,6 +21,11 @@ import { Specialty } from '../../../../domain/specialty';
 import { SpecialtyRepository } from '../../specialty.repository';
 import { SpecialtyEntity } from '../entities/specialty.entity';
 import { SpecialtyMapper } from '../mappers/specialty.mapper';
+import {
+  FilterSpecialtyDto,
+  SortSpecialtyDto,
+} from 'src/specialties/dto/find-all-specialties.dto';
+import { formatOrder } from 'src/utils/utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class SpecialtyRelationalRepository
@@ -62,14 +69,25 @@ export class SpecialtyRelationalRepository
   async findAllWithPagination({
     paginationOptions,
     options,
-    employeeId,
+    filterOptions,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
-    employeeId?: string;
+    filterOptions?: FilterSpecialtyDto | null;
+    sortOptions: SortSpecialtyDto[] | null;
   }): Promise<PaginationResponseDto<Specialty>> {
+    let order: FindOneOptions<SpecialtyEntity>['order'] = { createdAt: 'DESC' };
+    if (sortOptions) order = formatOrder(sortOptions);
+
     let where: FindOptionsWhere<SpecialtyEntity> = {};
-    if (employeeId) where = { ...where, employees: { id: employeeId } };
+    if (filterOptions?.search)
+      where = { ...where, name: Like(`%${filterOptions.search}%`) };
+    if (filterOptions?.employeeProfileIds)
+      where = {
+        ...where,
+        employees: { id: In([filterOptions.employeeProfileIds]) },
+      };
 
     let relations = this.relations;
     if (options?.minimal) relations = {};
@@ -78,6 +96,7 @@ export class SpecialtyRelationalRepository
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       where,
+      order,
       relations,
     });
     const items = entities.map((entity) => SpecialtyMapper.toDomain(entity));

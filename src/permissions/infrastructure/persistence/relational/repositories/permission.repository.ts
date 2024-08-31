@@ -5,13 +5,23 @@ import { BaseRepository } from 'src/common/base.repository';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { DataSource, FindOptionsRelations, In, Repository } from 'typeorm';
+import {
+  DataSource,
+  FindOneOptions,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  In,
+  Like,
+  Repository,
+} from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Permission } from '../../../../domain/permission';
 import { PermissionRepository } from '../../permission.repository';
 import { PermissionEntity } from '../entities/permission.entity';
 import { PermissionMapper } from '../mappers/permission.mapper';
+import { SortPermissionDto } from 'src/permissions/dto/find-all-permissions.dto';
+import { formatOrder } from 'src/utils/utils';
 @Injectable({ scope: Scope.REQUEST })
 export class permissionRelationalRepository
   extends BaseRepository
@@ -34,17 +44,30 @@ export class permissionRelationalRepository
   async findAllWithPagination({
     paginationOptions,
     options,
+    search,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    search?: string;
+    sortOptions?: SortPermissionDto[] | null;
   }): Promise<PaginationResponseDto<Permission>> {
+    let order: FindOneOptions<PermissionEntity>['order'] = {
+      name: 'DESC',
+    };
+    if (sortOptions) order = formatOrder(sortOptions);
+
+    let where: FindOptionsWhere<PermissionEntity> = {};
+    if (search) where = { ...where, name: Like(`%${search}%`) };
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
     const [permissions, count] = await this.PermissionRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
+      where,
       relations,
+      order,
     });
     const items = permissions.map((permission) =>
       PermissionMapper.toDomain(permission),

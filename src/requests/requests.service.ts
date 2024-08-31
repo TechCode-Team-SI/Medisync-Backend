@@ -12,6 +12,7 @@ import { RequestRepository } from './infrastructure/persistence/request.reposito
 import { RequestStatusEnum } from './requests.enum';
 import { exceptionResponses } from './requests.messages';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { FilterRequestDto, SortRequestDto } from './dto/find-all-requests.dto';
 @Injectable()
 export class RequestsService {
   constructor(
@@ -21,7 +22,7 @@ export class RequestsService {
     private readonly usersService: UsersService,
   ) {}
 
-  async create(createRequestDto: CreateRequestDto, madeById: string) {
+  async create(createRequestDto: CreateRequestDto, madeByIds: string) {
     const {
       requestTemplate,
       requestedSpecialty,
@@ -29,7 +30,7 @@ export class RequestsService {
       requestedMedic,
     } = createRequestDto;
 
-    const foundUser = await this.usersService.findById(madeById, {
+    const foundUser = await this.usersService.findById(madeByIds, {
       minimal: true,
     });
 
@@ -158,20 +159,20 @@ export class RequestsService {
 
   findAllMinimalWithPagination({
     paginationOptions,
-    requestedMedicId,
-    madeById,
+    filterOptions,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
-    requestedMedicId?: string;
-    madeById?: string;
+    filterOptions?: FilterRequestDto | null;
+    sortOptions?: SortRequestDto[] | null;
   }) {
     return this.requestRepository.findAllMinimalWithPagination({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
-      madeById,
-      requestedMedicId,
+      filterOptions,
+      sortOptions,
     });
   }
 

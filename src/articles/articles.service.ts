@@ -7,6 +7,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticleRepository } from './infrastructure/persistence/article.repository';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { SortArticleDto } from './dto/find-all-articles.dto';
 
 @Injectable()
 export class ArticlesService {
@@ -31,9 +32,11 @@ export class ArticlesService {
   findAllWithPagination({
     paginationOptions,
     options,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortArticleDto[] | null;
   }) {
     return this.articleRepository.findAllWithPagination({
       paginationOptions: {
@@ -41,6 +44,7 @@ export class ArticlesService {
         limit: paginationOptions.limit,
       },
       options,
+      sortOptions,
     });
   }
 

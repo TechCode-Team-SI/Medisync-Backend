@@ -12,13 +12,21 @@ import { exceptionResponses } from 'src/roles/roles.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { DataSource, FindOptionsRelations, In, Repository } from 'typeorm';
+import {
+  DataSource,
+  FindOneOptions,
+  FindOptionsRelations,
+  In,
+  Repository,
+} from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Role } from '../../../../domain/role';
 import { RoleRepository } from '../../role.repository';
 import { RoleEntity } from '../entities/role.entity';
 import { RoleMapper } from '../mappers/role.mapper';
+import { SortRoleDto } from 'src/roles/dto/find-all-roles.dto';
+import { formatOrder } from 'src/utils/utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class RoleRelationalRepository
@@ -88,10 +96,15 @@ export class RoleRelationalRepository
   async findAllWithPagination({
     paginationOptions,
     options,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortRoleDto[] | null;
   }): Promise<PaginationResponseDto<Role>> {
+    let order: FindOneOptions<RoleEntity>['order'] = { createdAt: 'DESC' };
+    if (sortOptions) order = formatOrder(sortOptions);
+
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
@@ -99,6 +112,7 @@ export class RoleRelationalRepository
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       relations,
+      order,
     });
     const items = entities.map((entity) => RoleMapper.toDomain(entity));
 

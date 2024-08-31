@@ -35,3 +35,15 @@ export function isValueInEnum<T extends StandardEnum<unknown>>(
 ) {
   return Object.values(enumLike).includes(value);
 }
+
+export function formatOrder<T>(
+  sortOptions: { orderBy: keyof T; order: string }[],
+) {
+  return sortOptions?.reduce(
+    (accumulator, sort) => ({
+      ...accumulator,
+      [sort.orderBy]: sort.order,
+    }),
+    {},
+  );
+}

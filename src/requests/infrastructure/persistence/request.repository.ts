@@ -1,11 +1,15 @@
+import { BaseRepository } from 'src/common/base.repository';
+import { RequestFormatted } from 'src/requests/domain/request-formatted';
+import {
+  FilterRequestDto,
+  SortRequestDto,
+} from 'src/requests/dto/find-all-requests.dto';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Request } from '../../domain/request';
-import { findOptions } from 'src/utils/types/fine-options.type';
-import { RequestFormatted } from 'src/requests/domain/request-formatted';
-import { BaseRepository } from 'src/common/base.repository';
 
 export abstract class RequestRepository extends BaseRepository {
   abstract create(
@@ -14,8 +18,8 @@ export abstract class RequestRepository extends BaseRepository {
 
   abstract findAllMinimalWithPagination(options: {
     paginationOptions: IPaginationOptions;
-    requestedMedicId?: string;
-    madeById?: string;
+    sortOptions?: SortRequestDto[] | null;
+    filterOptions?: FilterRequestDto | null;
   }): Promise<PaginationResponseDto<Request>>;
 
   abstract findById(

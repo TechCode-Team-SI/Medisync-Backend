@@ -6,13 +6,20 @@ import { BaseRepository } from 'src/common/base.repository';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
+import {
+  DataSource,
+  FindOneOptions,
+  FindOptionsRelations,
+  Repository,
+} from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Article } from '../../../../domain/article';
 import { ArticleRepository } from '../../article.repository';
 import { ArticleEntity } from '../entities/article.entity';
 import { ArticleMapper } from '../mappers/article.mapper';
+import { SortArticleDto } from 'src/articles/dto/find-all-articles.dto';
+import { formatOrder } from 'src/utils/utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ArticleRelationalRepository
@@ -44,10 +51,15 @@ export class ArticleRelationalRepository
   async findAllWithPagination({
     paginationOptions,
     options,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortArticleDto[] | null;
   }): Promise<PaginationResponseDto<Article>> {
+    let order: FindOneOptions<ArticleEntity>['order'] = { createdAt: 'DESC' };
+    if (sortOptions) order = formatOrder(sortOptions);
+
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
@@ -55,6 +67,7 @@ export class ArticleRelationalRepository
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       relations,
+      order,
     });
     const items = entities.map((entity) => ArticleMapper.toDomain(entity));
 

@@ -4,6 +4,7 @@ import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { RequestTemplate } from '../../domain/request-template';
+import { SortRequestTemplateDto } from 'src/request-templates/dto/find-all-request-templates.dto';
 
 export abstract class RequestTemplateRepository {
   abstract create(
@@ -20,6 +21,7 @@ export abstract class RequestTemplateRepository {
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortRequestTemplateDto[] | null;
   }): Promise<PaginationResponseDto<RequestTemplate>>;
 
   abstract findById(

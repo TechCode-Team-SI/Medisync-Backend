@@ -10,6 +10,10 @@ import { findOptions } from 'src/utils/types/fine-options.type';
 import { CreateMultipleSpecialtyInternalDto } from './dto/create-multiple-specialty-internal.dto';
 import { CreateSpecialtyInternalDto } from './dto/create-specialty-internal.dto';
 import { UsersService } from 'src/users/users.service';
+import {
+  FilterSpecialtyDto,
+  SortSpecialtyDto,
+} from './dto/find-all-specialties.dto';
 
 @Injectable()
 export class SpecialtiesService {
@@ -57,15 +61,18 @@ export class SpecialtiesService {
   async findAllWithPagination({
     paginationOptions,
     options,
-    userId,
+    filterOptions,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
-    userId?: string;
+    filterOptions?: (FilterSpecialtyDto & { userId?: string }) | null;
+    sortOptions?: SortSpecialtyDto[] | null;
   }) {
-    let extraOptions = {};
-    if (userId) {
-      const foundUser = await this.usersService.findById(userId, {
+    let filterOpts: FilterSpecialtyDto = {};
+
+    if (filterOptions?.userId) {
+      const foundUser = await this.usersService.findById(filterOptions.userId, {
         withProfile: true,
       });
       if (!foundUser) {
@@ -73,8 +80,15 @@ export class SpecialtiesService {
           exceptionResponses.UserNotExists,
         );
       }
-      extraOptions = { employeeId: foundUser.employeeProfile?.id };
+      if (!foundUser.employeeProfile) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.UserNotSpecialist,
+        );
+      }
+      filterOpts = { employeeProfileIds: [foundUser.employeeProfile.id] };
     }
+    if (filterOptions?.search)
+      filterOpts = { ...filterOpts, search: filterOptions.search };
 
     return this.specialtyRepository.findAllWithPagination({
       paginationOptions: {
@@ -82,7 +96,8 @@ export class SpecialtiesService {
         limit: paginationOptions.limit,
       },
       options,
-      ...extraOptions,
+      filterOptions: filterOpts,
+      sortOptions,
     });
   }
 

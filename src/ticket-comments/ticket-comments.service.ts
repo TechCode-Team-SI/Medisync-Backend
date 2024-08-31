@@ -46,7 +46,7 @@ export class TicketCommentsService {
     ticketId,
   }: {
     paginationOptions: IPaginationOptions;
-    options?: findOptions;
+    options?: findOptions & { createdBy?: boolean };
     ticketId?: string;
   }) {
     return this.ticketCommentRepository.findAllWithPagination({

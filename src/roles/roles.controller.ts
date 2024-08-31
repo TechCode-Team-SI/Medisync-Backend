@@ -57,7 +57,10 @@ export class RolesController {
   ): Promise<PaginationResponseDto<Role>> {
     const paginationOptions = getPagination(query);
 
-    return this.rolesService.findAllWithPagination({ paginationOptions });
+    return this.rolesService.findAllWithPagination({
+      paginationOptions,
+      sortOptions: query.sort,
+    });
   }
 
   @Get(':id')

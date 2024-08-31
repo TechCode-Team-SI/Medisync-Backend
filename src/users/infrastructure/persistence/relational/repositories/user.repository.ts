@@ -9,9 +9,11 @@ import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import {
   DataSource,
+  FindOneOptions,
   FindOptionsRelations,
   FindOptionsWhere,
   In,
+  Like,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -21,6 +23,7 @@ import { FilterUserDto, SortUserDto } from '../../../../dto/query-user.dto';
 import { UserRepository } from '../../user.repository';
 import { UserEntity } from '../entities/user.entity';
 import { UserMapper } from '../mappers/user.mapper';
+import { formatOrder } from 'src/utils/utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UsersRelationalRepository
@@ -61,22 +64,31 @@ export class UsersRelationalRepository
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-    options?: findOptions;
+    options?: findOptions & { employeeProfile: boolean };
   }): Promise<PaginationResponseDto<User>> {
+    let order: FindOneOptions<UserEntity>['order'] = { createdAt: 'DESC' };
+    if (sortOptions) order = formatOrder<User>(sortOptions);
+
     let relations = this.relations;
+    if (options) relations = {};
+    if (options?.employeeProfile)
+      relations = { ...relations, employeeProfile: true };
     if (options?.minimal) relations = {};
 
     let where: FindOptionsWhere<UserEntity> = {};
-    if (filterOptions?.roles && filterOptions.roles.length > 0) {
-      where = { ...where, roles: { id: In(filterOptions.roles) } };
+    if (filterOptions?.roleIds && filterOptions.roleIds.length > 0) {
+      where = { ...where, roles: { id: In(filterOptions.roleIds) } };
     }
-    if (filterOptions?.specialties && filterOptions.specialties.length > 0) {
+    if (filterOptions?.specialtyIds && filterOptions.specialtyIds.length > 0) {
       where = {
         ...where,
         employeeProfile: {
-          specialties: { id: In(filterOptions.specialties) },
+          specialties: { id: In(filterOptions.specialtyIds) },
         },
       };
+    }
+    if (filterOptions?.search) {
+      where = { ...where, fullName: Like(`%${filterOptions?.search}%`) };
     }
 
     const [entities, count] = await this.usersRepository.findAndCount({
@@ -85,13 +97,7 @@ export class UsersRelationalRepository
       loadEagerRelations: true,
       relations,
       where,
-      order: sortOptions?.reduce(
-        (accumulator, sort) => ({
-          ...accumulator,
-          [sort.orderBy]: sort.order,
-        }),
-        {},
-      ),
+      order,
     });
     const items = entities.map((entity) => UserMapper.toDomain(entity));
 

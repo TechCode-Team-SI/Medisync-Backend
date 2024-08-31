@@ -5,6 +5,7 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Room } from '../../domain/room';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
+import { FilterRoomsDto } from 'src/rooms/dto/find-all-rooms.dto';
 
 export abstract class RoomRepository extends BaseRepository {
   abstract create(
@@ -17,6 +18,7 @@ export abstract class RoomRepository extends BaseRepository {
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    filterOptions?: FilterRoomsDto | null;
   }): Promise<PaginationResponseDto<Room>>;
 
   abstract findById(

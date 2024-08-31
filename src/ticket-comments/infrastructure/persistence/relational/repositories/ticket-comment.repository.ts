@@ -36,7 +36,9 @@ export class TicketCommentRelationalRepository
     return this.getRepository(TicketCommentEntity);
   }
 
-  private relations: FindOptionsRelations<TicketCommentEntity> = {};
+  private relations: FindOptionsRelations<TicketCommentEntity> = {
+    createdBy: true,
+  };
 
   async create(data: TicketComment): Promise<TicketComment> {
     const persistenceModel = TicketCommentMapper.toPersistence(data);
@@ -52,7 +54,7 @@ export class TicketCommentRelationalRepository
     ticketId,
   }: {
     paginationOptions: IPaginationOptions;
-    options?: findOptions;
+    options?: findOptions & { createdBy?: boolean };
     ticketId?: string;
   }): Promise<PaginationResponseDto<TicketComment>> {
     let where: FindOptionsWhere<TicketCommentEntity> = {};
@@ -61,6 +63,8 @@ export class TicketCommentRelationalRepository
     }
 
     let relations = this.relations;
+    if (options) relations = {};
+    if (options?.createdBy) relations = { createdBy: true };
     if (options?.minimal) relations = {};
 
     const [entities, count] = await this.ticketCommentRepository.findAndCount({

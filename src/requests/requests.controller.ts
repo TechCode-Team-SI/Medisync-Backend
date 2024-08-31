@@ -80,6 +80,8 @@ export class RequestsController {
 
     return this.requestsService.findAllMinimalWithPagination({
       paginationOptions,
+      sortOptions: query.sort,
+      filterOptions: query.filters,
     });
   }
 
@@ -91,11 +93,12 @@ export class RequestsController {
     @Me() userPayload: JwtPayloadType,
     @Query() query: FindAllRequestsDto,
   ): Promise<PaginationResponseDto<Request>> {
+    const status = query.filters?.status;
     const paginationOptions = getPagination(query);
 
     return this.requestsService.findAllMinimalWithPagination({
       paginationOptions,
-      requestedMedicId: userPayload.id,
+      filterOptions: { requestedMedicIds: [userPayload.id], status },
     });
   }
 
@@ -107,11 +110,12 @@ export class RequestsController {
     @Me() userPayload: JwtPayloadType,
     @Query() query: FindAllRequestsDto,
   ): Promise<PaginationResponseDto<Request>> {
+    const status = query.filters?.status;
     const paginationOptions = getPagination(query);
 
     return this.requestsService.findAllMinimalWithPagination({
       paginationOptions,
-      madeById: userPayload.id,
+      filterOptions: { madeByIds: [userPayload.id], status },
     });
   }
 

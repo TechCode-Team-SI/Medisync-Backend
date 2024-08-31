@@ -61,6 +61,8 @@ export class SpecialtiesController {
 
     return this.specialtiesService.findAllWithPagination({
       paginationOptions,
+      filterOptions: query.filters,
+      sortOptions: query.sort,
     });
   }
 
@@ -72,11 +74,12 @@ export class SpecialtiesController {
     @Me() userPayload: JwtPayloadType,
     @Query() query: FindAllSpecialtiesDto,
   ): Promise<PaginationResponseDto<Specialty>> {
+    const search = query.filters?.search;
     const paginationOptions = getPagination(query);
 
     return this.specialtiesService.findAllWithPagination({
       paginationOptions,
-      userId: userPayload.id,
+      filterOptions: { userId: userPayload.id, search },
     });
   }
 

@@ -3,13 +3,15 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { CreateTicketDto } from './dto/create-ticket.dto';
-import { UpdateTicketDto } from './dto/update-ticket.dto';
-import { TicketRepository } from './infrastructure/persistence/ticket.repository';
+import { UsersService } from 'src/users/users.service';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Ticket } from './domain/ticket';
-import { UsersService } from 'src/users/users.service';
-import { TicketStatusEnum, TicketTypeEnum } from './tickets.enum';
+import { CreateTicketDto } from './dto/create-ticket.dto';
+import { FilterTicketDto, SortTicketDto } from './dto/find-all-tickets.dto';
+import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { TicketRepository } from './infrastructure/persistence/ticket.repository';
+import { TicketStatusEnum } from './tickets.enum';
 import { exceptionResponses } from './tickets.messages';
 
 @Injectable()
@@ -36,20 +38,23 @@ export class TicketsService {
 
   findAllWithPagination({
     paginationOptions,
-    type,
-    createdById,
+    filterOptions,
+    sortOptions,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
-    type?: TicketTypeEnum;
-    createdById?: string;
+    filterOptions?: FilterTicketDto | null;
+    sortOptions?: SortTicketDto[] | null;
+    options?: findOptions & { createdBy: boolean };
   }) {
     return this.ticketRepository.findAllWithPagination({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
-      type,
-      createdById,
+      sortOptions,
+      filterOptions,
+      options,
     });
   }
 

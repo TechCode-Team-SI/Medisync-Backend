@@ -1,8 +1,44 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsOptional } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { TicketTypeEnum } from '../tickets.enum';
-import { isValueInEnum } from 'src/utils/utils';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsEnum,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
+import { Ticket } from '../domain/ticket';
+import { TicketStatusEnum, TicketTypeEnum } from '../tickets.enum';
+
+export class FilterTicketDto {
+  @ApiPropertyOptional({ type: TicketStatusEnum })
+  @IsOptional()
+  @IsEnum(TicketStatusEnum)
+  status?: TicketStatusEnum | null;
+
+  @ApiPropertyOptional({ type: TicketTypeEnum })
+  @IsOptional()
+  @IsEnum(TicketTypeEnum)
+  type?: TicketTypeEnum | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  createdByIds?: string[] | null;
+}
+
+export class SortTicketDto {
+  @ApiProperty()
+  @Type(() => String)
+  @IsString()
+  orderBy: keyof Ticket;
+
+  @ApiProperty()
+  @IsString()
+  order: string;
+}
 
 export class FindAllTicketsDto {
   @ApiPropertyOptional()
@@ -17,13 +53,18 @@ export class FindAllTicketsDto {
   @IsOptional()
   limit?: number;
 
-  @ApiPropertyOptional()
-  @Transform(({ value }) => {
-    if (!value) return null;
-    const isValidType = isValueInEnum(TicketTypeEnum, value);
-    if (!isValidType) return null;
-    return value;
-  })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
-  type?: TicketTypeEnum;
+  @IsObject()
+  @Transform(ObjectTransformer(FilterTicketDto))
+  @ValidateNested()
+  @Type(() => FilterTicketDto)
+  filters?: FilterTicketDto | null;
+
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  @Transform(ObjectTransformer(SortTicketDto))
+  @ValidateNested({ each: true })
+  @Type(() => SortTicketDto)
+  sort?: SortTicketDto[] | null;
 }

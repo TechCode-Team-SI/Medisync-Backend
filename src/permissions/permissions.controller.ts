@@ -42,7 +42,11 @@ export class permissionsController {
   ): Promise<PaginationResponseDto<Permission>> {
     const paginationOptions = getPagination(query);
 
-    return this.PermissionsService.findAllWithPagination({ paginationOptions });
+    return this.PermissionsService.findAllWithPagination({
+      paginationOptions,
+      search: query.filters?.search,
+      sortOptions: query.sort,
+    });
   }
 
   @Get(':id')

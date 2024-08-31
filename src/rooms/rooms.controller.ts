@@ -59,6 +59,7 @@ export class RoomsController {
 
     return this.roomsService.findAllWithPagination({
       paginationOptions,
+      filterOptions: query.filters,
     });
   }
 

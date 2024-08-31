@@ -5,6 +5,10 @@ import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Specialty } from '../../domain/specialty';
 import { BaseRepository } from 'src/common/base.repository';
+import {
+  FilterSpecialtyDto,
+  SortSpecialtyDto,
+} from 'src/specialties/dto/find-all-specialties.dto';
 
 type CreateSpecialty = Omit<
   Specialty,
@@ -20,7 +24,8 @@ export abstract class SpecialtyRepository extends BaseRepository {
   abstract findAllWithPagination(options: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
-    employeeId?: string;
+    filterOptions?: FilterSpecialtyDto | null;
+    sortOptions?: SortSpecialtyDto[] | null;
   }): Promise<PaginationResponseDto<Specialty>>;
 
   abstract findAllWithNames(

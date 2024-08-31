@@ -6,13 +6,20 @@ import { exceptionResponses } from 'src/rooms/rooms.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
+import {
+  DataSource,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  Like,
+  Repository,
+} from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Room } from '../../../../domain/room';
 import { RoomRepository } from '../../room.repository';
 import { RoomEntity } from '../entities/room.entity';
 import { RoomMapper } from '../mappers/room.mapper';
+import { FilterRoomsDto } from 'src/rooms/dto/find-all-rooms.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class RoomRelationalRepository
@@ -47,16 +54,23 @@ export class RoomRelationalRepository
   async findAllWithPagination({
     paginationOptions,
     options,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    filterOptions?: FilterRoomsDto | null;
   }): Promise<PaginationResponseDto<Room>> {
+    let where: FindOptionsWhere<RoomEntity> = {};
+    if (filterOptions?.search)
+      where = { ...where, name: Like(`%${filterOptions.search}%`) };
+
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
     const [entities, count] = await this.roomRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
+      where,
       relations,
     });
     const items = entities.map((entity) => RoomMapper.toDomain(entity));

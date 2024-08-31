@@ -70,6 +70,8 @@ export class FieldQuestionsController {
 
     return this.fieldQuestionsService.findAllWithPagination({
       paginationOptions,
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
     });
   }
 

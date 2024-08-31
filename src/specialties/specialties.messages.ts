@@ -12,4 +12,14 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'avatar_not_exist',
     message: 'La imagen no existe',
   },
+  UserNotExists: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'user_not_exists',
+    message: 'The user does not exist',
+  },
+  UserNotSpecialist: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'user_not_specialist',
+    message: 'The user is not a specialist',
+  },
 } as const;
