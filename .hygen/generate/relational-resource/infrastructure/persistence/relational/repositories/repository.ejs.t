@@ -2,7 +2,7 @@
 to: src/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>/infrastructure/persistence/relational/repositories/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>.repository.ts
 ---
 import { Injectable, Inject, NotFoundException, Scope } from '@nestjs/common';
-import { Repository, FindOptionsRelations, DataSource } from 'typeorm';
+import { Repository, FindOptionsRelations, DataSource, FindOneOptions } from 'typeorm';
 import { <%= name %>Entity } from '../entities/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { <%= name %> } from '../../../../domain/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>';
@@ -16,6 +16,8 @@ import { findOptions } from 'src/utils/types/fine-options.type';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { REQUEST } from '@nestjs/core';
+import { formatOrder } from 'src/utils/utils';
+import { Sort<%= h.inflection.transform(name, ['pluralize']) %>Dto } from 'src/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>/dto/find-all-<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class <%= name %>RelationalRepository extends BaseRepository implements <%= name %>Repository {
@@ -43,11 +45,16 @@ export class <%= name %>RelationalRepository extends BaseRepository implements <
 
   async findAllWithPagination({
     paginationOptions,
-    options
+    options,
+    sortOptions
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: Sort<%= h.inflection.transform(name, ['pluralize']) %>Dto[] | null;
   }): Promise<PaginationResponseDto<<%= name %>>> {
+    let order: FindOneOptions<<%= name %>Entity>['order'] = {};
+    if (sortOptions) order = formatOrder(sortOptions);
+
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
@@ -55,6 +62,7 @@ export class <%= name %>RelationalRepository extends BaseRepository implements <
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       relations,
+      order,
     });
     const items = entities.map((entity) =>
       <%= name %>Mapper.toDomain(entity),

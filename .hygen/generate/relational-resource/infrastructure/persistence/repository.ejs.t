@@ -8,6 +8,7 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { <%= name %> } from '../../domain/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
+import { Sort<%= h.inflection.transform(name, ['pluralize']) %>Dto } from 'src/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>/dto/find-all-<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.dto';
 
 export abstract class <%= name %>Repository extends BaseRepository {
   abstract create(
@@ -20,6 +21,7 @@ export abstract class <%= name %>Repository extends BaseRepository {
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: Sort<%= h.inflection.transform(name, ['pluralize']) %>Dto[] | null;
   }): Promise<PaginationResponseDto<<%= name %>>>;
 
   abstract findById(id: <%= name %>['id'], options?: findOptions): Promise<NullableType<<%= name %>>>;
