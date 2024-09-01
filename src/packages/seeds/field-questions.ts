@@ -233,5 +233,43 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
       type: FieldQuestionTypeEnum.TEXT,
       isRequired: false,
     },
+    {
+      id: '32619a4e-d31b-4c7a-951f-b0044367c67e',
+      name: 'Tipo de cirugía',
+      slug: 'tipo-de-cirugia',
+      label: 'Tipo de cirugía',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: false,
+      },
+      selections: [
+        {
+          value: 'Electiva',
+        },
+        {
+          value: 'Urgente',
+        },
+      ],
+    },
+    {
+      id: '32619a4e-d31b-4c7a-951f-b0044367c67f',
+      name: 'Tipo de cirugía',
+      slug: 'tipo-de-cirugia',
+      label: 'Tipo de cirugía',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: false,
+      },
+      selections: [
+        {
+          value: 'Electiva',
+        },
+        {
+          value: 'Urgente',
+        },
+      ],
+    },
   ],
 };
