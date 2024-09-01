@@ -47,6 +47,10 @@ export class RequestMapper {
     if (raw.madeBy) {
       domainEntity.madeBy = UserMapper.toDomain(raw.madeBy);
     }
+    if (raw.referredBy) {
+      domainEntity.requestedMedic = UserMapper.toDomain(raw.requestedMedic);
+    }
+    domainEntity.referredContent = raw.referredContent;
     domainEntity.createdAt = raw.createdAt;
 
     return domainEntity;
@@ -87,6 +91,12 @@ export class RequestMapper {
         (value) => RequestValueMapper.toPersistence(value),
       );
     }
+    if (domainEntity.referredBy) {
+      persistenceEntity.referredBy = UserMapper.toPersistence(
+        domainEntity.referredBy,
+      );
+    }
+    persistenceEntity.referredContent = domainEntity.referredContent;
     persistenceEntity.createdAt = domainEntity.createdAt;
 
     return persistenceEntity;
@@ -103,9 +113,15 @@ export class RequestMapper {
     formattedEntity.requestedMedic = {
       fullName: raw.requestedMedic.fullName,
     };
+    if (raw.referredBy) {
+      formattedEntity.referredBy = {
+        fullName: raw.referredBy?.fullName,
+      };
+    }
     formattedEntity.requestedSpecialty = {
       name: raw.requestedSpecialty.name,
     };
+    formattedEntity.referredContent = raw.referredContent;
     formattedEntity.appointmentHour = raw.appointmentHour;
     formattedEntity.status = raw.status;
     const fields = raw.requestTemplate.fields.reduce<

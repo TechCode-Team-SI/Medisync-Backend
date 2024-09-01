@@ -1,36 +1,54 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { DiagnosticsService } from 'src/diagnostics/diagnostics.service';
+import { CreateDiagnosticDto } from 'src/diagnostics/dto/create-diagnostic.dto';
 import { Selection } from 'src/field-questions/domain/selection';
 import { FieldQuestionTypeEnum } from 'src/field-questions/field-questions.enum';
+import { CreateInstructionsDto } from 'src/instructions/dto/create-instructions.dto';
+import { InstructionsService } from 'src/instructions/instructions.service';
 import { RequestTemplatesService } from 'src/request-templates/request-templates.service';
 import { SpecialtiesService } from 'src/specialties/specialties.service';
 import { UsersService } from 'src/users/users.service';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Request } from './domain/request';
 import { RequestValue } from './domain/request-value';
+import { CreateRequestWithReferenceDto } from './dto/create-request-with-reference.dto';
 import { CreateRequestDto } from './dto/create-request.dto';
+import { FilterRequestDto, SortRequestDto } from './dto/find-all-requests.dto';
+import { FinishRequestDto } from './dto/finish-request.dto';
 import { RequestRepository } from './infrastructure/persistence/request.repository';
 import { RequestStatusEnum } from './requests.enum';
 import { exceptionResponses } from './requests.messages';
-import { findOptions } from 'src/utils/types/fine-options.type';
-import { FilterRequestDto, SortRequestDto } from './dto/find-all-requests.dto';
 @Injectable()
 export class RequestsService {
   constructor(
     private readonly requestRepository: RequestRepository,
     private readonly requestTemplateService: RequestTemplatesService,
-    private readonly specialtyRepository: SpecialtiesService,
+    private readonly specialtiesRepository: SpecialtiesService,
     private readonly usersService: UsersService,
+    private readonly diagnosticsService: DiagnosticsService,
+    private readonly instructionsService: InstructionsService,
   ) {}
 
-  async create(createRequestDto: CreateRequestDto, madeByIds: string) {
+  async create(
+    createRequestDto: CreateRequestDto &
+      Pick<Partial<CreateRequestWithReferenceDto>, 'referredContent'>,
+    madeById: string,
+  ) {
     const {
       requestTemplate,
       requestedSpecialty,
       requestValues,
       requestedMedic,
+      referredContent,
     } = createRequestDto;
 
-    const foundUser = await this.usersService.findById(madeByIds, {
+    const foundUser = await this.usersService.findById(madeById, {
       minimal: true,
     });
 
@@ -49,7 +67,7 @@ export class RequestsService {
       );
     }
 
-    const foundSpecialty = await this.specialtyRepository.findOne(
+    const foundSpecialty = await this.specialtiesRepository.findOne(
       requestedSpecialty.id,
       { minimal: true },
     );
@@ -151,6 +169,8 @@ export class RequestsService {
       requestedSpecialty: foundSpecialty,
       requestedMedic: foundMedic,
       requestValues: requestValuesUpdated,
+      referredContent: referredContent,
+      referredBy: referredContent ? foundMedic : undefined,
       madeBy: foundUser,
     };
 
@@ -191,7 +211,76 @@ export class RequestsService {
     return this.requestRepository.findRating(id);
   }
 
-  finish(id: Request['id'], status: RequestStatusEnum) {
+  updateStatus(id: Request['id'], status: RequestStatusEnum) {
     return this.requestRepository.update(id, { status });
+  }
+
+  async attend(requestId: string, medicId: string) {
+    const request = await this.requestRepository.findById(requestId, {
+      withMedic: true,
+      withSpecialty: true,
+    });
+    if (!request) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+    if (request.requestedMedic.id !== medicId) {
+      throw new ForbiddenException(exceptionResponses.CurrentMedicNotAllowed);
+    }
+    if (request.status !== RequestStatusEnum.PENDING) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.StatusNotPending,
+      );
+    }
+
+    return this.updateStatus(requestId, RequestStatusEnum.ATTENDING);
+  }
+
+  async finish(
+    requestId: string,
+    medicId: string,
+    finishRequestDto: FinishRequestDto,
+  ) {
+    const request = await this.requestRepository.findById(requestId, {
+      withSpecialty: true,
+      withMedic: true,
+    });
+    if (!request) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+    if (request.requestedMedic.id !== medicId) {
+      throw new ForbiddenException(exceptionResponses.CurrentMedicNotAllowed);
+    }
+    if (request.status !== RequestStatusEnum.ATTENDING) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.StatusNotAttending,
+      );
+    }
+    const specialty = await this.specialtiesRepository.findOne(
+      request.requestedSpecialty.id,
+      {
+        minimal: true,
+      },
+    );
+    if (!specialty) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.SpecialtyNotExists,
+      );
+    }
+
+    const createDiagnosticDto: CreateDiagnosticDto = {
+      description: finishRequestDto.diagnostic,
+      request,
+      specialty,
+    };
+
+    const createInstructionsDto: CreateInstructionsDto = {
+      description: finishRequestDto.instructions,
+      request,
+      specialty,
+    };
+
+    await this.diagnosticsService.create(createDiagnosticDto, medicId);
+    await this.instructionsService.create(createInstructionsDto, medicId);
+    return this.updateStatus(requestId, RequestStatusEnum.COMPLETED);
   }
 }

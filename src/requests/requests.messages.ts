@@ -42,4 +42,19 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'current_medic_not_allowed',
     message: 'The current medic is not allowed to perform this action',
   },
+  InvalidReferenceOneSelf: {
+    status: HttpStatus.FORBIDDEN,
+    error: 'invalid_reference_to_oneself',
+    message: "You can't reference to yourself",
+  },
+  StatusNotPending: {
+    status: HttpStatus.FORBIDDEN,
+    error: 'request_status_not_pending',
+    message: 'The request status needs to be pending to perform this action',
+  },
+  StatusNotAttending: {
+    status: HttpStatus.FORBIDDEN,
+    error: 'request_status_not_attending',
+    message: 'The request status needs to be attending to perform this action',
+  },
 } as const;
