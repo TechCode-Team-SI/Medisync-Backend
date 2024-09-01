@@ -8,6 +8,7 @@ import { <%= name %>Repository } from './infrastructure/persistence/<%= h.inflec
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { <%= name %> } from './domain/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { Sort<%= h.inflection.transform(name, ['pluralize']) %>Dto } from 'src/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>/dto/find-all-<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.dto';
 
 @Injectable()
 export class <%= h.inflection.transform(name, ['pluralize']) %>Service {
@@ -20,16 +21,19 @@ export class <%= h.inflection.transform(name, ['pluralize']) %>Service {
   findAllWithPagination({
     paginationOptions,
     options,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: Sort<%= h.inflection.transform(name, ['pluralize']) %>Dto[] | null;
   }) {
     return this.<%= h.inflection.camelize(name, true) %>Repository.findAllWithPagination({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
-      options
+      options,
+      sortOptions,
     });
   }
 

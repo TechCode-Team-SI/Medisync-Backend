@@ -125,7 +125,11 @@ export class RequestRelationalRepository
 
   async findById(
     id: Request['id'],
-    options?: findOptions & { withSpecialty?: boolean; withMedic?: boolean },
+    options?: findOptions & {
+      withSpecialty?: boolean;
+      withMedic?: boolean;
+      withMadeBy?: boolean;
+    },
   ): Promise<NullableType<Request>> {
     let relations = this.relations;
     if (options) relations = {};
@@ -135,11 +139,14 @@ export class RequestRelationalRepository
         requestedSpecialty: true,
       };
     }
-    if (options?.withSpecialty) {
+    if (options?.withMedic) {
       relations = {
         ...relations,
         requestedMedic: true,
       };
+    }
+    if (options?.withMadeBy) {
+      relations = { ...relations, madeBy: true };
     }
     if (options?.minimal) relations = {};
 

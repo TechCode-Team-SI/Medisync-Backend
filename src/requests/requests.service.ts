@@ -202,7 +202,11 @@ export class RequestsService {
 
   findOne(
     id: Request['id'],
-    options?: findOptions & { withSpecialty?: boolean; withMedic?: boolean },
+    options?: findOptions & {
+      withSpecialty?: boolean;
+      withMedic?: boolean;
+      withMadeBy?: boolean;
+    },
   ) {
     return this.requestRepository.findById(id, options);
   }

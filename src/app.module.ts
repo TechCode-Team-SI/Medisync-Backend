@@ -58,8 +58,11 @@ import { EmployeeProfilesModule } from './employee-profiles/employee-profiles.mo
 
 import { RatingsModule } from './ratings/ratings.module';
 
+import { RequestSavedDataModule } from './request-saved-data/request-saved-data.module';
+
 @Module({
   imports: [
+    RequestSavedDataModule,
     RatingsModule,
     PackagesModule,
     EmployeeProfilesModule,

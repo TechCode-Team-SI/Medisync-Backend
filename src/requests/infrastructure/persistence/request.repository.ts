@@ -24,7 +24,11 @@ export abstract class RequestRepository extends BaseRepository {
 
   abstract findById(
     id: Request['id'],
-    options?: findOptions & { withSpecialty?: boolean; withMedic?: boolean },
+    options?: findOptions & {
+      withSpecialty?: boolean;
+      withMedic?: boolean;
+      withMadeBy?: boolean;
+    },
   ): Promise<NullableType<Request>>;
 
   abstract findRating(id: Request['id']): Promise<NullableType<Request>>;

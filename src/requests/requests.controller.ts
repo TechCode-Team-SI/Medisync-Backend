@@ -35,6 +35,10 @@ import { CreateRequestDto } from './dto/create-request.dto';
 import { FindAllRequestsDto } from './dto/find-all-requests.dto';
 import { FinishRequestDto } from './dto/finish-request.dto';
 import { RequestsService } from './requests.service';
+import { RequestSavedData } from 'src/request-saved-data/domain/request-saved-data';
+import { RequestSavedDataService } from 'src/request-saved-data/request-saved-data.service';
+import { FindAllRequestSavedDataDto } from 'src/request-saved-data/dto/find-all-request-saved-data.dto';
+import { CreateRequestSavedDataDto } from 'src/request-saved-data/dto/create-request-saved-data.dto';
 
 @ApiTags('Requests')
 @ApiBearerAuth()
@@ -47,6 +51,7 @@ export class RequestsController {
   constructor(
     private readonly requestsService: RequestsService,
     private readonly ratingsService: RatingsService,
+    private readonly requestSavedDatasService: RequestSavedDataService,
   ) {}
 
   //In private, the user can create a request with a reference
@@ -180,5 +185,49 @@ export class RequestsController {
       userPayload,
     );
     return { success: !!rating };
+  }
+
+  @Get('save/:requestTemplateId')
+  @ApiParam({
+    name: 'requestTemplateId',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({
+    type: PaginationResponse(RequestSavedData),
+  })
+  findAllSaved(
+    @Param('requestTemplateId') requestTemplateId: string,
+    @Query() query: FindAllRequestSavedDataDto,
+  ): Promise<PaginationResponseDto<RequestSavedData>> {
+    const paginationOptions = getPagination(query);
+
+    return this.requestSavedDatasService.findAllWithPagination({
+      paginationOptions,
+      sortOptions: query.sort,
+      filterOptions: { requestTemplateId },
+    });
+  }
+
+  @Post('save/:requestId')
+  @ApiParam({
+    name: 'requestId',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({
+    type: RequestSavedData,
+  })
+  createSavedData(
+    @Param('requestId') requestId: string,
+    @Body() body: CreateRequestSavedDataDto,
+    @Me() userPayload: JwtPayloadType,
+  ): Promise<RequestSavedData> {
+    const clonedPayload = {
+      alias: body.alias,
+      requestId,
+    };
+
+    return this.requestSavedDatasService.create(clonedPayload, userPayload.id);
   }
 }
