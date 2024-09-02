@@ -158,6 +158,10 @@ export class FieldQuestionsService {
     return this.fieldQuestionRepository.findById(id, options);
   }
 
+  findAllBySlugs(slugs: FieldQuestion['slug'][], options?: findOptions) {
+    return this.fieldQuestionRepository.findAllBySlug(slugs, options);
+  }
+
   remove(id: FieldQuestion['id']) {
     return this.fieldQuestionRepository.remove(id);
   }

@@ -154,8 +154,19 @@ export class PackagesService {
         fieldQuestionsMap[fieldQuestion.slug] = fieldQuestion;
       }
     }
-    installationSteps.fieldQuestions = Object.values(fieldQuestionsMap);
-
+    const fieldQuestions = Object.values(fieldQuestionsMap);
+    //Remove already installed field questions
+    const fieldSlugs = fieldQuestions.map((field) => field.slug);
+    const installedFieldQuestions =
+      await this.fieldQuestionsService.findAllBySlugs(fieldSlugs, {
+        minimal: true,
+      });
+    const installedFieldSlugs = installedFieldQuestions.map(
+      (field) => field.slug,
+    );
+    installationSteps.fieldQuestions = fieldQuestions.filter(
+      (field) => !installedFieldSlugs.includes(field.slug),
+    );
     //Create questions
     await this.fieldQuestionsService.createMultiple({
       fields: installationSteps.fieldQuestions,

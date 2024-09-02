@@ -1,16 +1,13 @@
-import { CreateInstructionsDto } from 'src/instructions/dto/create-instructions.dto';
 import {
   Body,
   Controller,
-  ForbiddenException,
   Get,
   NotFoundException,
   Param,
-  Patch,
   Post,
   Query,
-  UnprocessableEntityException,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -20,6 +17,12 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { Me } from 'src/auth/auth.decorator';
+import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
+import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { TransactionInterceptor } from 'src/common/transaction.interceptor';
+import { CreateRatingDto } from 'src/ratings/dto/create-rating.dto';
+import { RatingsService } from 'src/ratings/ratings.service';
 import { exceptionResponses } from 'src/requests/requests.messages';
 import { getPagination } from 'src/utils/get-pagination';
 import {
@@ -27,20 +30,15 @@ import {
   PaginationResponseDto,
 } from '../utils/dto/pagination-response.dto';
 import { Request } from './domain/request';
+import { CreateRequestWithReferenceDto } from './dto/create-request-with-reference.dto';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { FindAllRequestsDto } from './dto/find-all-requests.dto';
-import { RequestsService } from './requests.service';
 import { FinishRequestDto } from './dto/finish-request.dto';
-import { RequestStatusEnum } from './requests.enum';
-import { DiagnosticsService } from 'src/diagnostics/diagnostics.service';
-import { Me } from 'src/auth/auth.decorator';
-import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
-import { InstructionsService } from 'src/instructions/instructions.service';
-import { CreateDiagnosticDto } from 'src/diagnostics/dto/create-diagnostic.dto';
-import { SpecialtiesService } from 'src/specialties/specialties.service';
-import { CreateRatingDto } from 'src/ratings/dto/create-rating.dto';
-import { RatingsService } from 'src/ratings/ratings.service';
-import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
+import { RequestsService } from './requests.service';
+import { RequestSavedData } from 'src/request-saved-data/domain/request-saved-data';
+import { RequestSavedDataService } from 'src/request-saved-data/request-saved-data.service';
+import { FindAllRequestSavedDataDto } from 'src/request-saved-data/dto/find-all-request-saved-data.dto';
+import { CreateRequestSavedDataDto } from 'src/request-saved-data/dto/create-request-saved-data.dto';
 
 @ApiTags('Requests')
 @ApiBearerAuth()
@@ -52,12 +50,24 @@ import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
 export class RequestsController {
   constructor(
     private readonly requestsService: RequestsService,
-    private readonly diagnosticsService: DiagnosticsService,
-    private readonly instructionsService: InstructionsService,
-    private readonly specialtiesService: SpecialtiesService,
     private readonly ratingsService: RatingsService,
+    private readonly requestSavedDatasService: RequestSavedDataService,
   ) {}
 
+  //In private, the user can create a request with a reference
+  @Post('reference')
+  @ApiCreatedResponse({
+    type: Request,
+  })
+  createWithReference(
+    @Me() userPayload: JwtPayloadType,
+    @Body() createRequestDto: CreateRequestWithReferenceDto,
+  ) {
+    return this.requestsService.create(createRequestDto, userPayload.id);
+  }
+
+  //In public, the user can create a request without a reference
+  //The difference is ultimately reduced to permissions
   @Post()
   @ApiCreatedResponse({
     type: Request,
@@ -138,54 +148,26 @@ export class RequestsController {
     return entity;
   }
 
-  @Patch(':id')
+  @Post('finish/:id')
+  @UseInterceptors(TransactionInterceptor)
   @ApiOkResponse({
     type: Request,
   })
   async finish(
     @Me() userPayload: JwtPayloadType,
-    @Body() body: FinishRequestDto,
+    @Body() finishRequestDto: FinishRequestDto,
     @Param('id') id: string,
   ) {
-    const request = await this.requestsService.findOne(id, {
-      withSpecialty: true,
-    });
-    if (!request) {
-      throw new NotFoundException(exceptionResponses.NotFound);
-    }
-    if (request.requestedMedic.id !== userPayload.id) {
-      throw new ForbiddenException(exceptionResponses.CurrentMedicNotAllowed);
-    }
-    const specialty = await this.specialtiesService.findOne(
-      request.requestedSpecialty.id,
-      {
-        minimal: true,
-      },
-    );
-    if (!specialty) {
-      throw new UnprocessableEntityException(
-        exceptionResponses.SpecialtyNotExists,
-      );
-    }
+    return this.requestsService.finish(id, userPayload.id, finishRequestDto);
+  }
 
-    const createDiagnosticDto: CreateDiagnosticDto = {
-      description: body.diagnostic,
-      request,
-      specialty,
-    };
-
-    const createInstructionsDto: CreateInstructionsDto = {
-      description: body.instructions,
-      request,
-      specialty,
-    };
-
-    await this.diagnosticsService.create(createDiagnosticDto, userPayload.id);
-    await this.instructionsService.create(
-      createInstructionsDto,
-      userPayload.id,
-    );
-    return this.requestsService.finish(id, RequestStatusEnum.COMPLETED);
+  @Post('attend/:id')
+  @UseInterceptors(TransactionInterceptor)
+  @ApiOkResponse({
+    type: Request,
+  })
+  async attend(@Me() userPayload: JwtPayloadType, @Param('id') id: string) {
+    return this.requestsService.attend(id, userPayload.id);
   }
 
   @Post('rate/:id')
@@ -203,5 +185,49 @@ export class RequestsController {
       userPayload,
     );
     return { success: !!rating };
+  }
+
+  @Get('save/:requestTemplateId')
+  @ApiParam({
+    name: 'requestTemplateId',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({
+    type: PaginationResponse(RequestSavedData),
+  })
+  findAllSaved(
+    @Param('requestTemplateId') requestTemplateId: string,
+    @Query() query: FindAllRequestSavedDataDto,
+  ): Promise<PaginationResponseDto<RequestSavedData>> {
+    const paginationOptions = getPagination(query);
+
+    return this.requestSavedDatasService.findAllWithPagination({
+      paginationOptions,
+      sortOptions: query.sort,
+      filterOptions: { requestTemplateId },
+    });
+  }
+
+  @Post('save/:requestId')
+  @ApiParam({
+    name: 'requestId',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({
+    type: RequestSavedData,
+  })
+  createSavedData(
+    @Param('requestId') requestId: string,
+    @Body() body: CreateRequestSavedDataDto,
+    @Me() userPayload: JwtPayloadType,
+  ): Promise<RequestSavedData> {
+    const clonedPayload = {
+      alias: body.alias,
+      requestId,
+    };
+
+    return this.requestSavedDatasService.create(clonedPayload, userPayload.id);
   }
 }

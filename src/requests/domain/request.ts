@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RequestTemplate } from 'src/request-templates/domain/request-template';
 import { Specialty } from 'src/specialties/domain/specialty';
 import { User } from 'src/users/domain/user';
@@ -38,6 +38,12 @@ export class Request {
 
   @ApiProperty({ type: () => Rating })
   rating: Rating;
+
+  @ApiPropertyOptional({ type: () => User })
+  referredBy?: User;
+
+  @ApiPropertyOptional()
+  referredContent?: string;
 
   @ApiProperty()
   appointmentHour: string;

@@ -73,4 +73,12 @@ export class RequestEntity extends EntityRelationalHelper {
   @ApiPropertyOptional()
   @OneToOne(() => RatingEntity, (rating) => rating.request)
   rating: RatingEntity;
+
+  @ApiPropertyOptional()
+  @ManyToOne(() => UserEntity)
+  referredBy?: UserEntity;
+
+  @ApiPropertyOptional()
+  @Column({ nullable: true })
+  referredContent?: string;
 }
