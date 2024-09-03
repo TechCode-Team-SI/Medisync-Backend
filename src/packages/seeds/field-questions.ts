@@ -199,6 +199,44 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
         },
       ],
     },
+    {
+      id: '84bba127-b43f-43f1-b4e7-0ff24016fdfa',
+      name: 'alimentacion',
+      slug: 'alimentacion',
+      label: '¿Come balanceado?',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: false,
+      },
+      selections: [
+        {
+          value: 'Sí',
+        },
+        {
+          value: 'No',
+        },
+      ],
+    },
+    {
+      id: '21181532-f034-4238-b12d-41d6063f337f',
+      name: 'sueño',
+      slug: 'sueño',
+      label: '¿Duerme bien?',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: false,
+      },
+      selections: [
+        {
+          value: 'Sí',
+        },
+        {
+          value: 'No',
+        },
+      ],
+    },
     // Medicina General
     {
       id: 'e4316905-c289-4f31-9821-59173886e789',
@@ -452,6 +490,47 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
         },
         {
           value: 'Otros',
+        },
+      ],
+    },
+    // Pediatría
+    {
+      id: 'dc173666-83e6-4bc7-80f8-9ee754f48ddd',
+      name: 'vacunas',
+      slug: 'vacunas',
+      label: 'Seleccione las vacunas que ha recibido el paciente',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: false,
+      selectionConfig: {
+        isMultiple: true,
+      },
+      selections: [
+        {
+          value: 'Pentavalente',
+        },
+        {
+          value: 'Neumococo',
+        },
+        {
+          value: 'Rotavirus',
+        },
+        {
+          value: 'Triple viral',
+        },
+        {
+          value: 'Varicela',
+        },
+        {
+          value: 'VPH',
+        },
+        {
+          value: 'Influenza',
+        },
+        {
+          value: 'Toxoide tetánico',
+        },
+        {
+          value: 'Otras',
         },
       ],
     },
