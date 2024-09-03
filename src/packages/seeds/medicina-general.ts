@@ -14,6 +14,10 @@ const installationModule: InstallationModule = {
         fieldQuestion: { slug: 'sintomas-comunes' },
         order: 1,
       },
+      {
+        fieldQuestion: { slug: 'detalles-adicionales' },
+        order: 2,
+      },
     ],
   },
 };
