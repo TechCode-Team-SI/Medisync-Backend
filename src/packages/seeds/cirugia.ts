@@ -12,16 +12,20 @@ const installationModule: InstallationModule = {
     name: 'Cirugía',
     fields: [
       {
-        fieldQuestion: { slug: 'razon-de-la-visita' },
+        fieldQuestion: { slug: 'tipo-de-cirugia' },
         order: 1,
       },
       {
-        fieldQuestion: { slug: 'tipo-de-cirugia' },
+        fieldQuestion: { slug: 'valoracion-medica' },
         order: 2,
       },
       {
-        fieldQuestion: { slug: 'informacion-adicional' },
+        fieldQuestion: { slug: 'valoracion-preoperatoria' },
         order: 3,
+      },
+      {
+        fieldQuestion: { slug: 'detalles-adicionales' },
+        order: 4,
       },
     ],
   },

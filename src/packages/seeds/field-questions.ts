@@ -7,7 +7,7 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
       id: '32619a4e-d31b-4c7a-951f-b0044367c66d',
       name: 'Razon de la visita',
       slug: 'razon-de-la-visita',
-      label: 'Razon de la visita',
+      label: 'Razón de la visita',
       type: FieldQuestionTypeEnum.SELECTION,
       isRequired: true,
       selectionConfig: {
@@ -233,25 +233,6 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
       type: FieldQuestionTypeEnum.TEXT,
       isRequired: false,
     },
-    {
-      id: '32619a4e-d31b-4c7a-951f-b0044367c67e',
-      name: 'Tipo de cirugía',
-      slug: 'tipo-de-cirugia',
-      label: 'Tipo de cirugía',
-      type: FieldQuestionTypeEnum.SELECTION,
-      isRequired: true,
-      selectionConfig: {
-        isMultiple: false,
-      },
-      selections: [
-        {
-          value: 'Electiva',
-        },
-        {
-          value: 'Urgente',
-        },
-      ],
-    },
     // Medicina General
     {
       id: 'e1a2a9c8-f809-405a-a55b-29e32fdf60c9',
@@ -348,6 +329,64 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
       description: 'Por favor, explique de forma clara y concisa lo ocurrido',
       type: FieldQuestionTypeEnum.TEXT,
       isRequired: false,
+    },
+    // Cirugía
+    {
+      id: '5125208d-34c1-474c-a37d-97d29faf01df',
+      name: 'Tipo de cirugia',
+      slug: 'tipo-de-cirugia',
+      label: 'Tipo de cirugía',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: false,
+      },
+      selections: [
+        {
+          value: 'Electiva',
+        },
+        {
+          value: 'Urgente',
+        },
+      ],
+    },
+    {
+      id: 'ad7fadb0-e5df-4b67-a0f7-19c03aeaa222',
+      name: 'valoracion medica',
+      slug: 'valoracion-medica',
+      label: '¿El paciente posee valoración médica?',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: false,
+      },
+      selections: [
+        {
+          value: 'Sí',
+        },
+        {
+          value: 'No',
+        },
+      ],
+    },
+    {
+      id: 'ad7fadb0-e5df-4b67-a0f7-19c03aeaa222',
+      name: 'valoracion preoperatoria',
+      slug: 'valoracion-preoperatoria',
+      label: '¿El paciente posee valoración preoperatoria?',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: false,
+      },
+      selections: [
+        {
+          value: 'Sí',
+        },
+        {
+          value: 'No',
+        },
+      ],
     },
   ],
 };
