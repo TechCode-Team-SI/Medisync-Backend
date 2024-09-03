@@ -582,5 +582,37 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
       type: FieldQuestionTypeEnum.TEXT,
       isRequired: false,
     },
+    // Radiología
+    {
+      id: '59e9b92b-133a-41bc-a965-067dc30390ab',
+      name: 'examenes radiologicos',
+      slug: 'examenes-radiologicos',
+      label: 'Seleccione los exámenes radiológicos a realizar',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: true,
+      },
+      selections: [
+        {
+          value: 'Radiografías',
+        },
+        {
+          value: 'Tomografía computarizada',
+        },
+        {
+          value: 'Resonancia magnética',
+        },
+        {
+          value: 'Ecografía',
+        },
+        {
+          value: 'Fluoroscopia',
+        },
+        {
+          value: 'Otros',
+        },
+      ],
+    },
   ],
 };
