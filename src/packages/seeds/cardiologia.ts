@@ -11,7 +11,7 @@ const installationModule: InstallationModule = {
     name: 'Cardiología',
     fields: [
       {
-        fieldQuestion: { slug: 'razon-de-la-visita' },
+        fieldQuestion: { slug: 'razon-de-la-consulta' },
         order: 1,
       },
       {

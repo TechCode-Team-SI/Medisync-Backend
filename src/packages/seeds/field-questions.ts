@@ -4,31 +4,6 @@ import { FieldQuestionTypeEnum } from 'src/field-questions/field-questions.enum'
 export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
   fieldQuestions: [
     {
-      id: '32619a4e-d31b-4c7a-951f-b0044367c66d',
-      name: 'Razon de la visita',
-      slug: 'razon-de-la-visita',
-      label: 'Razón de la visita',
-      type: FieldQuestionTypeEnum.SELECTION,
-      isRequired: true,
-      selectionConfig: {
-        isMultiple: false,
-      },
-      selections: [
-        {
-          value: 'Chequeo Rutinario',
-        },
-        {
-          value: 'Seguimiento',
-        },
-        {
-          value: 'Nuevos Sintomas',
-        },
-        {
-          value: 'Referencia de otro doctor',
-        },
-      ],
-    },
-    {
       id: '3ef30b79-660f-4daf-802d-70ad9f0a245e',
       name: 'Sintomas actuales',
       slug: 'sintomas-actuales',
@@ -235,6 +210,28 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
     },
     // Medicina General
     {
+      id: 'e4316905-c289-4f31-9821-59173886e789',
+      name: 'razon de la consulta',
+      slug: 'razon-de-la-consulta',
+      label: 'Razón de la consulta',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: false,
+      },
+      selections: [
+        {
+          value: 'Control de rutina',
+        },
+        {
+          value: 'Nuevos síntomas',
+        },
+        {
+          value: 'Referencia médica',
+        },
+      ],
+    },
+    {
       id: 'e1a2a9c8-f809-405a-a55b-29e32fdf60c9',
       name: 'sintomas comunes',
       slug: 'sintomas-comunes',
@@ -388,5 +385,6 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
         },
       ],
     },
+    // Gineco-obstetricia
   ],
 };
