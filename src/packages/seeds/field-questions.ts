@@ -132,6 +132,17 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
       ],
     },
     {
+      id: 'd2d0ed44-c96d-402b-bb21-554904e32249',
+      name: 'medicamentos actuales',
+      slug: 'medicamentos-actuales',
+      label: 'Medicamentos Actuales:',
+      description:
+        'Por favor, liste los medicamentos que está tomando actualmente',
+      type: FieldQuestionTypeEnum.TEXT,
+      isRequired: false,
+    },
+    // Hábitos
+    {
       id: 'b3f60cf8-8bfe-4b3b-89fa-4f75c6ec5011',
       name: 'fuma',
       slug: 'fuma',
@@ -171,9 +182,9 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
     },
     {
       id: '71f3064c-98a4-444c-ba3d-e8836c535d8e',
-      name: 'ejercicio regularmente',
-      slug: 'ejercicio-regularmente',
-      label: '¿Hace ejercicio regularmente?',
+      name: 'realiza actividad fisica regularmente',
+      slug: 'realiza-actividad-física-regularmente',
+      label: '¿Realiza actividad física regularmente?',
       type: FieldQuestionTypeEnum.SELECTION,
       isRequired: true,
       selectionConfig: {
@@ -187,26 +198,6 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
           value: 'No',
         },
       ],
-    },
-    {
-      id: 'd2d0ed44-c96d-402b-bb21-554904e32249',
-      name: 'medicamentos actuales',
-      slug: 'medicamentos-actuales',
-      label: 'Medicamentos Actuales:',
-      description:
-        'Por favor, liste los medicamentos que está tomando actualmente',
-      type: FieldQuestionTypeEnum.TEXT,
-      isRequired: false,
-    },
-    {
-      id: '282e3b8e-6dfa-4642-bab8-a1ab4710566a',
-      name: 'informacion adicional',
-      slug: 'informacion-adicional',
-      label: 'Información Adicional:',
-      description:
-        '¿Hay algo más que le gustaría que el cardiólogo supiera antes de su cita?',
-      type: FieldQuestionTypeEnum.TEXT,
-      isRequired: false,
     },
     // Medicina General
     {
@@ -386,5 +377,83 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
       ],
     },
     // Gineco-obstetricia
+    {
+      id: '888b9cc8-94a5-4548-b072-9ab2e28c5624',
+      name: 'embarazada',
+      slug: 'embarazada',
+      label: '¿Está embarazada?',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: false,
+      },
+      selections: [
+        {
+          value: 'Sí',
+        },
+        {
+          value: 'No',
+        },
+        {
+          value: 'No sé',
+        },
+      ],
+    },
+    {
+      id: '114b6905-dbb1-4c14-a497-3a5461f29dcb',
+      name: 'menopausia',
+      slug: 'menopausia',
+      label: '¿Está en la menopausia?',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: false,
+      },
+      selections: [
+        {
+          value: 'Sí',
+        },
+        {
+          value: 'No',
+        },
+        {
+          value: 'No sé',
+        },
+      ],
+    },
+    {
+      id: '3ef30b79-660f-4daf-802d-70ad9f0a245e',
+      name: 'sintomas gineco-obstetricia',
+      slug: 'sintomas-gineco-obstetricia',
+      label: 'Seleccione los síntomas que presenta',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: true,
+      },
+      selections: [
+        {
+          value: 'Dolor pélvico',
+        },
+        {
+          value: 'Sangrado anormal',
+        },
+        {
+          value: 'Dolor durante las relaciones sexuales',
+        },
+        {
+          value: 'Dolor al orinar',
+        },
+        {
+          value: 'Picazón o ardor vaginal',
+        },
+        {
+          value: 'Bultos o masas en la zona genital',
+        },
+        {
+          value: 'Otros',
+        },
+      ],
+    },
   ],
 };
