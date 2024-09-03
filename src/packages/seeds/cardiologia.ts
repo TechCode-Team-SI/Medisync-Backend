@@ -43,7 +43,7 @@ const installationModule: InstallationModule = {
         order: 8,
       },
       {
-        fieldQuestion: { slug: 'ejercicio-regularmente' },
+        fieldQuestion: { slug: 'realiza-actividad-física-regularmente' },
         order: 9,
       },
       {
@@ -51,7 +51,7 @@ const installationModule: InstallationModule = {
         order: 10,
       },
       {
-        fieldQuestion: { slug: 'informacion-adicional' },
+        fieldQuestion: { slug: 'detalles-adicionales' },
         order: 11,
       },
     ],
