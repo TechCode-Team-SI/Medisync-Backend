@@ -255,9 +255,9 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
     // Medicina General
     {
       id: 'e1a2a9c8-f809-405a-a55b-29e32fdf60c9',
-      name: 'Síntomas',
+      name: 'sintomas comunes',
       slug: 'sintomas-comunes',
-      label: 'Seleccione los sintomas que presenta',
+      label: 'Seleccione los síntomas que presenta',
       type: FieldQuestionTypeEnum.SELECTION,
       isRequired: true,
       selectionConfig: {
@@ -295,6 +295,59 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
           value: 'Otros',
         },
       ],
+    },
+    {
+      id: 'df556a8b-8dc9-4924-be86-ce8f934e8734',
+      name: 'detalles adicionales',
+      slug: 'detalles-adicionales',
+      label: 'Detalles adicionales:',
+      description: '¿Qué detalles debería saber el médico antes de atenderle?',
+      type: FieldQuestionTypeEnum.TEXT,
+      isRequired: false,
+    },
+    // Emergencia
+    {
+      id: '4c208d46-3240-4db7-a158-a1accd5b863a',
+      name: 'Posibles causas',
+      slug: 'posibles-causas',
+      label: 'Seleccione la(s) posible(s) causa(s) de la emergencia',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: true,
+      },
+      selections: [
+        {
+          value: 'Fracturas',
+        },
+        {
+          value: 'Conmociones cerebrales',
+        },
+        {
+          value: 'Heridas por arma blanca',
+        },
+        {
+          value: 'Heridas por arma de fuego',
+        },
+        {
+          value: 'Quemaduras',
+        },
+        {
+          value: 'Intoxicaciones',
+        },
+        {
+          value: 'Otras',
+        },
+      ],
+    },
+    {
+      id: 'edf5c627-9a8b-43a9-b48a-59ab1d9d8e2d',
+      name: 'descripcion del suceso',
+      slug: 'descripcion-del-suceso',
+      label: 'Descripción del suceso:',
+      description: 'Por favor, explique de forma clara y concisa lo ocurrido',
+      type: FieldQuestionTypeEnum.TEXT,
+      isRequired: false,
     },
   ],
 };
