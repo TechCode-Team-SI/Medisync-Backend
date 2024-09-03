@@ -534,5 +534,53 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
         },
       ],
     },
+    // Laboratorio
+    {
+      id: '9dcb87be-ffd6-4032-805a-92fa1e2fa39e',
+      name: 'examenes',
+      slug: 'examenes',
+      label: 'Seleccione los exámenes a realizar',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: true,
+      },
+      selections: [
+        {
+          value: 'Hematología completa',
+        },
+        {
+          value: 'Perfil bioquímico',
+        },
+        {
+          value: 'Perfil tiroideo',
+        },
+        {
+          value: 'Pruebas de coagulación',
+        },
+        {
+          value: 'Pruebas de orina',
+        },
+        {
+          value: 'Pruebas de heces',
+        },
+        {
+          value: 'Biopsias',
+        },
+        {
+          value: 'Otros',
+        },
+      ],
+    },
+    {
+      id: '56a44991-2d2b-45cf-8cc8-fb6f55de244f',
+      name: 'examenes adicionales',
+      slug: 'examenes-adicionales',
+      label: 'Exámenes adicionales:',
+      description:
+        'Si seleccionó otros, por favor, escriba los exámenes que se realizará',
+      type: FieldQuestionTypeEnum.TEXT,
+      isRequired: false,
+    },
   ],
 };
