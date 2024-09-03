@@ -370,7 +370,7 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
       ],
     },
     {
-      id: 'ad7fadb0-e5df-4b67-a0f7-19c03aeaa222',
+      id: '5d7b495c-8669-4b3b-9197-3b45bcb5c105',
       name: 'valoracion preoperatoria',
       slug: 'valoracion-preoperatoria',
       label: '¿El paciente posee valoración preoperatoria?',
