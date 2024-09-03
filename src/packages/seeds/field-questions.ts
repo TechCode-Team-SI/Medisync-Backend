@@ -625,5 +625,38 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
       type: FieldQuestionTypeEnum.TEXT,
       isRequired: false,
     },
+    // Hemoterapia
+    {
+      id: 'd3151a6f-a711-4d6b-8d66-cde7b667afd7',
+      name: 'hemoterapia servicio',
+      slug: 'hemoterapia-servicio',
+      label: 'Seleccione los servicos requeridos de hemoterapia',
+      type: FieldQuestionTypeEnum.SELECTION,
+      isRequired: true,
+      selectionConfig: {
+        isMultiple: true,
+      },
+      selections: [
+        {
+          value: 'Extracción',
+        },
+        {
+          value: 'Transfusión',
+        },
+        {
+          value: 'Otro',
+        },
+      ],
+    },
+    {
+      id: '6ff4c050-72cf-4988-8fe7-0a8ab30a427a',
+      name: 'servicios adicionales',
+      slug: 'servicios-adicionales',
+      label: 'Servicio adicionales:',
+      description:
+        'Si seleccionó otros, por favor, escriba los servicios que se realizará',
+      type: FieldQuestionTypeEnum.TEXT,
+      isRequired: false,
+    },
   ],
 };
