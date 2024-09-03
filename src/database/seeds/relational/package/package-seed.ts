@@ -5,10 +5,6 @@ type Packages = Array<{
 
 const packages: Packages = [
   {
-    name: 'Cardiologia',
-    slug: 'cardiologia',
-  },
-  {
     name: 'Medicina general',
     slug: 'medicina-general',
   },
@@ -47,6 +43,10 @@ const packages: Packages = [
   {
     name: 'Emergencia',
     slug: 'emergencia',
+  },
+  {
+    name: 'Cardiologia',
+    slug: 'cardiologia',
   },
 ];
 

@@ -252,22 +252,47 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
         },
       ],
     },
+    // Medicina General
     {
-      id: '32619a4e-d31b-4c7a-951f-b0044367c67f',
-      name: 'Tipo de cirugía',
-      slug: 'tipo-de-cirugia',
-      label: 'Tipo de cirugía',
+      id: 'e1a2a9c8-f809-405a-a55b-29e32fdf60c9',
+      name: 'Síntomas',
+      slug: 'sintomas-comunes',
+      label: 'Seleccione los sintomas que presenta',
       type: FieldQuestionTypeEnum.SELECTION,
       isRequired: true,
       selectionConfig: {
-        isMultiple: false,
+        isMultiple: true,
       },
       selections: [
         {
-          value: 'Electiva',
+          value: 'Fiebre',
         },
         {
-          value: 'Urgente',
+          value: 'Dolor',
+        },
+        {
+          value: 'Tos',
+        },
+        {
+          value: 'Fatiga',
+        },
+        {
+          value: 'Dolor de cabeza',
+        },
+        {
+          value: 'Náuseas y vómitos',
+        },
+        {
+          value: 'Dolor de garganta',
+        },
+        {
+          value: 'Estreñimiento',
+        },
+        {
+          value: 'Diarrea',
+        },
+        {
+          value: 'Otros',
         },
       ],
     },

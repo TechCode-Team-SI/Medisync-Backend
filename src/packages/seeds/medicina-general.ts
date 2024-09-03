@@ -1,17 +1,17 @@
 import { InstallationModule } from './type';
 
 const installationModule: InstallationModule = {
-  id: '9fe690fb-fb50-43a3-8196-3efaa0470155',
+  id: 'f7896370-d5ff-46fb-a43a-3491b8cb1637',
   specialty: 'Medicina general',
   description: 'Nivel de atención médica que realiza procedimientos sencillos',
   isGroup: false,
   isPublic: true,
   requestTemplate: {
-    id: '34f8e070-e4d4-4352-96f4-b3fe51d69dfb',
+    id: '470561f6-9d8f-40c6-a03d-647cf1eab1dd',
     name: 'Medicina general',
     fields: [
       {
-        fieldQuestion: { slug: 'razon-de-la-visita' },
+        fieldQuestion: { slug: 'sintomas-comunes' },
         order: 1,
       },
     ],
