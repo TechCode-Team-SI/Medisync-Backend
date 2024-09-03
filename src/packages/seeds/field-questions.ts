@@ -614,5 +614,16 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
         },
       ],
     },
+    // Farmacia
+    {
+      id: 'c05f6a70-f864-4d2e-a60d-e13fd1ea1937',
+      name: 'farmacos',
+      slug: 'farmacos',
+      label: 'Farmacos:',
+      description:
+        'Por favor, introduzca los nombres de los fármacos requeridos',
+      type: FieldQuestionTypeEnum.TEXT,
+      isRequired: false,
+    },
   ],
 };
