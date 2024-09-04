@@ -1,7 +1,7 @@
 import { InstallationModule } from './type';
 
 const installationModule: InstallationModule = {
-  id: '9fe690fb-fb50-43a3-8196-3efaa0470154',
+  id: '67b2f157-49b1-470e-93eb-3cfed3145fd0',
   specialty: 'Cardiología',
   description: 'Departamento encargado de la salud del corazón',
   isGroup: false,
@@ -11,7 +11,7 @@ const installationModule: InstallationModule = {
     name: 'Cardiología',
     fields: [
       {
-        fieldQuestion: { slug: 'razon-de-la-visita' },
+        fieldQuestion: { slug: 'razon-de-la-consulta' },
         order: 1,
       },
       {
@@ -43,7 +43,7 @@ const installationModule: InstallationModule = {
         order: 8,
       },
       {
-        fieldQuestion: { slug: 'ejercicio-regularmente' },
+        fieldQuestion: { slug: 'realiza-actividad-física-regularmente' },
         order: 9,
       },
       {
@@ -51,7 +51,7 @@ const installationModule: InstallationModule = {
         order: 10,
       },
       {
-        fieldQuestion: { slug: 'informacion-adicional' },
+        fieldQuestion: { slug: 'detalles-adicionales' },
         order: 11,
       },
     ],
