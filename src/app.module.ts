@@ -60,8 +60,11 @@ import { RatingsModule } from './ratings/ratings.module';
 
 import { RequestSavedDataModule } from './request-saved-data/request-saved-data.module';
 
+import { StatisticsModule } from './statistics/statistics.module';
+
 @Module({
   imports: [
+    StatisticsModule,
     RequestSavedDataModule,
     RatingsModule,
     PackagesModule,
