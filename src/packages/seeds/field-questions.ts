@@ -460,7 +460,7 @@ export const fieldQuestionsModule: { fieldQuestions: FieldQuestionType[] } = {
       ],
     },
     {
-      id: '3ef30b79-660f-4daf-802d-70ad9f0a245e',
+      id: 'dceae969-4c97-4177-ada9-f22232aa637a',
       name: 'sintomas gineco-obstetricia',
       slug: 'sintomas-gineco-obstetricia',
       label: 'Seleccione los síntomas que presenta',

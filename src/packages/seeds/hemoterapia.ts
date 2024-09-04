@@ -12,16 +12,12 @@ const installationModule: InstallationModule = {
     name: 'Hemoterapia',
     fields: [
       {
-        fieldQuestion: { slug: 'razon-de-la-visita' },
+        fieldQuestion: { slug: 'hemoterapia-servicio' },
         order: 1,
       },
       {
-        fieldQuestion: { slug: 'hemoterapia-servicio' },
-        order: 2,
-      },
-      {
         fieldQuestion: { slug: 'servicios-adicionales' },
-        order: 3,
+        order: 2,
       },
     ],
   },

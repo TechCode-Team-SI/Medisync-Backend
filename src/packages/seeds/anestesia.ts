@@ -12,7 +12,7 @@ const installationModule: InstallationModule = {
     name: 'Anestesia',
     fields: [
       {
-        fieldQuestion: { slug: 'razon-de-la-visita' },
+        fieldQuestion: { slug: 'razon-de-la-consulta' },
         order: 1,
       },
       {
@@ -20,7 +20,7 @@ const installationModule: InstallationModule = {
         order: 2,
       },
       {
-        fieldQuestion: { slug: 'informacion-adicional' },
+        fieldQuestion: { slug: 'detalles-adicionales' },
         order: 3,
       },
     ],
