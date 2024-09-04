@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Migration1725404031058 implements MigrationInterface {
-  name = 'Migration1725404031058';
+export class Migration1725466300309 implements MigrationInterface {
+  name = 'Migration1725466300309';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -18,7 +18,7 @@ export class Migration1725404031058 implements MigrationInterface {
   order by count(request.id);
 `);
     await queryRunner.query(
-      `INSERT INTO \`api\`.\`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
+      `INSERT INTO \`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
       [
         'api',
         'VIEW',
@@ -34,7 +34,7 @@ export class Migration1725404031058 implements MigrationInterface {
   order by count(request.id);
 `);
     await queryRunner.query(
-      `INSERT INTO \`api\`.\`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
+      `INSERT INTO \`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
       [
         'api',
         'VIEW',
@@ -50,7 +50,7 @@ export class Migration1725404031058 implements MigrationInterface {
   order by count(request.id);
 `);
     await queryRunner.query(
-      `INSERT INTO \`api\`.\`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
+      `INSERT INTO \`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
       [
         'api',
         'VIEW',
@@ -66,7 +66,7 @@ export class Migration1725404031058 implements MigrationInterface {
   order by count(request.id);
 `);
     await queryRunner.query(
-      `INSERT INTO \`api\`.\`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
+      `INSERT INTO \`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
       [
         'api',
         'VIEW',
@@ -82,7 +82,7 @@ select request.requestedSpecialtyId AS specialtyId,specialty.name AS name,file.p
   order by count(request.id);
 `);
     await queryRunner.query(
-      `INSERT INTO \`api\`.\`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
+      `INSERT INTO \`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
       [
         'api',
         'VIEW',
@@ -98,7 +98,7 @@ select request.requestedSpecialtyId AS specialtyId,specialty.name AS name,file.p
   order by count(request.id);
 `);
     await queryRunner.query(
-      `INSERT INTO \`api\`.\`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
+      `INSERT INTO \`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
       [
         'api',
         'VIEW',
@@ -114,7 +114,7 @@ select request.requestedSpecialtyId AS specialtyId,specialty.name AS name,file.p
   order by count(request.id);
 `);
     await queryRunner.query(
-      `INSERT INTO \`api\`.\`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
+      `INSERT INTO \`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
       [
         'api',
         'VIEW',
@@ -130,7 +130,7 @@ select request.requestedSpecialtyId AS specialtyId,specialty.name AS name,file.p
   order by count(request.id);
 `);
     await queryRunner.query(
-      `INSERT INTO \`api\`.\`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
+      `INSERT INTO \`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
       [
         'api',
         'VIEW',
@@ -138,50 +138,134 @@ select request.requestedSpecialtyId AS specialtyId,specialty.name AS name,file.p
         "select request.requestedSpecialtyId AS specialtyId,specialty.name AS name,file.path AS avatar,count(request.id) AS requests \n  from ((request join specialty on((specialty.id = request.requestedSpecialtyId))) left join file on((file.id = specialty.imageId))) \n  where (request.status <> 'cancelled') and  Date(request.createdAt)=Curdate()\n  group by request.requestedSpecialtyId \n  order by count(request.id);",
       ],
     );
+    await queryRunner.query(`CREATE VIEW \`top_medics_all_time_entity\` AS 
+  select request.requestedMedicId AS medicId,user.fullName AS fullName,file.path AS avatar,count(request.id) AS requests 
+  from ((request join user on((user.id = request.requestedMedicId))) left join file on((file.id = user.photoId))) 
+  where (request.status <> 'cancelled') 
+  group by request.requestedMedicId 
+  order by count(request.id)
+`);
+    await queryRunner.query(
+      `INSERT INTO \`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
+      [
+        'api',
+        'VIEW',
+        'top_medics_all_time_entity',
+        "select request.requestedMedicId AS medicId,user.fullName AS fullName,file.path AS avatar,count(request.id) AS requests \n  from ((request join user on((user.id = request.requestedMedicId))) left join file on((file.id = user.photoId))) \n  where (request.status <> 'cancelled') \n  group by request.requestedMedicId \n  order by count(request.id)",
+      ],
+    );
+    await queryRunner.query(`CREATE VIEW \`top_medics_current_year_entity\` AS 
+  select request.requestedMedicId AS medicId,user.fullName AS fullName,file.path AS avatar,count(request.id) AS requests 
+  from ((request join user on((user.id = request.requestedMedicId))) left join file on((file.id = user.photoId))) 
+  where (request.status <> 'cancelled') and (year(request.createdAt) = year(now()))
+  group by request.requestedMedicId 
+  order by count(request.id)
+`);
+    await queryRunner.query(
+      `INSERT INTO \`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
+      [
+        'api',
+        'VIEW',
+        'top_medics_current_year_entity',
+        "select request.requestedMedicId AS medicId,user.fullName AS fullName,file.path AS avatar,count(request.id) AS requests \n  from ((request join user on((user.id = request.requestedMedicId))) left join file on((file.id = user.photoId))) \n  where (request.status <> 'cancelled') and (year(request.createdAt) = year(now()))\n  group by request.requestedMedicId \n  order by count(request.id)",
+      ],
+    );
+    await queryRunner.query(`CREATE VIEW \`top_medics_current_month_entity\` AS 
+  select request.requestedMedicId AS medicId,user.fullName AS fullName,file.path AS avatar,count(request.id) AS requests 
+  from ((request join user on((user.id = request.requestedMedicId))) left join file on((file.id = user.photoId))) 
+  where (request.status <> 'cancelled') and (year(request.createdAt) = year(now())) && (month(request.createdAt) = month(now()))
+  group by request.requestedMedicId 
+  order by count(request.id)
+`);
+    await queryRunner.query(
+      `INSERT INTO \`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
+      [
+        'api',
+        'VIEW',
+        'top_medics_current_month_entity',
+        "select request.requestedMedicId AS medicId,user.fullName AS fullName,file.path AS avatar,count(request.id) AS requests \n  from ((request join user on((user.id = request.requestedMedicId))) left join file on((file.id = user.photoId))) \n  where (request.status <> 'cancelled') and (year(request.createdAt) = year(now())) && (month(request.createdAt) = month(now()))\n  group by request.requestedMedicId \n  order by count(request.id)",
+      ],
+    );
+    await queryRunner.query(`CREATE VIEW \`top_medics_current_day_entity\` AS 
+  select request.requestedMedicId AS medicId,user.fullName AS fullName,file.path AS avatar,count(request.id) AS requests 
+  from ((request join user on((user.id = request.requestedMedicId))) left join file on((file.id = user.photoId))) 
+  where (request.status <> 'cancelled') and  Date(request.createdAt)=Curdate()
+  group by request.requestedMedicId 
+  order by count(request.id)
+`);
+    await queryRunner.query(
+      `INSERT INTO \`typeorm_metadata\`(\`database\`, \`schema\`, \`table\`, \`type\`, \`name\`, \`value\`) VALUES (DEFAULT, ?, DEFAULT, ?, ?, ?)`,
+      [
+        'api',
+        'VIEW',
+        'top_medics_current_day_entity',
+        "select request.requestedMedicId AS medicId,user.fullName AS fullName,file.path AS avatar,count(request.id) AS requests \n  from ((request join user on((user.id = request.requestedMedicId))) left join file on((file.id = user.photoId))) \n  where (request.status <> 'cancelled') and  Date(request.createdAt)=Curdate()\n  group by request.requestedMedicId \n  order by count(request.id)",
+      ],
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `DELETE FROM \`api\`.\`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
+      `DELETE FROM \`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
+      ['VIEW', 'top_medics_current_day_entity', 'api'],
+    );
+    await queryRunner.query(`DROP VIEW \`top_medics_current_day_entity\``);
+    await queryRunner.query(
+      `DELETE FROM \`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
+      ['VIEW', 'top_medics_current_month_entity', 'api'],
+    );
+    await queryRunner.query(`DROP VIEW \`top_medics_current_month_entity\``);
+    await queryRunner.query(
+      `DELETE FROM \`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
+      ['VIEW', 'top_medics_current_year_entity', 'api'],
+    );
+    await queryRunner.query(`DROP VIEW \`top_medics_current_year_entity\``);
+    await queryRunner.query(
+      `DELETE FROM \`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
+      ['VIEW', 'top_medics_all_time_entity', 'api'],
+    );
+    await queryRunner.query(`DROP VIEW \`top_medics_all_time_entity\``);
+    await queryRunner.query(
+      `DELETE FROM \`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
       ['VIEW', 'top_specialties_current_day_entity', 'api'],
     );
     await queryRunner.query(`DROP VIEW \`top_specialties_current_day_entity\``);
     await queryRunner.query(
-      `DELETE FROM \`api\`.\`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
+      `DELETE FROM \`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
       ['VIEW', 'top_specialties_current_month_entity', 'api'],
     );
     await queryRunner.query(
       `DROP VIEW \`top_specialties_current_month_entity\``,
     );
     await queryRunner.query(
-      `DELETE FROM \`api\`.\`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
+      `DELETE FROM \`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
       ['VIEW', 'top_specialties_current_year_entity', 'api'],
     );
     await queryRunner.query(
       `DROP VIEW \`top_specialties_current_year_entity\``,
     );
     await queryRunner.query(
-      `DELETE FROM \`api\`.\`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
+      `DELETE FROM \`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
       ['VIEW', 'top_specialties_all_time_entity', 'api'],
     );
     await queryRunner.query(`DROP VIEW \`top_specialties_all_time_entity\``);
     await queryRunner.query(
-      `DELETE FROM \`api\`.\`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
+      `DELETE FROM \`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
       ['VIEW', 'top_weekdays_current_day_entity', 'api'],
     );
     await queryRunner.query(`DROP VIEW \`top_weekdays_current_day_entity\``);
     await queryRunner.query(
-      `DELETE FROM \`api\`.\`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
+      `DELETE FROM \`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
       ['VIEW', 'top_weekdays_current_month_entity', 'api'],
     );
     await queryRunner.query(`DROP VIEW \`top_weekdays_current_month_entity\``);
     await queryRunner.query(
-      `DELETE FROM \`api\`.\`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
+      `DELETE FROM \`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
       ['VIEW', 'top_weekdays_current_year_entity', 'api'],
     );
     await queryRunner.query(`DROP VIEW \`top_weekdays_current_year_entity\``);
     await queryRunner.query(
-      `DELETE FROM \`api\`.\`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
+      `DELETE FROM \`typeorm_metadata\` WHERE \`type\` = ? AND \`name\` = ? AND \`schema\` = ?`,
       ['VIEW', 'top_weekdays_all_time_entity', 'api'],
     );
     await queryRunner.query(`DROP VIEW \`top_weekdays_all_time_entity\``);
