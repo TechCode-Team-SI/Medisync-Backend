@@ -9,9 +9,9 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({
-  name: 'injury',
+  name: 'agenda',
 })
-export class InjuryEntity extends EntityRelationalHelper {
+export class AgendaEntity extends EntityRelationalHelper {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -22,7 +22,7 @@ export class InjuryEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @Column()
-  description: string;
+  weekdays: string;
 
   @ApiProperty()
   @CreateDateColumn()

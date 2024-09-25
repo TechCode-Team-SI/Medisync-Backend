@@ -15,6 +15,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
+import { AgendaEntity } from 'src/agendas/infrastructure/persistence/relational/entities/agenda.entity';
 
 @Entity({
   name: 'specialty',
@@ -63,6 +64,12 @@ export class SpecialtyEntity extends EntityRelationalHelper {
   })
   @ManyToOne(() => RequestTemplateEntity)
   requestTemplate?: RequestTemplateEntity;
+
+  @ApiProperty({
+    type: () => AgendaEntity,
+  })
+  @ManyToOne(() => AgendaEntity)
+  agenda: AgendaEntity;
 
   @ApiProperty()
   @CreateDateColumn()

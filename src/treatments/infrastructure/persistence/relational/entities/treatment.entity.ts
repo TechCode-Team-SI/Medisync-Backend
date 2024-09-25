@@ -17,7 +17,7 @@ export class TreatmentEntity extends EntityRelationalHelper {
   id: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @ApiProperty()

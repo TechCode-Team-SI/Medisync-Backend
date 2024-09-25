@@ -1,4 +1,4 @@
-import { Inject, Injectable, Scope } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
@@ -9,6 +9,7 @@ import { EmployeeProfile } from '../../../../domain/employee-profile';
 import { EmployeeProfileRepository } from '../../employee-profile.repository';
 import { EmployeeProfileEntity } from '../entities/employee-profile.entity';
 import { EmployeeProfileMapper } from '../mappers/employee-profile.mapper';
+import { exceptionResponses } from 'src/employee-profiles/employee-profiles.messages';
 
 @Injectable({ scope: Scope.REQUEST })
 export class EmployeeProfileRelationalRepository
@@ -42,5 +43,29 @@ export class EmployeeProfileRelationalRepository
     });
 
     return entity ? EmployeeProfileMapper.toDomain(entity) : null;
+  }
+
+  async update(
+    id: EmployeeProfile['id'],
+    payload: Partial<EmployeeProfile>,
+  ): Promise<EmployeeProfile> {
+    const entity = await this.employeeProfileRepository.findOne({
+      where: { id },
+    });
+
+    if (!entity) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+
+    const updatedEntity = await this.employeeProfileRepository.save(
+      this.employeeProfileRepository.create(
+        EmployeeProfileMapper.toPersistence({
+          ...EmployeeProfileMapper.toDomain(entity),
+          ...payload,
+        }),
+      ),
+    );
+
+    return EmployeeProfileMapper.toDomain(updatedEntity);
   }
 }

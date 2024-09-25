@@ -3,6 +3,7 @@ import { Specialty } from '../../../../domain/specialty';
 import { SpecialtyEntity } from '../entities/specialty.entity';
 import { EmployeeProfileMapper } from 'src/employee-profiles/infrastructure/persistence/relational/mappers/employee-profile.mapper';
 import { RequestTemplateMapper } from 'src/request-templates/infrastructure/persistence/relational/mappers/request-template.mapper';
+import { AgendaMapper } from 'src/agendas/infrastructure/persistence/relational/mappers/agenda.mapper';
 
 export class SpecialtyMapper {
   static toDomain(raw: SpecialtyEntity): Specialty {
@@ -22,6 +23,9 @@ export class SpecialtyMapper {
       domainEntity.requestTemplate = RequestTemplateMapper.toDomain(
         raw.requestTemplate,
       );
+    }
+    if (raw.agenda) {
+      domainEntity.agenda = AgendaMapper.toDomain(raw.agenda);
     }
     domainEntity.isGroup = raw.isGroup;
     domainEntity.isPublic = raw.isPublic;
@@ -45,6 +49,11 @@ export class SpecialtyMapper {
     if (domainEntity.requestTemplate) {
       persistenceEntity.requestTemplate = RequestTemplateMapper.toPersistence(
         domainEntity.requestTemplate,
+      );
+    }
+    if (domainEntity.agenda) {
+      persistenceEntity.agenda = AgendaMapper.toPersistence(
+        domainEntity.agenda,
       );
     }
     persistenceEntity.isGroup = domainEntity.isGroup;

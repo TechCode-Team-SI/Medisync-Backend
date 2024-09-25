@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Agenda } from 'src/agendas/domain/agenda';
 import { Specialty } from 'src/specialties/domain/specialty';
 
 export class EmployeeProfile {
@@ -18,6 +19,9 @@ export class EmployeeProfile {
 
   @ApiProperty()
   specialties?: Specialty[] | null;
+
+  @ApiProperty()
+  agenda?: Agenda | null;
 
   @ApiProperty()
   createdAt: Date;

@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FileType } from 'src/files/domain/file';
 import { RequestTemplate } from 'src/request-templates/domain/request-template';
 import { EmployeeProfile } from 'src/employee-profiles/domain/employee-profile';
+import { Agenda } from 'src/agendas/domain/agenda';
 
 export class Specialty {
   @ApiProperty({
@@ -19,6 +20,11 @@ export class Specialty {
     type: () => FileType,
   })
   image?: FileType | null;
+
+  @ApiProperty({
+    type: () => Agenda,
+  })
+  agenda?: Agenda | null;
 
   @ApiProperty()
   isGroup: boolean;

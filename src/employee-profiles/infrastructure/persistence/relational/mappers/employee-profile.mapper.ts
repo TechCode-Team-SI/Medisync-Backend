@@ -1,6 +1,7 @@
 import { SpecialtyMapper } from 'src/specialties/infrastructure/persistence/relational/mappers/specialty.mapper';
-import { EmployeeProfile } from '../../../../../employee-profiles/domain/employee-profile';
-import { EmployeeProfileEntity } from '../../../../../employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
+import { AgendaMapper } from 'src/agendas/infrastructure/persistence/relational/mappers/agenda.mapper';
+import { EmployeeProfileEntity } from '../entities/employee-profile.entity';
+import { EmployeeProfile } from 'src/employee-profiles/domain/employee-profile';
 
 export class EmployeeProfileMapper {
   static toDomain(raw: EmployeeProfileEntity): EmployeeProfile {
@@ -13,6 +14,9 @@ export class EmployeeProfileMapper {
       domainEntity.specialties = raw.specialties.map((specialty) =>
         SpecialtyMapper.toDomain(specialty),
       );
+    }
+    if (raw.agenda) {
+      domainEntity.agenda = AgendaMapper.toDomain(raw.agenda);
     }
 
     return domainEntity;
@@ -29,6 +33,11 @@ export class EmployeeProfileMapper {
     if (domainEntity.specialties) {
       persistenceEntity.specialties = domainEntity.specialties.map(
         (specialty) => SpecialtyMapper.toPersistence(specialty),
+      );
+    }
+    if (domainEntity.agenda) {
+      persistenceEntity.agenda = AgendaMapper.toPersistence(
+        domainEntity.agenda,
       );
     }
 

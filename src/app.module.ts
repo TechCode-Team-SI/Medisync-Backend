@@ -72,8 +72,11 @@ import { SymptomsModule } from './symptoms/symptoms.module';
 
 import { InjuriesModule } from './injuries/injuries.module';
 
+import { AgendasModule } from './agendas/agendas.module';
+
 @Module({
   imports: [
+    AgendasModule,
     InjuriesModule,
     SymptomsModule,
     PathologiesModule,
