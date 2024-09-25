@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   UseGuards,
   UseInterceptors,
@@ -71,5 +72,10 @@ export class InstallationsController {
   verifyToken(@Body() verifyTokenDto: VerifyTokenDto): SuccessResponseDto {
     //TODO: add rate limiter (low priority)
     return this.installationsService.verifyToken(verifyTokenDto.token);
+  }
+
+  @Get('/step')
+  getInstallationStep() {
+    return this.installationsService.getInstallationStep();
   }
 }

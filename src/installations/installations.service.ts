@@ -145,4 +145,12 @@ export class InstallationsService {
 
     return { success: true };
   }
+
+  async getInstallationStep() {
+    const installStep = await this.findOne();
+    if (!installStep) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+    return installStep;
+  }
 }
