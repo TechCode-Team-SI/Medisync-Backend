@@ -66,8 +66,11 @@ import { IllnessesModule } from './illnesses/illnesses.module';
 
 import { treatmentsModule } from './treatments/treatments.module';
 
+import { PathologiesModule } from './pathologies/pathologies.module';
+
 @Module({
   imports: [
+    PathologiesModule,
     treatmentsModule,
     IllnessesModule,
     StatisticsModule,
