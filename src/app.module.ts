@@ -62,8 +62,11 @@ import { RequestSavedDataModule } from './request-saved-data/request-saved-data.
 
 import { StatisticsModule } from './statistics/statistics.module';
 
+import { IllnessesModule } from './illnesses/illnesses.module';
+
 @Module({
   imports: [
+    IllnessesModule,
     StatisticsModule,
     RequestSavedDataModule,
     RatingsModule,
