@@ -21,6 +21,11 @@ export abstract class SymptomRepository extends BaseRepository {
     sortOptions?: SortSymptomsDto[] | null;
   }): Promise<PaginationResponseDto<Symptom>>;
 
+  abstract findManyByIds(
+    ids: Symptom['id'][],
+    options?: findOptions,
+  ): Promise<Symptom[]>;
+
   abstract findById(
     id: Symptom['id'],
     options?: findOptions,

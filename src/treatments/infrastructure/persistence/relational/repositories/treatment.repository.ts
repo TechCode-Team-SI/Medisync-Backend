@@ -4,12 +4,13 @@ import {
   FindOptionsRelations,
   DataSource,
   FindOneOptions,
+  In,
 } from 'typeorm';
-import { treatmentEntity } from '../entities/treatment.entity';
+import { TreatmentEntity } from '../entities/treatment.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
-import { treatment } from '../../../../domain/treatment';
-import { treatmentRepository } from '../../treatment.repository';
-import { treatmentMapper } from '../mappers/treatment.mapper';
+import { Treatment } from '../../../../domain/treatment';
+import { TreatmentRepository } from '../../treatment.repository';
+import { TreatmentMapper } from '../mappers/treatment.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { exceptionResponses } from 'src/treatments/treatments.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
@@ -19,12 +20,12 @@ import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { REQUEST } from '@nestjs/core';
 import { formatOrder } from 'src/utils/utils';
-import { SorttreatmentsDto } from 'src/treatments/dto/find-all-treatments.dto';
+import { SortTreatmentsDto } from 'src/treatments/dto/find-all-treatments.dto';
 
 @Injectable({ scope: Scope.REQUEST })
-export class treatmentRelationalRepository
+export class TreatmentRelationalRepository
   extends BaseRepository
-  implements treatmentRepository
+  implements TreatmentRepository
 {
   constructor(
     datasource: DataSource,
@@ -34,18 +35,18 @@ export class treatmentRelationalRepository
     super(datasource, request);
   }
 
-  private get treatmentRepository(): Repository<treatmentEntity> {
-    return this.getRepository(treatmentEntity);
+  private get treatmentRepository(): Repository<TreatmentEntity> {
+    return this.getRepository(TreatmentEntity);
   }
 
-  private relations: FindOptionsRelations<treatmentEntity> = {};
+  private relations: FindOptionsRelations<TreatmentEntity> = {};
 
-  async create(data: treatment): Promise<treatment> {
-    const persistenceModel = treatmentMapper.toPersistence(data);
+  async create(data: Treatment): Promise<Treatment> {
+    const persistenceModel = TreatmentMapper.toPersistence(data);
     const newEntity = await this.treatmentRepository.save(
       this.treatmentRepository.create(persistenceModel),
     );
-    return treatmentMapper.toDomain(newEntity);
+    return TreatmentMapper.toDomain(newEntity);
   }
 
   async findAllWithPagination({
@@ -55,9 +56,9 @@ export class treatmentRelationalRepository
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
-    sortOptions?: SorttreatmentsDto[] | null;
-  }): Promise<PaginationResponseDto<treatment>> {
-    let order: FindOneOptions<treatmentEntity>['order'] = {};
+    sortOptions?: SortTreatmentsDto[] | null;
+  }): Promise<PaginationResponseDto<Treatment>> {
+    let order: FindOneOptions<TreatmentEntity>['order'] = {};
     if (sortOptions) order = formatOrder(sortOptions);
 
     let relations = this.relations;
@@ -69,7 +70,7 @@ export class treatmentRelationalRepository
       relations,
       order,
     });
-    const items = entities.map((entity) => treatmentMapper.toDomain(entity));
+    const items = entities.map((entity) => TreatmentMapper.toDomain(entity));
 
     return Pagination(
       { items, count },
@@ -81,10 +82,24 @@ export class treatmentRelationalRepository
     );
   }
 
-  async findById(
-    id: treatment['id'],
+  async findManyByIds(
+    ids: string[],
     options?: findOptions,
-  ): Promise<NullableType<treatment>> {
+  ): Promise<Treatment[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entities = await this.treatmentRepository.find({
+      where: { id: In(ids) },
+      relations,
+    });
+    return entities.map((illness) => TreatmentMapper.toDomain(illness));
+  }
+
+  async findById(
+    id: Treatment['id'],
+    options?: findOptions,
+  ): Promise<NullableType<Treatment>> {
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
@@ -93,13 +108,13 @@ export class treatmentRelationalRepository
       relations,
     });
 
-    return entity ? treatmentMapper.toDomain(entity) : null;
+    return entity ? TreatmentMapper.toDomain(entity) : null;
   }
 
   async update(
-    id: treatment['id'],
-    payload: Partial<treatment>,
-  ): Promise<treatment> {
+    id: Treatment['id'],
+    payload: Partial<Treatment>,
+  ): Promise<Treatment> {
     const entity = await this.treatmentRepository.findOne({
       where: { id },
     });
@@ -110,17 +125,17 @@ export class treatmentRelationalRepository
 
     const updatedEntity = await this.treatmentRepository.save(
       this.treatmentRepository.create(
-        treatmentMapper.toPersistence({
-          ...treatmentMapper.toDomain(entity),
+        TreatmentMapper.toPersistence({
+          ...TreatmentMapper.toDomain(entity),
           ...payload,
         }),
       ),
     );
 
-    return treatmentMapper.toDomain(updatedEntity);
+    return TreatmentMapper.toDomain(updatedEntity);
   }
 
-  async remove(id: treatment['id']): Promise<void> {
+  async remove(id: Treatment['id']): Promise<void> {
     await this.treatmentRepository.delete(id);
   }
 }

@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CreatetreatmentDto } from './dto/create-treatment.dto';
 import { UpdatetreatmentDto } from './dto/update-treatment.dto';
-import { treatmentRepository } from './infrastructure/persistence/treatment.repository';
+import { TreatmentRepository } from './infrastructure/persistence/treatment.repository';
 import { IPaginationOptions } from '../utils/types/pagination-options';
-import { treatment } from './domain/treatment';
+import { Treatment } from './domain/treatment';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { SorttreatmentsDto } from 'src/treatments/dto/find-all-treatments.dto';
+import { SortTreatmentsDto } from 'src/treatments/dto/find-all-treatments.dto';
 
 @Injectable()
-export class treatmentsService {
-  constructor(private readonly treatmentRepository: treatmentRepository) {}
+export class TreatmentsService {
+  constructor(private readonly TreatmentRepository: TreatmentRepository) {}
 
   create(createtreatmentDto: CreatetreatmentDto) {
-    return this.treatmentRepository.create(createtreatmentDto);
+    return this.TreatmentRepository.create(createtreatmentDto);
   }
 
   findAllWithPagination({
@@ -22,9 +22,9 @@ export class treatmentsService {
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
-    sortOptions?: SorttreatmentsDto[] | null;
+    sortOptions?: SortTreatmentsDto[] | null;
   }) {
-    return this.treatmentRepository.findAllWithPagination({
+    return this.TreatmentRepository.findAllWithPagination({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
@@ -34,15 +34,19 @@ export class treatmentsService {
     });
   }
 
-  findOne(id: treatment['id'], options?: findOptions) {
-    return this.treatmentRepository.findById(id, options);
+  findOne(id: Treatment['id'], options?: findOptions) {
+    return this.TreatmentRepository.findById(id, options);
   }
 
-  update(id: treatment['id'], updatetreatmentDto: UpdatetreatmentDto) {
-    return this.treatmentRepository.update(id, updatetreatmentDto);
+  update(id: Treatment['id'], updatetreatmentDto: UpdatetreatmentDto) {
+    return this.TreatmentRepository.update(id, updatetreatmentDto);
   }
 
-  remove(id: treatment['id']) {
-    return this.treatmentRepository.remove(id);
+  remove(id: Treatment['id']) {
+    return this.TreatmentRepository.remove(id);
+  }
+
+  findMany(ids: Treatment['id'][], options?: findOptions) {
+    return this.TreatmentRepository.findManyByIds(ids, options);
   }
 }

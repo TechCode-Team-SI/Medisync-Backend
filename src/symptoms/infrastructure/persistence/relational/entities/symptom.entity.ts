@@ -1,4 +1,5 @@
 import {
+  Column,
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
@@ -16,9 +17,11 @@ export class SymptomEntity extends EntityRelationalHelper {
   id: string;
 
   @ApiProperty()
+  @Column()
   name: string;
 
   @ApiProperty()
+  @Column()
   description: string;
 
   @ApiProperty()

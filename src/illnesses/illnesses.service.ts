@@ -45,4 +45,8 @@ export class IllnessesService {
   remove(id: Illness['id']) {
     return this.illnessRepository.remove(id);
   }
+
+  findMany(ids: Illness['id'][], options?: findOptions) {
+    return this.illnessRepository.findManyByIds(ids, options);
+  }
 }

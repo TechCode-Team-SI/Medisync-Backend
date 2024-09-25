@@ -12,6 +12,11 @@ export abstract class IllnessRepository extends BaseRepository {
     data: Omit<Illness, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Illness>;
 
+  abstract findManyByIds(
+    ids: Illness['id'][],
+    options?: findOptions,
+  ): Promise<Illness[]>;
+
   abstract findAllWithPagination({
     paginationOptions,
     options,

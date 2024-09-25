@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class treatment {
+export class Treatment {
   @ApiProperty({
     type: String,
   })

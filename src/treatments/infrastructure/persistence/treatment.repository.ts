@@ -2,15 +2,15 @@ import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
-import { treatment } from '../../domain/treatment';
+import { Treatment } from '../../domain/treatment';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
-import { SorttreatmentsDto } from 'src/treatments/dto/find-all-treatments.dto';
+import { SortTreatmentsDto } from 'src/treatments/dto/find-all-treatments.dto';
 
-export abstract class treatmentRepository extends BaseRepository {
+export abstract class TreatmentRepository extends BaseRepository {
   abstract create(
-    data: Omit<treatment, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<treatment>;
+    data: Omit<Treatment, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Treatment>;
 
   abstract findAllWithPagination({
     paginationOptions,
@@ -18,18 +18,23 @@ export abstract class treatmentRepository extends BaseRepository {
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
-    sortOptions?: SorttreatmentsDto[] | null;
-  }): Promise<PaginationResponseDto<treatment>>;
+    sortOptions?: SortTreatmentsDto[] | null;
+  }): Promise<PaginationResponseDto<Treatment>>;
+
+  abstract findManyByIds(
+    ids: Treatment['id'][],
+    options?: findOptions,
+  ): Promise<Treatment[]>;
 
   abstract findById(
-    id: treatment['id'],
+    id: Treatment['id'],
     options?: findOptions,
-  ): Promise<NullableType<treatment>>;
+  ): Promise<NullableType<Treatment>>;
 
   abstract update(
-    id: treatment['id'],
-    payload: DeepPartial<treatment>,
-  ): Promise<treatment | null>;
+    id: Treatment['id'],
+    payload: DeepPartial<Treatment>,
+  ): Promise<Treatment | null>;
 
-  abstract remove(id: treatment['id']): Promise<void>;
+  abstract remove(id: Treatment['id']): Promise<void>;
 }

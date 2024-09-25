@@ -1,9 +1,9 @@
-import { treatment } from '../../../../domain/treatment';
-import { treatmentEntity } from '../entities/treatment.entity';
+import { Treatment } from '../../../../domain/treatment';
+import { TreatmentEntity } from '../entities/treatment.entity';
 
-export class treatmentMapper {
-  static toDomain(raw: treatmentEntity): treatment {
-    const domainEntity = new treatment();
+export class TreatmentMapper {
+  static toDomain(raw: TreatmentEntity): Treatment {
+    const domainEntity = new Treatment();
     domainEntity.id = raw.id;
     domainEntity.name = raw.name;
     domainEntity.description = raw.description;
@@ -13,8 +13,8 @@ export class treatmentMapper {
     return domainEntity;
   }
 
-  static toPersistence(domainEntity: treatment): treatmentEntity {
-    const persistenceEntity = new treatmentEntity();
+  static toPersistence(domainEntity: Treatment): TreatmentEntity {
+    const persistenceEntity = new TreatmentEntity();
     if (domainEntity.id) {
       persistenceEntity.id = domainEntity.id;
     }

@@ -21,6 +21,11 @@ export abstract class InjuryRepository extends BaseRepository {
     sortOptions?: SortInjuriesDto[] | null;
   }): Promise<PaginationResponseDto<Injury>>;
 
+  abstract findManyByIds(
+    ids: Injury['id'][],
+    options?: findOptions,
+  ): Promise<Injury[]>;
+
   abstract findById(
     id: Injury['id'],
     options?: findOptions,

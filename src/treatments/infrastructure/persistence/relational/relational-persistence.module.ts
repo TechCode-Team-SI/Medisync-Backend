@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
-import { treatmentRepository } from '../treatment.repository';
-import { treatmentRelationalRepository } from './repositories/treatment.repository';
+import { TreatmentRepository } from '../treatment.repository';
+import { TreatmentRelationalRepository } from './repositories/treatment.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { treatmentEntity } from './entities/treatment.entity';
+import { TreatmentEntity } from './entities/treatment.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([treatmentEntity])],
+  imports: [TypeOrmModule.forFeature([TreatmentEntity])],
   providers: [
     {
-      provide: treatmentRepository,
-      useClass: treatmentRelationalRepository,
+      provide: TreatmentRepository,
+      useClass: TreatmentRelationalRepository,
     },
   ],
-  exports: [treatmentRepository],
+  exports: [TreatmentRepository],
 })
 export class RelationaltreatmentPersistenceModule {}

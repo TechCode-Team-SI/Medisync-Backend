@@ -45,4 +45,8 @@ export class SymptomsService {
   remove(id: Symptom['id']) {
     return this.symptomRepository.remove(id);
   }
+
+  findMany(ids: Symptom['id'][], options?: findOptions) {
+    return this.symptomRepository.findManyByIds(ids, options);
+  }
 }

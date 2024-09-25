@@ -4,6 +4,7 @@ import {
   FindOptionsRelations,
   DataSource,
   FindOneOptions,
+  In,
 } from 'typeorm';
 import { IllnessEntity } from '../entities/illness.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -46,6 +47,20 @@ export class IllnessRelationalRepository
       this.illnessRepository.create(persistenceModel),
     );
     return IllnessMapper.toDomain(newEntity);
+  }
+
+  async findManyByIds(
+    ids: string[],
+    options?: findOptions,
+  ): Promise<Illness[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entities = await this.illnessRepository.find({
+      where: { id: In(ids) },
+      relations,
+    });
+    return entities.map((illness) => IllnessMapper.toDomain(illness));
   }
 
   async findAllWithPagination({

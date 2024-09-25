@@ -7,13 +7,13 @@ import {
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
-import { treatment } from '../domain/treatment';
+import { Treatment } from '../domain/treatment';
 
-export class SorttreatmentsDto {
+export class SortTreatmentsDto {
   @ApiProperty()
   @Type(() => String)
   @IsString()
-  orderBy: keyof treatment;
+  orderBy: keyof Treatment;
 
   @ApiProperty()
   @IsString()
@@ -35,8 +35,8 @@ export class FindAlltreatmentsDto {
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @Transform(ObjectTransformer(SorttreatmentsDto))
+  @Transform(ObjectTransformer(SortTreatmentsDto))
   @ValidateNested({ each: true })
-  @Type(() => SorttreatmentsDto)
-  sort?: SorttreatmentsDto[] | null;
+  @Type(() => SortTreatmentsDto)
+  sort?: SortTreatmentsDto[] | null;
 }

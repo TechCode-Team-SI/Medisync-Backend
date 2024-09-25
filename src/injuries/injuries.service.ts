@@ -45,4 +45,8 @@ export class InjuriesService {
   remove(id: Injury['id']) {
     return this.injuryRepository.remove(id);
   }
+
+  findMany(ids: Injury['id'][], options?: findOptions) {
+    return this.injuryRepository.findManyByIds(ids, options);
+  }
 }

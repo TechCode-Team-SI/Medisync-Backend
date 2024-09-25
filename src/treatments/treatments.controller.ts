@@ -10,7 +10,7 @@ import {
   Query,
   NotFoundException,
 } from '@nestjs/common';
-import { treatmentsService } from './treatments.service';
+import { TreatmentsService } from './treatments.service';
 import { CreatetreatmentDto } from './dto/create-treatment.dto';
 import { UpdatetreatmentDto } from './dto/update-treatment.dto';
 import {
@@ -20,7 +20,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { treatment } from './domain/treatment';
+import { Treatment } from './domain/treatment';
 import { AuthGuard } from '@nestjs/passport';
 import {
   PaginationResponse,
@@ -38,26 +38,26 @@ import { getPagination } from 'src/utils/get-pagination';
   version: '1',
 })
 export class treatmentsController {
-  constructor(private readonly treatmentsService: treatmentsService) {}
+  constructor(private readonly TreatmentsService: TreatmentsService) {}
 
   @Post()
   @ApiCreatedResponse({
-    type: treatment,
+    type: Treatment,
   })
   create(@Body() createtreatmentDto: CreatetreatmentDto) {
-    return this.treatmentsService.create(createtreatmentDto);
+    return this.TreatmentsService.create(createtreatmentDto);
   }
 
   @Get()
   @ApiOkResponse({
-    type: PaginationResponse(treatment),
+    type: PaginationResponse(Treatment),
   })
   async findAll(
     @Query() query: FindAlltreatmentsDto,
-  ): Promise<PaginationResponseDto<treatment>> {
+  ): Promise<PaginationResponseDto<Treatment>> {
     const paginationOptions = getPagination(query);
 
-    return this.treatmentsService.findAllWithPagination({
+    return this.TreatmentsService.findAllWithPagination({
       paginationOptions,
       sortOptions: query.sort,
     });
@@ -70,10 +70,10 @@ export class treatmentsController {
     required: true,
   })
   @ApiOkResponse({
-    type: treatment,
+    type: Treatment,
   })
   async findOne(@Param('id') id: string) {
-    const entity = await this.treatmentsService.findOne(id);
+    const entity = await this.TreatmentsService.findOne(id);
 
     if (!entity) {
       throw new NotFoundException(exceptionResponses.NotFound);
@@ -89,13 +89,13 @@ export class treatmentsController {
     required: true,
   })
   @ApiOkResponse({
-    type: treatment,
+    type: Treatment,
   })
   update(
     @Param('id') id: string,
     @Body() updatetreatmentDto: UpdatetreatmentDto,
   ) {
-    return this.treatmentsService.update(id, updatetreatmentDto);
+    return this.TreatmentsService.update(id, updatetreatmentDto);
   }
 
   @Delete(':id')
@@ -105,6 +105,6 @@ export class treatmentsController {
     required: true,
   })
   remove(@Param('id') id: string) {
-    return this.treatmentsService.remove(id);
+    return this.TreatmentsService.remove(id);
   }
 }

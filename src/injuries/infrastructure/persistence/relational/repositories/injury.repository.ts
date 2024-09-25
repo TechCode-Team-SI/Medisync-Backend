@@ -4,6 +4,7 @@ import {
   FindOptionsRelations,
   DataSource,
   FindOneOptions,
+  In,
 } from 'typeorm';
 import { InjuryEntity } from '../entities/injury.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -79,6 +80,17 @@ export class InjuryRelationalRepository
         domain: 'injuries',
       },
     );
+  }
+
+  async findManyByIds(ids: string[], options?: findOptions): Promise<Injury[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entities = await this.injuryRepository.find({
+      where: { id: In(ids) },
+      relations,
+    });
+    return entities.map((illness) => InjuryMapper.toDomain(illness));
   }
 
   async findById(

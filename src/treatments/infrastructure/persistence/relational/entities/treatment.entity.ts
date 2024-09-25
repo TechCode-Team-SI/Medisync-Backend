@@ -11,7 +11,7 @@ import { ApiProperty } from '@nestjs/swagger';
 @Entity({
   name: 'treatment',
 })
-export class treatmentEntity extends EntityRelationalHelper {
+export class TreatmentEntity extends EntityRelationalHelper {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
