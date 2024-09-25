@@ -64,8 +64,11 @@ import { StatisticsModule } from './statistics/statistics.module';
 
 import { IllnessesModule } from './illnesses/illnesses.module';
 
+import { treatmentsModule } from './treatments/treatments.module';
+
 @Module({
   imports: [
+    treatmentsModule,
     IllnessesModule,
     StatisticsModule,
     RequestSavedDataModule,
