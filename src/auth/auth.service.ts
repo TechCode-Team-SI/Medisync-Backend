@@ -75,6 +75,7 @@ export class AuthService {
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: user.id,
+      employeeId: user.employeeProfile?.id,
       email: user.email,
       roles: user.roles,
       sessionId: session.id,
@@ -303,6 +304,7 @@ export class AuthService {
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: session.user.id,
+      employeeId: user.employeeProfile?.id,
       email: user.email,
       roles: user.roles,
       sessionId: session.id,
@@ -326,6 +328,7 @@ export class AuthService {
 
   private async getTokensData(data: {
     id: User['id'];
+    employeeId?: string;
     email: User['email'];
     roles: User['roles'];
     sessionId: Session['id'];
@@ -339,6 +342,7 @@ export class AuthService {
 
     const payload: Omit<JwtPayloadType, 'iat' | 'exp'> = {
       id: data.id,
+      employeeId: data.employeeId,
       email: data.email,
       roleSlugs: data.roles?.map((role) => role.slug) || [],
       sessionId: data.sessionId,
