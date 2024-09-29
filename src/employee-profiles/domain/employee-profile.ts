@@ -1,8 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Agenda } from 'src/agendas/domain/agenda';
 import { Specialty } from 'src/specialties/domain/specialty';
+import { genderEnum } from '../employee-profiles.enum';
 
 export class EmployeeProfile {
+  @ApiProperty()
+  MPPS: string;
+
+  @ApiProperty()
+  CML: string;
+
+  @ApiProperty()
+  gender: genderEnum;
+
   @ApiProperty({
     type: String,
   })

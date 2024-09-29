@@ -8,6 +8,9 @@ import { Specialty } from 'src/specialties/domain/specialty';
 export class EmployeeProfileMapper {
   static toDomain(raw: EmployeeProfileEntity): EmployeeProfile {
     const domainEntity = new EmployeeProfile();
+    domainEntity.MPPS = raw.MPPS;
+    domainEntity.CML = raw.CML;
+    domainEntity.gender = raw.gender;
     domainEntity.id = raw.id;
     domainEntity.address = raw.address;
     domainEntity.birthday = raw.birthday;
@@ -26,6 +29,9 @@ export class EmployeeProfileMapper {
 
   static toPersistence(domainEntity: EmployeeProfile): EmployeeProfileEntity {
     const persistenceEntity = new EmployeeProfileEntity();
+    persistenceEntity.MPPS = domainEntity.MPPS;
+    persistenceEntity.CML = domainEntity.CML;
+    persistenceEntity.gender = domainEntity.gender;
     if (domainEntity.id) {
       persistenceEntity.id = domainEntity.id;
     }

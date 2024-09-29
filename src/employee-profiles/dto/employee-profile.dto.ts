@@ -1,12 +1,34 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
+import { genderEnum } from '../employee-profiles.enum';
 
 export class EmployeeProfileDto {
   @ApiProperty({ example: '27317962', type: String })
   @IsNotEmpty()
   dni: string;
+
+  @ApiProperty({ example: '12345', type: String })
+  @IsOptional()
+  @IsString()
+  CML: string;
+
+  @ApiProperty({ example: '12345', type: String })
+  @IsOptional()
+  @IsString()
+  MPPS: string;
+
+  @ApiProperty({ example: 'F', type: String })
+  @IsNotEmpty()
+  @IsEnum(genderEnum)
+  gender: genderEnum;
 
   @ApiProperty()
   @IsNotEmpty()
