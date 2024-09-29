@@ -2,6 +2,8 @@ import { SpecialtyMapper } from 'src/specialties/infrastructure/persistence/rela
 import { AgendaMapper } from 'src/agendas/infrastructure/persistence/relational/mappers/agenda.mapper';
 import { EmployeeProfileEntity } from '../entities/employee-profile.entity';
 import { EmployeeProfile } from 'src/employee-profiles/domain/employee-profile';
+import { EmployeeProfileDto } from 'src/employee-profiles/dto/employee-profile.dto';
+import { Specialty } from 'src/specialties/domain/specialty';
 
 export class EmployeeProfileMapper {
   static toDomain(raw: EmployeeProfileEntity): EmployeeProfile {
@@ -42,5 +44,26 @@ export class EmployeeProfileMapper {
     }
 
     return persistenceEntity;
+  }
+
+  static fromDtotoDomain(dto: EmployeeProfileDto): EmployeeProfile {
+    const domainEntity = new EmployeeProfile();
+    if (dto.address) {
+      domainEntity.address = dto.address;
+    }
+    if (dto.birthday) {
+      domainEntity.birthday = dto.birthday;
+    }
+    if (dto.dni) {
+      domainEntity.dni = dto.dni;
+    }
+    if (dto.specialties) {
+      domainEntity.specialties = dto.specialties.map((specialty) => {
+        const newSpecialty = new Specialty();
+        newSpecialty.id = specialty.id;
+        return newSpecialty;
+      });
+    }
+    return domainEntity;
   }
 }

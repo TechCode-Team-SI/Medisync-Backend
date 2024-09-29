@@ -12,6 +12,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { exceptionResponses } from './users.messages';
+import { EmployeeProfile } from 'src/employee-profiles/domain/employee-profile';
+import { EmployeeProfileMapper } from 'src/employee-profiles/infrastructure/persistence/relational/mappers/employee-profile.mapper';
 
 @Injectable()
 export class UsersService {
@@ -59,9 +61,22 @@ export class UsersService {
       }
     }
 
+    let employeeProfile: EmployeeProfile | undefined = undefined;
+    if (clonedPayload.employeeProfile) {
+      employeeProfile = EmployeeProfileMapper.fromDtotoDomain(
+        clonedPayload.employeeProfile,
+      );
+    }
+
     const roles = clonedPayload.roles || [];
 
-    return this.usersRepository.create(clonedPayload, roles);
+    return this.usersRepository.create(
+      {
+        ...clonedPayload,
+        employeeProfile,
+      },
+      roles,
+    );
   }
 
   findManyWithPagination({

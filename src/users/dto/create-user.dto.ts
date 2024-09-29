@@ -6,10 +6,12 @@ import {
   IsNotEmpty,
   IsOptional,
   MinLength,
+  ValidateNested,
 } from 'class-validator';
 import { FileDto } from '../../files/dto/file.dto';
 import { RoleDto } from '../../roles/dto/role.dto';
 import { lowerCaseTransformer } from '../../utils/transformers/lower-case.transformer';
+import { EmployeeProfileDto } from 'src/employee-profiles/dto/employee-profile.dto';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'test1@example.com', type: String })
@@ -34,6 +36,12 @@ export class CreateUserDto {
   @IsOptional()
   @Type(() => RoleDto)
   roles?: RoleDto[] | null;
+
+  @ApiPropertyOptional({ type: () => EmployeeProfileDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => EmployeeProfileDto)
+  employeeProfile?: EmployeeProfileDto | null;
 
   hash?: string | null;
 }
