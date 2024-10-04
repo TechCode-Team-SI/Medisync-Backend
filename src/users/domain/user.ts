@@ -7,6 +7,9 @@ import { EmployeeProfile } from '../../employee-profiles/domain/employee-profile
 const idType = Number;
 
 export class User {
+  @ApiProperty()
+  phone?: string;
+
   @ApiProperty({
     type: idType,
   })

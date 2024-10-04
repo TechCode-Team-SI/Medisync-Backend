@@ -10,6 +10,7 @@ import { EmployeeProfileEntity } from '../../../../../employee-profiles/infrastr
 export class UserMapper {
   static toDomain(raw: UserEntity): User {
     const domainEntity = new User();
+    domainEntity.phone = raw.phone;
     domainEntity.id = raw.id;
     domainEntity.email = raw.email;
     domainEntity.password = raw.password;
@@ -25,6 +26,7 @@ export class UserMapper {
         raw.employeeProfile,
       );
     }
+    domainEntity.phone = raw.phone;
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
     domainEntity.deletedAt = raw.deletedAt;
@@ -59,6 +61,9 @@ export class UserMapper {
     }
 
     const persistenceEntity = new UserEntity();
+    if (domainEntity.phone) {
+      persistenceEntity.phone = domainEntity.phone;
+    }
     if (domainEntity.id) {
       persistenceEntity.id = domainEntity.id;
     }

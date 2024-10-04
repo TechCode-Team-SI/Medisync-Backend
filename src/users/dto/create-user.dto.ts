@@ -7,6 +7,7 @@ import {
   IsOptional,
   MinLength,
   ValidateNested,
+  IsString,
 } from 'class-validator';
 import { FileDto } from '../../files/dto/file.dto';
 import { RoleDto } from '../../roles/dto/role.dto';
@@ -43,5 +44,8 @@ export class CreateUserDto {
   @Type(() => EmployeeProfileDto)
   employeeProfile?: EmployeeProfileDto | null;
 
-  hash?: string | null;
+  @ApiProperty({ example: '0412-1234567' })
+  @IsOptional()
+  @IsString()
+  phone?: string;
 }

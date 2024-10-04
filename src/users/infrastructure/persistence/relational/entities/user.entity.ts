@@ -25,6 +25,10 @@ import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
   name: 'user',
 })
 export class UserEntity extends EntityRelationalHelper {
+  @ApiProperty()
+  @Column({ nullable: true })
+  phone: string;
+
   @ApiProperty({
     type: String,
   })
