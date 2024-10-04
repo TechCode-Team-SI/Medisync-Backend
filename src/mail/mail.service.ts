@@ -15,9 +15,9 @@ export class MailService {
   ) {}
 
   async forgotPassword(mailData: MailData<{ code: string }>): Promise<void> {
-    const resetPasswordTitle: MaybeType<string> = 'Reset Password';
-    const text1: MaybeType<string> = 'Has solicitado cambiar la contrasena.';
-    const text2: MaybeType<string> = `Por favor usa el siguiente codigo para resetear la contrasena:`;
+    const resetPasswordTitle: MaybeType<string> = 'Reiniciar contraseña';
+    const text1: MaybeType<string> = 'Has solicitado cambiar la contraseña.';
+    const text2: MaybeType<string> = `Por favor usa el siguiente código para resetear la contraseña`;
     let text3: MaybeType<string>;
     const footerText1: MaybeType<string> =
       'Si no has solicitado este correo, por favor ignóralo.';
@@ -60,7 +60,7 @@ export class MailService {
       'Confirmación de correo electrónico';
     const text1: MaybeType<string> = `Hola, ${mailData.data.fullName}`;
     const text2: MaybeType<string> =
-      '¡Gracias por registrarte con nosotros! Para completar tu registro, por favor confirma tu dirección de correo electrónico con este codigo a continuacion';
+      '¡Gracias por registrarte con nosotros! Para completar tu registro, por favor confirma tu dirección de correo electrónico con este codigo a continuación';
     let text3: MaybeType<string>;
     const footerText1: MaybeType<string> =
       'Si no has solicitado este correo, por favor ignóralo.';
