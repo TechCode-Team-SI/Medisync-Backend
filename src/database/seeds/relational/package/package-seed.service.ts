@@ -19,6 +19,7 @@ export class PackageSeedService {
       return this.repository.create({
         name: currentPackage.name,
         slug: currentPackage.slug,
+        description: currentPackage.description,
         applied: false,
       });
     });

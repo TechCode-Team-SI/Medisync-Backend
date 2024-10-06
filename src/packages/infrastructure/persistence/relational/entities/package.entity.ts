@@ -26,6 +26,10 @@ export class PackageEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @Column()
+  description: string;
+
+  @ApiProperty()
+  @Column()
   applied: boolean;
 
   @ApiProperty()

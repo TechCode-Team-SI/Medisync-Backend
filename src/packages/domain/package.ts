@@ -13,6 +13,9 @@ export class Package {
   slug: string;
 
   @ApiProperty()
+  description: string;
+
+  @ApiProperty()
   applied: boolean;
 
   @ApiProperty()
