@@ -8,12 +8,14 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticleRepository } from './infrastructure/persistence/article.repository';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { SortArticleDto } from './dto/find-all-articles.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class ArticlesService {
   constructor(
     private readonly articleRepository: ArticleRepository,
     private usersService: UsersService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async create(createArticleDto: CreateArticleDto, userId: string) {
@@ -26,7 +28,14 @@ export class ArticlesService {
       ...createArticleDto,
       updatedBy: user,
     };
-    return this.articleRepository.create(data);
+    const result = await this.articleRepository.create(data);
+
+    await this.notificationsService.createForAllMobileUsers({
+      title: 'Nuevo Articulo disponible!',
+      content: `Hay un nuevo articulo medico disponible en nuestra plataforma: ${data.title}`,
+    });
+
+    return result;
   }
 
   findAllWithPagination({

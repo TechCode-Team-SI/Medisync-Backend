@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsNumber,
   IsObject,
   IsOptional,
@@ -22,7 +23,19 @@ export class FilterUserDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  permissionSlugs?: string[] | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
   specialtyIds?: string[] | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  onlyEmployee?: boolean;
 
   //Search by name
   @ApiPropertyOptional()

@@ -3,9 +3,14 @@ import { UsersModule } from 'src/users/users.module';
 import { ArticlesController } from './articles.controller';
 import { ArticlesService } from './articles.service';
 import { RelationalArticlePersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
-  imports: [RelationalArticlePersistenceModule, UsersModule],
+  imports: [
+    RelationalArticlePersistenceModule,
+    UsersModule,
+    NotificationsModule,
+  ],
   controllers: [ArticlesController],
   providers: [ArticlesService],
   exports: [ArticlesService, RelationalArticlePersistenceModule],

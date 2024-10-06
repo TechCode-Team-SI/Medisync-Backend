@@ -15,6 +15,36 @@ import { MailModule } from './mail/mail.module';
 import { MailerModule } from './mailer/mailer.module';
 import { SessionModule } from './session/session.module';
 import { UsersModule } from './users/users.module';
+import { permissionsModule } from './permissions/permissions.module';
+import { RolesModule } from './roles/roles.module';
+import { ArticlesModule } from './articles/articles.module';
+import { SpecialtiesModule } from './specialties/specialties.module';
+import { TicketsModule } from './tickets/tickets.module';
+import { TicketCommentsModule } from './ticket-comments/ticket-comments.module';
+import { InstallationsModule } from './installations/installations.module';
+import { APP_GUARD } from '@nestjs/core';
+import { SystemGuard } from './common/system.guard';
+import { FieldQuestionsModule } from './field-questions/field-questions.module';
+import { RequestTemplatesModule } from './request-templates/request-templates.module';
+import { MedicalCentersModule } from './medical-centers/medical-centers.module';
+import { RequestsModule } from './requests/requests.module';
+import { DiagnosticsModule } from './diagnostics/diagnostics.module';
+import { InstructionsModule } from './instructions/instructions.module';
+import { PackagesModule } from './packages/packages.module';
+import { RoomsModule } from './rooms/rooms.module';
+import { EmployeeProfilesModule } from './employee-profiles/employee-profiles.module';
+import { RatingsModule } from './ratings/ratings.module';
+import { RequestSavedDataModule } from './request-saved-data/request-saved-data.module';
+import { StatisticsModule } from './statistics/statistics.module';
+import { IllnessesModule } from './illnesses/illnesses.module';
+import { treatmentsModule } from './treatments/treatments.module';
+import { PathologiesModule } from './pathologies/pathologies.module';
+import { SymptomsModule } from './symptoms/symptoms.module';
+import { InjuriesModule } from './injuries/injuries.module';
+import { AgendasModule } from './agendas/agendas.module';
+import { DaysOffsModule } from './days-offs/days-offs.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { NotificationUsersModule } from './notification-users/notification-users.module';
 
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
@@ -23,61 +53,10 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   },
 });
 
-import { permissionsModule } from './permissions/permissions.module';
-
-import { RolesModule } from './roles/roles.module';
-
-import { ArticlesModule } from './articles/articles.module';
-
-import { SpecialtiesModule } from './specialties/specialties.module';
-
-import { TicketsModule } from './tickets/tickets.module';
-
-import { TicketCommentsModule } from './ticket-comments/ticket-comments.module';
-
-import { InstallationsModule } from './installations/installations.module';
-import { APP_GUARD } from '@nestjs/core';
-import { SystemGuard } from './common/system.guard';
-
-import { FieldQuestionsModule } from './field-questions/field-questions.module';
-
-import { RequestTemplatesModule } from './request-templates/request-templates.module';
-
-import { MedicalCentersModule } from './medical-centers/medical-centers.module';
-import { RequestsModule } from './requests/requests.module';
-
-import { DiagnosticsModule } from './diagnostics/diagnostics.module';
-
-import { InstructionsModule } from './instructions/instructions.module';
-
-import { PackagesModule } from './packages/packages.module';
-
-import { RoomsModule } from './rooms/rooms.module';
-
-import { EmployeeProfilesModule } from './employee-profiles/employee-profiles.module';
-
-import { RatingsModule } from './ratings/ratings.module';
-
-import { RequestSavedDataModule } from './request-saved-data/request-saved-data.module';
-
-import { StatisticsModule } from './statistics/statistics.module';
-
-import { IllnessesModule } from './illnesses/illnesses.module';
-
-import { treatmentsModule } from './treatments/treatments.module';
-
-import { PathologiesModule } from './pathologies/pathologies.module';
-
-import { SymptomsModule } from './symptoms/symptoms.module';
-
-import { InjuriesModule } from './injuries/injuries.module';
-
-import { AgendasModule } from './agendas/agendas.module';
-
-import { DaysOffsModule } from './days-offs/days-offs.module';
-
 @Module({
   imports: [
+    NotificationUsersModule,
+    NotificationsModule,
     DaysOffsModule,
     AgendasModule,
     InjuriesModule,

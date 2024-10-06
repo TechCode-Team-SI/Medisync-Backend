@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -31,6 +32,7 @@ import { Article } from './domain/article';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { FindAllArticlesDto } from './dto/find-all-articles.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
+import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 
 @ApiTags('Articles')
 @ApiBearerAuth()
@@ -43,6 +45,7 @@ export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
   @Post()
+  @UseInterceptors(TransactionInterceptor)
   @ApiCreatedResponse({
     type: Article,
   })

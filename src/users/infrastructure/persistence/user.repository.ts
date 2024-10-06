@@ -27,6 +27,16 @@ export abstract class UserRepository extends BaseRepository {
     options?: findOptions & { employeeProfile: boolean };
   }): Promise<PaginationResponseDto<User>>;
 
+  abstract findAll({
+    filterOptions,
+    sortOptions,
+    options,
+  }: {
+    filterOptions?: FilterUserDto | null;
+    sortOptions?: SortUserDto[] | null;
+    options?: findOptions & { employeeProfile: boolean };
+  }): Promise<User[]>;
+
   abstract findById(
     id: User['id'],
     options?: findOptions & { withProfile?: boolean; withSpecialty?: boolean },

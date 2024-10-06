@@ -13,7 +13,9 @@ import {
   FindOptionsRelations,
   FindOptionsWhere,
   In,
+  IsNull,
   Like,
+  Not,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -90,6 +92,12 @@ export class UsersRelationalRepository
     if (filterOptions?.search) {
       where = { ...where, fullName: Like(`%${filterOptions?.search}%`) };
     }
+    if (filterOptions?.onlyEmployee) {
+      where = {
+        ...where,
+        employeeProfile: { id: Not(IsNull()) },
+      };
+    }
 
     const [entities, count] = await this.usersRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
@@ -105,6 +113,73 @@ export class UsersRelationalRepository
       { items, count },
       { ...paginationOptions, domain: 'users' },
     );
+  }
+
+  async findAll({
+    filterOptions,
+    sortOptions,
+    options,
+  }: {
+    filterOptions?: FilterUserDto | null;
+    sortOptions?: SortUserDto[] | null;
+    options?: findOptions & { employeeProfile: boolean };
+  }): Promise<User[]> {
+    let order: FindOneOptions<UserEntity>['order'] = { createdAt: 'DESC' };
+    if (sortOptions) order = formatOrder<User>(sortOptions);
+
+    let relations = this.relations;
+    if (options) relations = {};
+    if (options?.employeeProfile)
+      relations = { ...relations, employeeProfile: true };
+    if (options?.minimal) relations = {};
+
+    let where: FindOptionsWhere<UserEntity> = {};
+    if (filterOptions?.roleIds && filterOptions.roleIds.length > 0) {
+      where = { ...where, roles: { id: In(filterOptions.roleIds) } };
+    }
+    if (
+      filterOptions?.permissionSlugs &&
+      filterOptions.permissionSlugs.length > 0
+    ) {
+      let rolesWhere = {};
+      if (where.roles) {
+        rolesWhere = where.roles;
+      }
+      where = {
+        ...where,
+        roles: {
+          ...rolesWhere,
+          permissions: { slug: In(filterOptions.permissionSlugs) },
+        },
+      };
+    }
+    if (filterOptions?.specialtyIds && filterOptions.specialtyIds.length > 0) {
+      where = {
+        ...where,
+        employeeProfile: {
+          specialties: { id: In(filterOptions.specialtyIds) },
+        },
+      };
+    }
+    if (filterOptions?.onlyEmployee) {
+      where = {
+        ...where,
+        employeeProfile: { id: Not(IsNull()) },
+      };
+    }
+    if (filterOptions?.search) {
+      where = { ...where, fullName: Like(`%${filterOptions?.search}%`) };
+    }
+
+    const entities = await this.usersRepository.find({
+      loadEagerRelations: true,
+      relations,
+      where,
+      order,
+    });
+    const items = entities.map((entity) => UserMapper.toDomain(entity));
+
+    return items;
   }
 
   async findById(
