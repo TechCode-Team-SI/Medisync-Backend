@@ -100,7 +100,7 @@ export class InstallationsService {
   }
 
   //CREATE MEDICAL CENTER
-  async processStepTwo(createMedicalCenterDto: CreateMedicalCenterDto) {
+  async processStepThree(createMedicalCenterDto: CreateMedicalCenterDto) {
     let medicalCenter = await this.medicalCentersService.findOne();
 
     if (medicalCenter) {
@@ -121,14 +121,14 @@ export class InstallationsService {
       );
     }
 
-    return this.update({ step: InstallationStepEnum.CONFIGURE_MODULES });
+    return this.update({ step: InstallationStepEnum.FINISHED });
   }
 
   //INSTALL MODULES
-  async processStepThree(...slugs: string[]) {
+  async processStepTwo(...slugs: string[]) {
     await this.packagesService.seed(...slugs);
     await this.update({
-      step: InstallationStepEnum.FINISHED,
+      step: InstallationStepEnum.CONFIGURE_COMPANY,
     });
     return { success: true };
   }

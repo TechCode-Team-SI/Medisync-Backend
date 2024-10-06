@@ -46,9 +46,14 @@ export class InstallationsController {
   @ApiOkResponse({
     type: Installation,
   })
-  @CurrentInstallationStep(InstallationStepEnum.CONFIGURE_COMPANY)
-  processStepTwo(@Body() createMedicalCenterDto: CreateMedicalCenterDto) {
-    return this.installationsService.processStepTwo(createMedicalCenterDto);
+  @CurrentInstallationStep(InstallationStepEnum.CONFIGURE_MODULES)
+  @UseInterceptors(TransactionInterceptor)
+  processStepTwo(
+    @Body() installationThreeDto: ApplyPackagesDto,
+  ): Promise<SuccessResponseDto> {
+    return this.installationsService.processStepTwo(
+      ...installationThreeDto.slugs,
+    );
   }
 
   @Post('/three')
@@ -57,14 +62,9 @@ export class InstallationsController {
   @ApiOkResponse({
     type: Installation,
   })
-  @CurrentInstallationStep(InstallationStepEnum.CONFIGURE_MODULES)
-  @UseInterceptors(TransactionInterceptor)
-  processStepThree(
-    @Body() installationThreeDto: ApplyPackagesDto,
-  ): Promise<SuccessResponseDto> {
-    return this.installationsService.processStepThree(
-      ...installationThreeDto.slugs,
-    );
+  @CurrentInstallationStep(InstallationStepEnum.CONFIGURE_COMPANY)
+  processStepThree(@Body() createMedicalCenterDto: CreateMedicalCenterDto) {
+    return this.installationsService.processStepThree(createMedicalCenterDto);
   }
 
   @Post('/token')
