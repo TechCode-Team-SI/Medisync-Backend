@@ -10,7 +10,9 @@ import {
   DataSource,
   FindOneOptions,
   FindOptionsRelations,
+  FindOptionsWhere,
   In,
+  Like,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -19,7 +21,10 @@ import { Package } from '../../../../domain/package';
 import { PackageRepository } from '../../package.repository';
 import { PackageEntity } from '../entities/package.entity';
 import { PackageMapper } from '../mappers/package.mapper';
-import { SortPackageDto } from 'src/packages/dto/find-all-packages.dto';
+import {
+  FilterPackageDto,
+  SortPackageDto,
+} from 'src/packages/dto/find-all-packages.dto';
 import { formatOrder } from 'src/utils/utils';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -53,11 +58,20 @@ export class PackageRelationalRepository
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortPackageDto[] | null;
+    filterOptions?: FilterPackageDto | null;
   }): Promise<PaginationResponseDto<Package>> {
+    let where: FindOptionsWhere<PackageEntity> = {};
+    if (filterOptions?.search) {
+      where = {
+        ...where,
+        name: Like(`%${filterOptions.search}%`),
+      };
+    }
     let order: FindOneOptions<PackageEntity>['order'] = {
       name: 'DESC',
     };
@@ -70,6 +84,7 @@ export class PackageRelationalRepository
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       relations,
+      where,
       order,
     });
     const items = entities.map((entity) => PackageMapper.toDomain(entity));

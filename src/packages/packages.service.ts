@@ -16,7 +16,7 @@ import { PackageRepository } from './infrastructure/persistence/package.reposito
 import { exceptionResponses } from './packages.messages';
 import { fieldQuestionsModule } from './seeds/field-questions';
 import { InstallationModule, ModuleInstallationSteps } from './seeds/type';
-import { SortPackageDto } from './dto/find-all-packages.dto';
+import { FilterPackageDto, SortPackageDto } from './dto/find-all-packages.dto';
 
 @Injectable()
 export class PackagesService {
@@ -32,10 +32,12 @@ export class PackagesService {
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortPackageDto[] | null;
+    filterOptions?: FilterPackageDto | null;
   }) {
     return this.packageRepository.findAllWithPagination({
       paginationOptions: {
@@ -44,6 +46,7 @@ export class PackagesService {
       },
       options,
       sortOptions,
+      filterOptions,
     });
   }
 

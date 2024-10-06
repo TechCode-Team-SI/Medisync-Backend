@@ -51,6 +51,7 @@ export class PackagesController {
     return this.packagesService.findAllWithPagination({
       paginationOptions,
       sortOptions: query.sort,
+      filterOptions: query.filters,
     });
   }
 
