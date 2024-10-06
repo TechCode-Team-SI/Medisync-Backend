@@ -7,57 +7,63 @@ type Packages = Array<{
 const packages: Packages = [
   {
     name: 'Medicina general',
-    description: 'Medicina',
+    description:
+      'Nivel de atención médica que realiza procedimientos sencillos',
     slug: 'medicina-general',
   },
   {
     name: 'Cirugía',
-    description: 'Medicina',
+    description:
+      'Departamento donde se realizan intervenciones quirúrgicas variadas',
     slug: 'cirugia',
   },
   {
     name: 'Gineco-Obstetricia',
-    description: 'Medicina',
+    description: 'Especialidad encargada de la salud de la mujer',
     slug: 'gineco-obstetricia',
   },
   {
     name: 'Pediatría',
-    description: 'Medicina',
+    description: 'Especialidad encargada de la salud de los niños',
     slug: 'pediatria',
   },
   {
     name: 'Laboratorio',
-    description: 'Medicina',
+    description: 'Departamento especializado en analizar muestras biológicas',
     slug: 'laboratorio',
   },
   {
     name: 'Radiología',
-    description: 'Medicina',
+    description:
+      'Departamento especializado en obtener imágenes del interior del cuerpo, con el objetivo de diagnosticar enfermedades, evaluar tratamientos y realizar procedimientos médicos',
     slug: 'radiologia',
   },
   {
     name: 'Farmacia',
-    description: 'Medicina',
+    description:
+      'Departamento donde se preparan, dispensan y controlan los medicamentos',
     slug: 'farmacia',
   },
   {
     name: 'Anestesia',
-    description: 'Medicina',
+    description:
+      'Departamento hecho para garantizar la seguridad y el bienestar del paciente durante procedimientos quirúrgicos y algunos exámenes médicos',
     slug: 'anestesia',
   },
   {
     name: 'Hemoterapia',
-    description: 'Medicina',
+    description:
+      'Departamento encargado de la extracción, procesamiento, almacenamiento y transfusión de sangre y sus componentes',
     slug: 'hemoterapia',
   },
   {
     name: 'Emergencia',
-    description: 'Medicina',
+    description: 'Departamento para brindar atención inmediata',
     slug: 'emergencia',
   },
   {
     name: 'Cardiologia',
-    description: 'Medicina',
+    description: 'Departamento encargado de la salud del corazón',
     slug: 'cardiologia',
   },
 ];
