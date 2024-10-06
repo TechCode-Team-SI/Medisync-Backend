@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -21,6 +22,14 @@ import { InstallationsService } from './installations.service';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 import { VerifyTokenDto } from './dto/verify-token.dto';
 import { PrivateGuard } from 'src/common/private.guard';
+import { PackagesService } from 'src/packages/packages.service';
+import {
+  PaginationResponse,
+  PaginationResponseDto,
+} from 'src/utils/dto/pagination-response.dto';
+import { Package } from 'src/packages/domain/package';
+import { FindAllPackagesDto } from 'src/packages/dto/find-all-packages.dto';
+import { getPagination } from 'src/utils/get-pagination';
 
 @ApiTags('Installation')
 @ApiBearerAuth()
@@ -29,7 +38,10 @@ import { PrivateGuard } from 'src/common/private.guard';
   version: '1',
 })
 export class InstallationsController {
-  constructor(private readonly installationsService: InstallationsService) {}
+  constructor(
+    private readonly installationsService: InstallationsService,
+    private readonly packagesService: PackagesService,
+  ) {}
 
   @Post('/one')
   @IsInstallationEndpoint()
@@ -65,6 +77,22 @@ export class InstallationsController {
   @CurrentInstallationStep(InstallationStepEnum.CONFIGURE_COMPANY)
   processStepThree(@Body() createMedicalCenterDto: CreateMedicalCenterDto) {
     return this.installationsService.processStepThree(createMedicalCenterDto);
+  }
+
+  @Get('/packages')
+  @IsInstallationEndpoint()
+  @UseGuards(PrivateGuard)
+  @ApiOkResponse({
+    type: PaginationResponse(Package),
+  })
+  async findAll(
+    @Query() query: FindAllPackagesDto,
+  ): Promise<PaginationResponseDto<Package>> {
+    return this.packagesService.findAllWithPagination({
+      paginationOptions: getPagination(query),
+      sortOptions: query.sort,
+      filterOptions: query.filters,
+    });
   }
 
   @Post('/token')

@@ -90,7 +90,7 @@ export class InstallationsService {
     });
 
     const installationInfo = await this.update({
-      step: InstallationStepEnum.CONFIGURE_COMPANY,
+      step: InstallationStepEnum.CONFIGURE_MODULES,
     });
 
     return {
