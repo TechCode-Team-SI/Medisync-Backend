@@ -1,5 +1,8 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
+import { EmployeeProfile } from 'src/employee-profiles/domain/employee-profile';
+import { EmployeeProfileRepository } from 'src/employee-profiles/infrastructure/persistence/employee-profile.repository';
+import { EmployeeProfileMapper } from 'src/employee-profiles/infrastructure/persistence/relational/mappers/employee-profile.mapper';
 import { RolesService } from 'src/roles/roles.service';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { findOptions } from 'src/utils/types/fine-options.type';
@@ -12,8 +15,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { exceptionResponses } from './users.messages';
-import { EmployeeProfile } from 'src/employee-profiles/domain/employee-profile';
-import { EmployeeProfileMapper } from 'src/employee-profiles/infrastructure/persistence/relational/mappers/employee-profile.mapper';
 
 @Injectable()
 export class UsersService {
@@ -21,6 +22,7 @@ export class UsersService {
     private readonly usersRepository: UserRepository,
     private readonly filesService: FilesService,
     private readonly rolesService: RolesService,
+    private readonly employeeProfilesRepository: EmployeeProfileRepository,
   ) {}
 
   async create(createProfileDto: CreateUserDto): Promise<User> {

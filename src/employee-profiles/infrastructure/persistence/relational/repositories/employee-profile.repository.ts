@@ -28,7 +28,9 @@ export class EmployeeProfileRelationalRepository
     return this.getRepository(EmployeeProfileEntity);
   }
 
-  private relations: FindOptionsRelations<EmployeeProfileEntity> = {};
+  private relations: FindOptionsRelations<EmployeeProfileEntity> = {
+    schedule: true,
+  };
 
   async findById(
     id: EmployeeProfile['id'],

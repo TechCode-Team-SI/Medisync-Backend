@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsDate,
@@ -10,8 +10,13 @@ import {
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
 import { genderEnum } from '../employee-profiles.enum';
 import { ScheduleDto } from 'src/schedules/dto/schedule.dto';
+import { EmployeeProfileDto } from './employee-profile.dto';
 
-export class EmployeeProfileDto {
+export class EmployeeProfilePartialDto extends PartialType(EmployeeProfileDto) {
+  @ApiProperty()
+  @IsNotEmpty()
+  id: string;
+
   @ApiProperty({ example: '27317962', type: String })
   @IsNotEmpty()
   dni: string;

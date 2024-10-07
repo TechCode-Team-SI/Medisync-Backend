@@ -32,4 +32,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'role_not_exist',
     message: 'El rol no existe',
   },
+  NotEmployee: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'user_not_employee',
+    message: 'El usuario no es un empleado',
+  },
 } as const;

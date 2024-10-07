@@ -47,3 +47,18 @@ export function formatOrder<T>(
     {},
   );
 }
+
+export function isHourALessThanHourB(hourA: string, hourB: string) {
+  const [hourAHours, hourAMinutes] = hourA.split(':').map(Number);
+  const [hourBHours, hourBMinutes] = hourB.split(':').map(Number);
+
+  if (hourAHours < hourBHours) {
+    return true;
+  }
+
+  if (hourAHours === hourBHours && hourAMinutes < hourBMinutes) {
+    return true;
+  }
+
+  return false;
+}

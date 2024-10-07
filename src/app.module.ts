@@ -53,8 +53,11 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   },
 });
 
+import { SchedulesModule } from './schedules/schedules.module';
+
 @Module({
   imports: [
+    SchedulesModule,
     NotificationUsersModule,
     NotificationsModule,
     DaysOffsModule,

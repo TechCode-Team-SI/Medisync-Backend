@@ -1,4 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { AgendaEntity } from 'src/agendas/infrastructure/persistence/relational/entities/agenda.entity';
+import { genderEnum } from 'src/employee-profiles/employee-profiles.enum';
+import { ScheduleEntity } from 'src/schedules/infrastructure/persistence/relational/entities/schedule.entity';
+import { SpecialtyEntity } from 'src/specialties/infrastructure/persistence/relational/entities/specialty.entity';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import {
   Column,
@@ -11,9 +15,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
-import { SpecialtyEntity } from 'src/specialties/infrastructure/persistence/relational/entities/specialty.entity';
-import { AgendaEntity } from 'src/agendas/infrastructure/persistence/relational/entities/agenda.entity';
-import { genderEnum } from 'src/employee-profiles/employee-profiles.enum';
 
 @Entity({
   name: 'employee_profile',
@@ -50,6 +51,12 @@ export class EmployeeProfileEntity extends EntityRelationalHelper {
   @ManyToMany(() => SpecialtyEntity)
   @JoinTable({ name: 'employee_specialty' })
   specialties: SpecialtyEntity[];
+
+  @ApiProperty({
+    type: () => ScheduleEntity,
+  })
+  @ManyToOne(() => ScheduleEntity)
+  schedule: ScheduleEntity;
 
   @ApiProperty()
   @ManyToOne(() => AgendaEntity)

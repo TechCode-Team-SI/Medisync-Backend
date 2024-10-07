@@ -46,7 +46,9 @@ export class UsersRelationalRepository
 
   private relations: FindOptionsRelations<UserEntity> = {
     roles: true,
-    employeeProfile: true,
+    employeeProfile: {
+      schedule: true,
+    },
   };
 
   async create(data: User): Promise<User> {
