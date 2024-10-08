@@ -69,4 +69,8 @@ export class EmployeeProfileEntity extends EntityRelationalHelper {
   @ApiProperty()
   @Column()
   address: string;
+
+  @ApiProperty()
+  @Column({ type: 'boolean', default: true })
+  status: boolean;
 }

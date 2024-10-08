@@ -37,4 +37,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'user_not_employee',
     message: 'El usuario no es un empleado',
   },
+  CannotChangeOwnStatus: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'user_cannot_change_own_status',
+    message: 'No puedes cambiar tu propio status',
+  },
 } as const;

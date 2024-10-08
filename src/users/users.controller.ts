@@ -10,6 +10,7 @@ import {
   Post,
   Query,
   SerializeOptions,
+  UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -25,6 +26,10 @@ import { PermissionsEnum } from '../permissions/permissions.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+import { Me } from 'src/auth/auth.decorator';
+import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
+import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { EmployeeProfileStatusDto } from 'src/employee-profiles/dto/employee-profile-status.dto';
 import {
   PaginationResponse,
   PaginationResponseDto,
@@ -34,6 +39,7 @@ import { PermissionsGuard } from '../permissions/permissions.guard';
 import { NullableType } from '../utils/types/nullable.type';
 import { User } from './domain/user';
 import { QueryUserDto } from './dto/query-user.dto';
+import { exceptionResponses } from './users.messages';
 import { UsersService } from './users.service';
 
 @ApiBearerAuth()
@@ -115,6 +121,32 @@ export class UsersController {
     @Body() updateProfileDto: UpdateUserDto,
   ): Promise<User | null> {
     return this.usersService.update(id, updateProfileDto);
+  }
+
+  @ApiOkResponse({
+    type: SuccessResponseDto,
+  })
+  @Patch('/employee-status/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  @Permissions(PermissionsEnum.EDIT_USER)
+  @UseGuards(PermissionsGuard)
+  async updateEmployeeStatus(
+    @Param('id') id: User['id'],
+    @Me() userPayload: JwtPayloadType,
+    @Body() profileStatus: EmployeeProfileStatusDto,
+  ): Promise<SuccessResponseDto> {
+    if (id === userPayload.id) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.CannotChangeOwnStatus,
+      );
+    }
+    await this.usersService.updateEmployeeStatus(id, profileStatus.status);
+    return { success: true };
   }
 
   @Delete(':id')

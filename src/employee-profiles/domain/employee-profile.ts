@@ -38,6 +38,9 @@ export class EmployeeProfile {
   agenda?: Agenda | null;
 
   @ApiProperty()
+  status: boolean;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()

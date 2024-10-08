@@ -178,4 +178,21 @@ export class UsersService {
   async remove(id: User['id']): Promise<void> {
     await this.usersRepository.remove(id);
   }
+
+  async updateEmployeeStatus(id: User['id'], status: boolean) {
+    const user = await this.usersRepository.findById(id, { withProfile: true });
+    if (!user) {
+      throw new UnprocessableEntityException(exceptionResponses.UserNotFound);
+    }
+    if (!user.employeeProfile) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.ProfileNotExist,
+      );
+    }
+    await this.employeeProfilesRepository.update(user.employeeProfile.id, {
+      status,
+    });
+
+    return true;
+  }
 }

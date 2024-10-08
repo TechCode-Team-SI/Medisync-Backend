@@ -16,6 +16,7 @@ export class EmployeeProfileMapper {
     domainEntity.address = raw.address;
     domainEntity.birthday = raw.birthday;
     domainEntity.dni = raw.dni;
+    domainEntity.status = raw.status;
     if (raw.specialties) {
       domainEntity.specialties = raw.specialties.map((specialty) =>
         SpecialtyMapper.toDomain(specialty),
@@ -42,6 +43,7 @@ export class EmployeeProfileMapper {
     persistenceEntity.address = domainEntity.address;
     persistenceEntity.birthday = domainEntity.birthday;
     persistenceEntity.dni = domainEntity.dni;
+    persistenceEntity.status = domainEntity.status;
     if (domainEntity.specialties) {
       persistenceEntity.specialties = domainEntity.specialties.map(
         (specialty) => SpecialtyMapper.toPersistence(specialty),

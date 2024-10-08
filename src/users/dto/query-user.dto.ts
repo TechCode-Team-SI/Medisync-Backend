@@ -9,6 +9,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { BooleanTransformer } from 'src/utils/transformers/boolean.transformer';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
 import { User } from '../domain/user';
 
@@ -33,9 +34,15 @@ export class FilterUserDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(BooleanTransformer)
   @IsBoolean()
   onlyEmployee?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Transform(BooleanTransformer)
+  @IsBoolean()
+  status?: boolean;
 
   //Search by name
   @ApiPropertyOptional()

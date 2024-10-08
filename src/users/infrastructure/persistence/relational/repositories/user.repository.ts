@@ -94,10 +94,27 @@ export class UsersRelationalRepository
     if (filterOptions?.search) {
       where = { ...where, fullName: Like(`%${filterOptions?.search}%`) };
     }
-    if (filterOptions?.onlyEmployee) {
+    if (filterOptions?.onlyEmployee !== undefined) {
+      switch (filterOptions.onlyEmployee) {
+        case true:
+          where = {
+            ...where,
+            employeeProfile: { id: Not(IsNull()) },
+          };
+          break;
+        default:
+          where = {
+            ...where,
+            employeeProfile: { id: IsNull() },
+          };
+      }
+    }
+    if (filterOptions?.status !== undefined) {
       where = {
         ...where,
-        employeeProfile: { id: Not(IsNull()) },
+        employeeProfile: {
+          status: filterOptions.status,
+        },
       };
     }
 
@@ -163,10 +180,27 @@ export class UsersRelationalRepository
         },
       };
     }
-    if (filterOptions?.onlyEmployee) {
+    if (filterOptions?.onlyEmployee !== undefined) {
+      switch (filterOptions.onlyEmployee) {
+        case true:
+          where = {
+            ...where,
+            employeeProfile: { id: Not(IsNull()) },
+          };
+          break;
+        default:
+          where = {
+            ...where,
+            employeeProfile: { id: IsNull() },
+          };
+      }
+    }
+    if (filterOptions?.status !== undefined) {
       where = {
         ...where,
-        employeeProfile: { id: Not(IsNull()) },
+        employeeProfile: {
+          status: filterOptions.status,
+        },
       };
     }
     if (filterOptions?.search) {
