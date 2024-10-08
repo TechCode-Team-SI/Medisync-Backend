@@ -1,25 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
   NotFoundException,
+  Patch,
+  UseGuards,
 } from '@nestjs/common';
-import { MedicalCentersService } from './medical-centers.service';
-import { CreateMedicalCenterDto } from './dto/create-medical-center.dto';
-import { UpdateMedicalCenterDto } from './dto/update-medical-center.dto';
-import {
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { MedicalCenter } from './domain/medical-center';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { exceptionResponses } from 'src/medical-centers/medical-centers.messages';
+import { MedicalCenter } from './domain/medical-center';
+import { UpdateMedicalCenterDto } from './dto/update-medical-center.dto';
+import { MedicalCentersService } from './medical-centers.service';
 
 @ApiTags('Medicalcenters')
 @ApiBearerAuth()
@@ -30,20 +23,6 @@ import { exceptionResponses } from 'src/medical-centers/medical-centers.messages
 })
 export class MedicalCentersController {
   constructor(private readonly medicalCentersService: MedicalCentersService) {}
-
-  @Post()
-  @ApiCreatedResponse({
-    type: MedicalCenter,
-  })
-  async create(@Body() createMedicalCenterDto: CreateMedicalCenterDto) {
-    const entity = await this.medicalCentersService.findOne();
-
-    if (entity) {
-      throw new NotFoundException(exceptionResponses.Created);
-    }
-
-    return this.medicalCentersService.create(createMedicalCenterDto);
-  }
 
   @Get()
   @ApiOkResponse({
