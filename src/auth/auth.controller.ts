@@ -27,6 +27,8 @@ import { RefreshResponseDto } from './dto/refresh-response.dto';
 import { SuccessResponseDto } from './dto/success-response.dto';
 import { Me } from './auth.decorator';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
+import { IsValidPassCodeResponseDto } from './dto/auth-is-valid-code-response.dto';
+import { IsValidPassCodeDto } from './dto/auth-is-valid-code.dto';
 
 @ApiTags('Auth')
 @Controller({
@@ -95,6 +97,18 @@ export class AuthController {
       resetPasswordDto.code,
       resetPasswordDto.password,
     );
+  }
+
+  @Post('forgot/password-code')
+  @HttpCode(HttpStatus.OK)
+  async checkPassCode(
+    @Body() checkPassCodeDto: IsValidPassCodeDto,
+  ): Promise<IsValidPassCodeResponseDto> {
+    const isValid = await this.service.checkPasswordCode(
+      checkPassCodeDto.email,
+      checkPassCodeDto.code,
+    );
+    return { valid: isValid };
   }
 
   @ApiBearerAuth()

@@ -248,6 +248,25 @@ export class AuthService {
     };
   }
 
+  async checkPasswordCode(email: string, code: string): Promise<boolean> {
+    const passwordToken = await this.passwordTokenRepository.findOne({
+      email,
+      code,
+    });
+
+    if (!passwordToken) {
+      return false;
+    }
+
+    const user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+      return false;
+    }
+
+    return true;
+  }
+
   async me(userJwtPayload: JwtPayloadType): Promise<NullableType<User>> {
     return this.usersService.findById(userJwtPayload.id);
   }
