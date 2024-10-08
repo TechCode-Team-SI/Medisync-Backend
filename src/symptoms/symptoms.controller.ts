@@ -29,6 +29,7 @@ import {
 import { FindAllSymptomsDto } from './dto/find-all-symptoms.dto';
 import { exceptionResponses } from 'src/symptoms/symptoms.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 
 @ApiTags('Symptoms')
 @ApiBearerAuth()
@@ -41,6 +42,7 @@ export class SymptomsController {
   constructor(private readonly symptomsService: SymptomsService) {}
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @ApiCreatedResponse({
     type: Symptom,
   })

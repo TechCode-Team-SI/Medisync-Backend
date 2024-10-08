@@ -14,6 +14,7 @@ import { FieldQuestionSeedModule } from './question/question-seed.module';
 import { RequestTemplateSeedModule } from './request-template/request-template-seed.module';
 import { SpecialtySeedModule } from './specialty/specialty-seed.module';
 import { PackageSeedModule } from './package/package-seed.module';
+import { MedicalCenterSeedModule } from './medical-center/medical-center.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { PackageSeedModule } from './package/package-seed.module';
     RequestTemplateSeedModule,
     SpecialtySeedModule,
     PackageSeedModule,
+    MedicalCenterSeedModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, appConfig],

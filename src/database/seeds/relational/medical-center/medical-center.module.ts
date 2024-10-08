@@ -9,4 +9,4 @@ import { MedicalCenterSeedService } from './medical-center.service';
   providers: [MedicalCenterSeedService],
   exports: [MedicalCenterSeedService],
 })
-export class SpecialtySeedModule {}
+export class MedicalCenterSeedModule {}
