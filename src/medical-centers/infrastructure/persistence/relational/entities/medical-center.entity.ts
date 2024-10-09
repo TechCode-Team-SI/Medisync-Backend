@@ -7,6 +7,26 @@ import { ApiProperty } from '@nestjs/swagger';
 })
 export class MedicalCenterEntity extends EntityRelationalHelper {
   @ApiProperty()
+  @Column({ nullable: true })
+  instagramName: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  twitterName: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  facebookName: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  tiktokName: string;
+
+  @ApiProperty()
+  @Column()
+  email: string;
+
+  @ApiProperty()
   @PrimaryGeneratedColumn('increment')
   id: number;
 
