@@ -15,20 +15,19 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../users/domain/user';
 import { NullableType } from '../utils/types/nullable.type';
+import { Me } from './auth.decorator';
 import { AuthService } from './auth.service';
 import { AuthConfirmEmailDto } from './dto/auth-confirm-email.dto';
 import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
 import { AuthForgotPasswordDto } from './dto/auth-forgot-password.dto';
+import { IsValidPassCodeDto } from './dto/auth-is-valid-code.dto';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { RefreshResponseDto } from './dto/refresh-response.dto';
 import { SuccessResponseDto } from './dto/success-response.dto';
-import { Me } from './auth.decorator';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
-import { IsValidPassCodeResponseDto } from './dto/auth-is-valid-code-response.dto';
-import { IsValidPassCodeDto } from './dto/auth-is-valid-code.dto';
 
 @ApiTags('Auth')
 @Controller({
@@ -103,12 +102,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async checkPassCode(
     @Body() checkPassCodeDto: IsValidPassCodeDto,
-  ): Promise<IsValidPassCodeResponseDto> {
+  ): Promise<SuccessResponseDto> {
     const isValid = await this.service.checkPasswordCode(
       checkPassCodeDto.email,
       checkPassCodeDto.code,
     );
-    return { valid: isValid };
+    return { success: isValid };
   }
 
   @ApiBearerAuth()
