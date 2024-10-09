@@ -5,7 +5,10 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Symptom } from '../../domain/symptom';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
-import { SortSymptomsDto } from 'src/symptoms/dto/find-all-symptoms.dto';
+import {
+  FilterSymptomsDto,
+  SortSymptomsDto,
+} from 'src/symptoms/dto/find-all-symptoms.dto';
 
 export abstract class SymptomRepository extends BaseRepository {
   abstract create(
@@ -19,6 +22,7 @@ export abstract class SymptomRepository extends BaseRepository {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortSymptomsDto[] | null;
+    filterOptions?: FilterSymptomsDto | null;
   }): Promise<PaginationResponseDto<Symptom>>;
 
   abstract findManyByIds(

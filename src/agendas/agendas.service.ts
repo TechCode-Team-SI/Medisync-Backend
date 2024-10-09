@@ -9,7 +9,10 @@ import { AgendaRepository } from './infrastructure/persistence/agenda.repository
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Agenda } from './domain/agenda';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { SortAgendasDto } from 'src/agendas/dto/find-all-agendas.dto';
+import {
+  FilterAgendaDto,
+  SortAgendasDto,
+} from 'src/agendas/dto/find-all-agendas.dto';
 import { SpecialtiesService } from 'src/specialties/specialties.service';
 import { exceptionResponses } from './agendas.messages';
 import { EmployeeProfileRepository } from 'src/employee-profiles/infrastructure/persistence/employee-profile.repository';
@@ -30,10 +33,12 @@ export class AgendasService {
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortAgendasDto[] | null;
+    filterOptions?: FilterAgendaDto | null;
   }) {
     return this.agendaRepository.findAllWithPagination({
       paginationOptions: {
@@ -42,6 +47,7 @@ export class AgendasService {
       },
       options,
       sortOptions,
+      filterOptions,
     });
   }
 

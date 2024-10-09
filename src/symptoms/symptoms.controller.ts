@@ -62,6 +62,7 @@ export class SymptomsController {
     return this.symptomsService.findAllWithPagination({
       paginationOptions,
       sortOptions: query.sort,
+      filterOptions: query.filters,
     });
   }
 

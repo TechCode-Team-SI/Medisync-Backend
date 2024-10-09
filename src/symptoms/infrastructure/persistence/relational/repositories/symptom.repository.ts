@@ -5,6 +5,8 @@ import {
   DataSource,
   FindOneOptions,
   In,
+  FindOptionsWhere,
+  Like,
 } from 'typeorm';
 import { SymptomEntity } from '../entities/symptom.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -20,7 +22,10 @@ import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { REQUEST } from '@nestjs/core';
 import { formatOrder } from 'src/utils/utils';
-import { SortSymptomsDto } from 'src/symptoms/dto/find-all-symptoms.dto';
+import {
+  FilterSymptomsDto,
+  SortSymptomsDto,
+} from 'src/symptoms/dto/find-all-symptoms.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class SymptomRelationalRepository
@@ -53,11 +58,20 @@ export class SymptomRelationalRepository
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortSymptomsDto[] | null;
+    filterOptions?: FilterSymptomsDto | null;
   }): Promise<PaginationResponseDto<Symptom>> {
+    let where: FindOptionsWhere<SymptomEntity> = {};
+    if (filterOptions?.search) {
+      where = {
+        ...where,
+        name: Like(`%${filterOptions.search}%`),
+      };
+    }
     let order: FindOneOptions<SymptomEntity>['order'] = {};
     if (sortOptions) order = formatOrder(sortOptions);
 
@@ -69,6 +83,7 @@ export class SymptomRelationalRepository
       take: paginationOptions.limit,
       relations,
       order,
+      where,
     });
     const items = entities.map((entity) => SymptomMapper.toDomain(entity));
 

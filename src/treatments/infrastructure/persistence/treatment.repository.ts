@@ -5,7 +5,10 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Treatment } from '../../domain/treatment';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
-import { SortTreatmentsDto } from 'src/treatments/dto/find-all-treatments.dto';
+import {
+  FilterTreatmentsDto,
+  SortTreatmentsDto,
+} from 'src/treatments/dto/find-all-treatments.dto';
 
 export abstract class TreatmentRepository extends BaseRepository {
   abstract create(
@@ -19,6 +22,7 @@ export abstract class TreatmentRepository extends BaseRepository {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortTreatmentsDto[] | null;
+    filterOptions?: FilterTreatmentsDto | null;
   }): Promise<PaginationResponseDto<Treatment>>;
 
   abstract findManyByIds(

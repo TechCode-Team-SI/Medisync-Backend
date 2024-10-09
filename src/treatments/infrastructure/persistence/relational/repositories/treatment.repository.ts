@@ -5,6 +5,8 @@ import {
   DataSource,
   FindOneOptions,
   In,
+  FindOptionsWhere,
+  Like,
 } from 'typeorm';
 import { TreatmentEntity } from '../entities/treatment.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -20,7 +22,10 @@ import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { REQUEST } from '@nestjs/core';
 import { formatOrder } from 'src/utils/utils';
-import { SortTreatmentsDto } from 'src/treatments/dto/find-all-treatments.dto';
+import {
+  FilterTreatmentsDto,
+  SortTreatmentsDto,
+} from 'src/treatments/dto/find-all-treatments.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class TreatmentRelationalRepository
@@ -53,11 +58,20 @@ export class TreatmentRelationalRepository
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortTreatmentsDto[] | null;
+    filterOptions?: FilterTreatmentsDto | null;
   }): Promise<PaginationResponseDto<Treatment>> {
+    let where: FindOptionsWhere<TreatmentEntity> = {};
+    if (filterOptions?.search) {
+      where = {
+        ...where,
+        name: Like(`%${filterOptions.search}%`),
+      };
+    }
     let order: FindOneOptions<TreatmentEntity>['order'] = {};
     if (sortOptions) order = formatOrder(sortOptions);
 
@@ -69,6 +83,7 @@ export class TreatmentRelationalRepository
       take: paginationOptions.limit,
       relations,
       order,
+      where,
     });
     const items = entities.map((entity) => TreatmentMapper.toDomain(entity));
 

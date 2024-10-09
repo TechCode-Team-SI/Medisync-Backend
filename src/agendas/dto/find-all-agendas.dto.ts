@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   ValidateNested,
@@ -18,6 +19,14 @@ export class SortAgendasDto {
   @ApiProperty()
   @IsString()
   order: string;
+}
+
+export class FilterAgendaDto {
+  //Search by name
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
 
 export class FindAllAgendasDto {
@@ -39,4 +48,12 @@ export class FindAllAgendasDto {
   @ValidateNested({ each: true })
   @Type(() => SortAgendasDto)
   sort?: SortAgendasDto[] | null;
+
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  @IsObject()
+  @Transform(ObjectTransformer(FilterAgendaDto))
+  @ValidateNested()
+  @Type(() => FilterAgendaDto)
+  filters?: FilterAgendaDto | null;
 }

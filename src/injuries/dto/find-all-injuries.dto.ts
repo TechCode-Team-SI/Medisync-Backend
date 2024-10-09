@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   ValidateNested,
@@ -18,6 +19,14 @@ export class SortInjuriesDto {
   @ApiProperty()
   @IsString()
   order: string;
+}
+
+export class FilterInjuriesDto {
+  //Search by name
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
 
 export class FindAllInjuriesDto {
@@ -39,4 +48,12 @@ export class FindAllInjuriesDto {
   @ValidateNested({ each: true })
   @Type(() => SortInjuriesDto)
   sort?: SortInjuriesDto[] | null;
+
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  @IsObject()
+  @Transform(ObjectTransformer(FilterInjuriesDto))
+  @ValidateNested()
+  @Type(() => FilterInjuriesDto)
+  filters?: FilterInjuriesDto | null;
 }

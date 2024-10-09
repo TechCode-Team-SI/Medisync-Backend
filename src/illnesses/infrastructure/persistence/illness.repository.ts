@@ -5,7 +5,10 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Illness } from '../../domain/illness';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
-import { SortIllnessesDto } from 'src/illnesses/dto/find-all-illnesses.dto';
+import {
+  FilterIllnessesDto,
+  SortIllnessesDto,
+} from 'src/illnesses/dto/find-all-illnesses.dto';
 
 export abstract class IllnessRepository extends BaseRepository {
   abstract create(
@@ -24,6 +27,7 @@ export abstract class IllnessRepository extends BaseRepository {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortIllnessesDto[] | null;
+    filterOptions?: FilterIllnessesDto | null;
   }): Promise<PaginationResponseDto<Illness>>;
 
   abstract findById(

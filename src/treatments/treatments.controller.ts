@@ -60,6 +60,7 @@ export class treatmentsController {
     return this.TreatmentsService.findAllWithPagination({
       paginationOptions,
       sortOptions: query.sort,
+      filterOptions: query.filters,
     });
   }
 

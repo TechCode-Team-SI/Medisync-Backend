@@ -5,7 +5,10 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Article } from '../../domain/article';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
-import { SortArticleDto } from 'src/articles/dto/find-all-articles.dto';
+import {
+  FilterArticleDto,
+  SortArticleDto,
+} from 'src/articles/dto/find-all-articles.dto';
 
 export abstract class ArticleRepository extends BaseRepository {
   abstract create(
@@ -19,6 +22,7 @@ export abstract class ArticleRepository extends BaseRepository {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortArticleDto[] | null;
+    filterOptions?: FilterArticleDto | null;
   }): Promise<PaginationResponseDto<Article>>;
 
   abstract findById(

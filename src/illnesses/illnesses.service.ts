@@ -5,7 +5,10 @@ import { IllnessRepository } from './infrastructure/persistence/illness.reposito
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Illness } from './domain/illness';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { SortIllnessesDto } from 'src/illnesses/dto/find-all-illnesses.dto';
+import {
+  FilterIllnessesDto,
+  SortIllnessesDto,
+} from 'src/illnesses/dto/find-all-illnesses.dto';
 
 @Injectable()
 export class IllnessesService {
@@ -19,10 +22,12 @@ export class IllnessesService {
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortIllnessesDto[] | null;
+    filterOptions?: FilterIllnessesDto | null;
   }) {
     return this.illnessRepository.findAllWithPagination({
       paginationOptions: {
@@ -31,6 +36,7 @@ export class IllnessesService {
       },
       options,
       sortOptions,
+      filterOptions,
     });
   }
 

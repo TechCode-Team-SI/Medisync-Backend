@@ -10,6 +10,8 @@ import {
   DataSource,
   FindOneOptions,
   FindOptionsRelations,
+  FindOptionsWhere,
+  Like,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -18,7 +20,10 @@ import { Article } from '../../../../domain/article';
 import { ArticleRepository } from '../../article.repository';
 import { ArticleEntity } from '../entities/article.entity';
 import { ArticleMapper } from '../mappers/article.mapper';
-import { SortArticleDto } from 'src/articles/dto/find-all-articles.dto';
+import {
+  FilterArticleDto,
+  SortArticleDto,
+} from 'src/articles/dto/find-all-articles.dto';
 import { formatOrder } from 'src/utils/utils';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -52,11 +57,20 @@ export class ArticleRelationalRepository
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortArticleDto[] | null;
+    filterOptions?: FilterArticleDto | null;
   }): Promise<PaginationResponseDto<Article>> {
+    let where: FindOptionsWhere<ArticleEntity> = {};
+    if (filterOptions?.search) {
+      where = {
+        ...where,
+        title: Like(`%${filterOptions.search}%`),
+      };
+    }
     let order: FindOneOptions<ArticleEntity>['order'] = { createdAt: 'DESC' };
     if (sortOptions) order = formatOrder(sortOptions);
 
@@ -68,6 +82,7 @@ export class ArticleRelationalRepository
       take: paginationOptions.limit,
       relations,
       order,
+      where,
     });
     const items = entities.map((entity) => ArticleMapper.toDomain(entity));
 

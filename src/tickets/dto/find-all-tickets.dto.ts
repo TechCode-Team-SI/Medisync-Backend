@@ -27,6 +27,12 @@ export class FilterTicketDto {
   @IsOptional()
   @IsString()
   createdByIds?: string[] | null;
+
+  //Search by name
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
 
 export class SortTicketDto {

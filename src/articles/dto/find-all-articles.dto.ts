@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   ValidateNested,
@@ -18,6 +19,14 @@ export class SortArticleDto {
   @ApiProperty()
   @IsString()
   order: string;
+}
+
+export class FilterArticleDto {
+  //Search by name
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
 
 export class FindAllArticlesDto {
@@ -39,4 +48,12 @@ export class FindAllArticlesDto {
   @ValidateNested({ each: true })
   @Type(() => SortArticleDto)
   sort?: SortArticleDto[] | null;
+
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  @IsObject()
+  @Transform(ObjectTransformer(FilterArticleDto))
+  @ValidateNested()
+  @Type(() => FilterArticleDto)
+  filters?: FilterArticleDto | null;
 }

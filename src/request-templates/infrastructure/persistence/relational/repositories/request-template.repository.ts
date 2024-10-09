@@ -10,7 +10,9 @@ import {
   DataSource,
   FindOneOptions,
   FindOptionsRelations,
+  FindOptionsWhere,
   In,
+  Like,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -19,7 +21,10 @@ import { RequestTemplate } from '../../../../domain/request-template';
 import { RequestTemplateRepository } from '../../request-template.repository';
 import { RequestTemplateEntity } from '../entities/request-template.entity';
 import { RequestTemplateMapper } from '../mappers/request-template.mapper';
-import { SortRequestTemplateDto } from 'src/request-templates/dto/find-all-request-templates.dto';
+import {
+  FilterRequestTemplateDto,
+  SortRequestTemplateDto,
+} from 'src/request-templates/dto/find-all-request-templates.dto';
 import { formatOrder } from 'src/utils/utils';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -72,11 +77,19 @@ export class RequestTemplateRelationalRepository
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortRequestTemplateDto[] | null;
+    filterOptions?: FilterRequestTemplateDto | null;
   }): Promise<PaginationResponseDto<RequestTemplate>> {
+    let where: FindOptionsWhere<RequestTemplateEntity> = {};
+    if (filterOptions?.search) {
+      where = {
+        name: Like(`%${filterOptions.search}%`),
+      };
+    }
     let order: FindOneOptions<RequestTemplateEntity>['order'] = {
       createdAt: 'DESC',
     };
@@ -91,6 +104,7 @@ export class RequestTemplateRelationalRepository
         take: paginationOptions.limit,
         relations,
         order,
+        where,
       },
     );
     const items = entities.map((entity) =>

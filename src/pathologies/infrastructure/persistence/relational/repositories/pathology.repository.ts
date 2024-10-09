@@ -4,6 +4,8 @@ import {
   FindOptionsRelations,
   DataSource,
   FindOneOptions,
+  FindOptionsWhere,
+  Like,
 } from 'typeorm';
 import { PathologyEntity } from '../entities/pathology.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -19,7 +21,10 @@ import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { REQUEST } from '@nestjs/core';
 import { formatOrder } from 'src/utils/utils';
-import { SortPathologiesDto } from 'src/pathologies/dto/find-all-pathologies.dto';
+import {
+  FilterPathologiesDto,
+  SortPathologiesDto,
+} from 'src/pathologies/dto/find-all-pathologies.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class PathologyRelationalRepository
@@ -52,11 +57,19 @@ export class PathologyRelationalRepository
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortPathologiesDto[] | null;
+    filterOptions?: FilterPathologiesDto | null;
   }): Promise<PaginationResponseDto<Pathology>> {
+    let where: FindOptionsWhere<PathologyEntity> = {};
+    if (filterOptions?.search) {
+      where = {
+        name: Like(`%${filterOptions.search}%`),
+      };
+    }
     let order: FindOneOptions<PathologyEntity>['order'] = {};
     if (sortOptions) order = formatOrder(sortOptions);
 
@@ -68,6 +81,7 @@ export class PathologyRelationalRepository
       take: paginationOptions.limit,
       relations,
       order,
+      where,
     });
     const items = entities.map((entity) => PathologyMapper.toDomain(entity));
 

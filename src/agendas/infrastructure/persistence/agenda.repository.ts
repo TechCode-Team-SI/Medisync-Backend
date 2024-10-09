@@ -5,7 +5,10 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Agenda } from '../../domain/agenda';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
-import { SortAgendasDto } from 'src/agendas/dto/find-all-agendas.dto';
+import {
+  FilterAgendaDto,
+  SortAgendasDto,
+} from 'src/agendas/dto/find-all-agendas.dto';
 
 export abstract class AgendaRepository extends BaseRepository {
   abstract create(
@@ -19,6 +22,7 @@ export abstract class AgendaRepository extends BaseRepository {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortAgendasDto[] | null;
+    filterOptions?: FilterAgendaDto | null;
   }): Promise<PaginationResponseDto<Agenda>>;
 
   abstract findById(

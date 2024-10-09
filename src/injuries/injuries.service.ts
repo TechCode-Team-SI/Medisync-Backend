@@ -5,7 +5,10 @@ import { InjuryRepository } from './infrastructure/persistence/injury.repository
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Injury } from './domain/injury';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { SortInjuriesDto } from 'src/injuries/dto/find-all-injuries.dto';
+import {
+  FilterInjuriesDto,
+  SortInjuriesDto,
+} from 'src/injuries/dto/find-all-injuries.dto';
 
 @Injectable()
 export class InjuriesService {
@@ -19,10 +22,12 @@ export class InjuriesService {
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortInjuriesDto[] | null;
+    filterOptions?: FilterInjuriesDto | null;
   }) {
     return this.injuryRepository.findAllWithPagination({
       paginationOptions: {
@@ -31,6 +36,7 @@ export class InjuriesService {
       },
       options,
       sortOptions,
+      filterOptions,
     });
   }
 

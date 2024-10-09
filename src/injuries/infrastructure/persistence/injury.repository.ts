@@ -5,7 +5,10 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Injury } from '../../domain/injury';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
-import { SortInjuriesDto } from 'src/injuries/dto/find-all-injuries.dto';
+import {
+  FilterInjuriesDto,
+  SortInjuriesDto,
+} from 'src/injuries/dto/find-all-injuries.dto';
 
 export abstract class InjuryRepository extends BaseRepository {
   abstract create(
@@ -15,10 +18,12 @@ export abstract class InjuryRepository extends BaseRepository {
   abstract findAllWithPagination({
     paginationOptions,
     options,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortInjuriesDto[] | null;
+    filterOptions?: FilterInjuriesDto | null;
   }): Promise<PaginationResponseDto<Injury>>;
 
   abstract findManyByIds(

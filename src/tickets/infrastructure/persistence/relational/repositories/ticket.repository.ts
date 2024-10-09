@@ -17,6 +17,7 @@ import {
   FindOptionsRelations,
   FindOptionsWhere,
   In,
+  Like,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -68,6 +69,12 @@ export class TicketRelationalRepository
     if (sortOptions) order = formatOrder(sortOptions);
 
     let where: FindOptionsWhere<TicketEntity> = {};
+    if (filterOptions?.search) {
+      where = {
+        ...where,
+        title: Like(`%${filterOptions.search}%`),
+      };
+    }
     if (filterOptions?.type) where = { ...where, type: filterOptions.type };
     if (filterOptions?.status)
       where = { ...where, status: filterOptions.status };

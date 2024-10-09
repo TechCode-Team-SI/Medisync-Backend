@@ -60,6 +60,7 @@ export class AgendasController {
     return this.agendasService.findAllWithPagination({
       paginationOptions,
       sortOptions: query.sort,
+      filterOptions: query.filters,
     });
   }
 

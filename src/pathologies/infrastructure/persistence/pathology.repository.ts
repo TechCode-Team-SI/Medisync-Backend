@@ -5,7 +5,10 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Pathology } from '../../domain/pathology';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
-import { SortPathologiesDto } from 'src/pathologies/dto/find-all-pathologies.dto';
+import {
+  FilterPathologiesDto,
+  SortPathologiesDto,
+} from 'src/pathologies/dto/find-all-pathologies.dto';
 
 export abstract class PathologyRepository extends BaseRepository {
   abstract create(
@@ -15,10 +18,12 @@ export abstract class PathologyRepository extends BaseRepository {
   abstract findAllWithPagination({
     paginationOptions,
     options,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortPathologiesDto[] | null;
+    filterOptions?: FilterPathologiesDto | null;
   }): Promise<PaginationResponseDto<Pathology>>;
 
   abstract findById(

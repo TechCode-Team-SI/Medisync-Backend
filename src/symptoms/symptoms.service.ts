@@ -5,7 +5,10 @@ import { SymptomRepository } from './infrastructure/persistence/symptom.reposito
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Symptom } from './domain/symptom';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { SortSymptomsDto } from 'src/symptoms/dto/find-all-symptoms.dto';
+import {
+  FilterSymptomsDto,
+  SortSymptomsDto,
+} from 'src/symptoms/dto/find-all-symptoms.dto';
 
 @Injectable()
 export class SymptomsService {
@@ -19,10 +22,12 @@ export class SymptomsService {
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortSymptomsDto[] | null;
+    filterOptions?: FilterSymptomsDto | null;
   }) {
     return this.symptomRepository.findAllWithPagination({
       paginationOptions: {
@@ -31,6 +36,7 @@ export class SymptomsService {
       },
       options,
       sortOptions,
+      filterOptions,
     });
   }
 

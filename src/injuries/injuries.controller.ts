@@ -60,6 +60,7 @@ export class InjuriesController {
     return this.injuriesService.findAllWithPagination({
       paginationOptions,
       sortOptions: query.sort,
+      filterOptions: query.filters,
     });
   }
 

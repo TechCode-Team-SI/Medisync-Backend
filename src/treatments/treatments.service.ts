@@ -5,7 +5,10 @@ import { TreatmentRepository } from './infrastructure/persistence/treatment.repo
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Treatment } from './domain/treatment';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { SortTreatmentsDto } from 'src/treatments/dto/find-all-treatments.dto';
+import {
+  FilterTreatmentsDto,
+  SortTreatmentsDto,
+} from 'src/treatments/dto/find-all-treatments.dto';
 
 @Injectable()
 export class TreatmentsService {
@@ -19,10 +22,12 @@ export class TreatmentsService {
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortTreatmentsDto[] | null;
+    filterOptions?: FilterTreatmentsDto | null;
   }) {
     return this.TreatmentRepository.findAllWithPagination({
       paginationOptions: {
@@ -31,6 +36,7 @@ export class TreatmentsService {
       },
       options,
       sortOptions,
+      filterOptions,
     });
   }
 

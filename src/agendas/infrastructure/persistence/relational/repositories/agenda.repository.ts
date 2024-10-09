@@ -4,6 +4,8 @@ import {
   FindOptionsRelations,
   DataSource,
   FindOneOptions,
+  FindOptionsWhere,
+  Like,
 } from 'typeorm';
 import { AgendaEntity } from '../entities/agenda.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -19,7 +21,10 @@ import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { REQUEST } from '@nestjs/core';
 import { formatOrder } from 'src/utils/utils';
-import { SortAgendasDto } from 'src/agendas/dto/find-all-agendas.dto';
+import {
+  FilterAgendaDto,
+  SortAgendasDto,
+} from 'src/agendas/dto/find-all-agendas.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AgendaRelationalRepository
@@ -52,11 +57,20 @@ export class AgendaRelationalRepository
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortAgendasDto[] | null;
+    filterOptions?: FilterAgendaDto | null;
   }): Promise<PaginationResponseDto<Agenda>> {
+    let where: FindOptionsWhere<AgendaEntity> = {};
+    if (filterOptions?.search) {
+      where = {
+        ...where,
+        name: Like(`%${filterOptions.search}%`),
+      };
+    }
     let order: FindOneOptions<AgendaEntity>['order'] = {};
     if (sortOptions) order = formatOrder(sortOptions);
 
@@ -68,6 +82,7 @@ export class AgendaRelationalRepository
       take: paginationOptions.limit,
       relations,
       order,
+      where,
     });
     const items = entities.map((entity) => AgendaMapper.toDomain(entity));
 
