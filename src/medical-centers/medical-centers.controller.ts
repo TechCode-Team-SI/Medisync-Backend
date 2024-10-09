@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   NotFoundException,
   Patch,
@@ -15,8 +14,6 @@ import { UpdateMedicalCenterDto } from './dto/update-medical-center.dto';
 import { MedicalCentersService } from './medical-centers.service';
 
 @ApiTags('Medicalcenters')
-@ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
 @Controller({
   path: 'medical-centers',
   version: '1',
@@ -39,15 +36,12 @@ export class MedicalCentersController {
   }
 
   @Patch()
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
     type: MedicalCenter,
   })
   update(@Body() updateMedicalCenterDto: UpdateMedicalCenterDto) {
     return this.medicalCentersService.update(updateMedicalCenterDto);
-  }
-
-  @Delete()
-  remove() {
-    return this.medicalCentersService.remove();
   }
 }

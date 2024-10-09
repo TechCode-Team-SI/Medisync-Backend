@@ -35,8 +35,6 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 
 @ApiTags('Articles')
-@ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
 @Controller({
   path: 'articles',
   version: '1',
@@ -45,6 +43,8 @@ export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
   @Post()
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(TransactionInterceptor)
   @ApiCreatedResponse({
     type: Article,
@@ -91,6 +91,8 @@ export class ArticlesController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @ApiParam({
     name: 'id',
     type: String,
@@ -104,6 +106,8 @@ export class ArticlesController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @ApiParam({
     name: 'id',
     type: String,
