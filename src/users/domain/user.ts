@@ -3,6 +3,7 @@ import { Exclude } from 'class-transformer';
 import { FileType } from '../../files/domain/file';
 import { Role } from '../../roles/domain/role';
 import { EmployeeProfile } from '../../employee-profiles/domain/employee-profile';
+import { UserPatient } from 'src/user-patients/domain/user-patient';
 
 const idType = Number;
 
@@ -39,6 +40,11 @@ export class User {
     type: () => Role,
   })
   roles?: Role[] | null;
+
+  @ApiProperty({
+    type: () => UserPatient,
+  })
+  userPatients?: UserPatient[] | null;
 
   @ApiProperty({
     type: () => EmployeeProfile,

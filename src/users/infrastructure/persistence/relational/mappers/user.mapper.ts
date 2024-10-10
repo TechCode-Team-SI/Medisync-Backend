@@ -6,6 +6,8 @@ import { User } from '../../../../domain/user';
 import { UserEntity } from '../entities/user.entity';
 import { EmployeeProfileMapper } from 'src/employee-profiles/infrastructure/persistence/relational/mappers/employee-profile.mapper';
 import { EmployeeProfileEntity } from '../../../../../employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
+import { UserPatientMapper } from 'src/user-patients/infrastructure/persistence/relational/mappers/user-patient.mapper';
+import { UserPatientEntity } from 'src/user-patients/infrastructure/persistence/relational/entities/user-patient.entity';
 
 export class UserMapper {
   static toDomain(raw: UserEntity): User {
@@ -25,6 +27,11 @@ export class UserMapper {
       domainEntity.employeeProfile = EmployeeProfileMapper.toDomain(
         raw.employeeProfile,
       );
+    }
+    if (raw.userPatients && raw.userPatients.length > 0) {
+      domainEntity.userPatients = raw.userPatients.map((userPatient) => {
+        return UserPatientMapper.toDomain(userPatient);
+      });
     }
     domainEntity.phone = raw.phone;
     domainEntity.createdAt = raw.createdAt;
@@ -60,6 +67,13 @@ export class UserMapper {
       );
     }
 
+    let userPatients: UserPatientEntity[] | undefined = undefined;
+    if (domainEntity.userPatients) {
+      userPatients = domainEntity.userPatients.map((userPatient) => {
+        return UserPatientMapper.toPersistence(userPatient);
+      });
+    }
+
     const persistenceEntity = new UserEntity();
     if (domainEntity.phone) {
       persistenceEntity.phone = domainEntity.phone;
@@ -73,6 +87,7 @@ export class UserMapper {
     persistenceEntity.photo = photo;
     persistenceEntity.roles = roles;
     persistenceEntity.employeeProfile = employeeProfile;
+    persistenceEntity.userPatients = userPatients;
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
     persistenceEntity.deletedAt = domainEntity.deletedAt;

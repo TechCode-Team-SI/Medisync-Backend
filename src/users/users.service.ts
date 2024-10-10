@@ -15,6 +15,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { exceptionResponses } from './users.messages';
+import { UserPatientRepository } from 'src/user-patients/infrastructure/persistence/user-patient.repository';
+import { CreateUserPatientDto } from 'src/user-patients/dto/create-user-patient.dto';
+import { UserPatient } from 'src/user-patients/domain/user-patient';
+import { UpdateUserPatientDto } from 'src/user-patients/dto/update-user-patient.dto';
 
 @Injectable()
 export class UsersService {
@@ -23,6 +27,7 @@ export class UsersService {
     private readonly filesService: FilesService,
     private readonly rolesService: RolesService,
     private readonly employeeProfilesRepository: EmployeeProfileRepository,
+    private readonly userPatientsRepository: UserPatientRepository,
   ) {}
 
   async create(createProfileDto: CreateUserDto): Promise<User> {
@@ -194,5 +199,26 @@ export class UsersService {
     });
 
     return true;
+  }
+
+  async createUserPatient(
+    id: User['id'],
+    createPatientDto: CreateUserPatientDto,
+  ) {
+    const user = new User();
+    user.id = id;
+    const clonedPayload = {
+      ...createPatientDto,
+      user,
+    };
+
+    return this.userPatientsRepository.create(clonedPayload);
+  }
+
+  async updateUserPatient(
+    id: UserPatient['id'],
+    updatePatientDto: UpdateUserPatientDto,
+  ) {
+    return this.userPatientsRepository.update(id, updatePatientDto);
   }
 }

@@ -55,8 +55,11 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
 
 import { SchedulesModule } from './schedules/schedules.module';
 
+import { UserPatientsModule } from './user-patients/user-patients.module';
+
 @Module({
   imports: [
+    UserPatientsModule,
     SchedulesModule,
     NotificationUsersModule,
     NotificationsModule,

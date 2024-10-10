@@ -1,3 +1,13 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
+import { ArticleEntity } from 'src/articles/infrastructure/persistence/relational/entities/article.entity';
+import { ConfirmEmailTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/confirm-email-token.entity';
+import { PasswordTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/password-token.entity';
+import { EmployeeProfileEntity } from 'src/employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
+import { FileEntity } from 'src/files/infrastructure/persistence/relational/entities/file.entity';
+import { RoleEntity } from 'src/roles/infrastructure/persistence/relational/entities/role.entity';
+import { UserPatientEntity } from 'src/user-patients/infrastructure/persistence/relational/entities/user-patient.entity';
+import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
 import {
   Column,
   CreateDateColumn,
@@ -11,15 +21,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
-import { ArticleEntity } from 'src/articles/infrastructure/persistence/relational/entities/article.entity';
-import { ConfirmEmailTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/confirm-email-token.entity';
-import { PasswordTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/password-token.entity';
-import { FileEntity } from 'src/files/infrastructure/persistence/relational/entities/file.entity';
-import { RoleEntity } from 'src/roles/infrastructure/persistence/relational/entities/role.entity';
-import { EmployeeProfileEntity } from 'src/employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
-import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
 
 @Entity({
   name: 'user',
@@ -90,6 +91,12 @@ export class UserEntity extends EntityRelationalHelper {
     { cascade: true },
   )
   employeeProfile?: EmployeeProfileEntity;
+
+  @ApiProperty()
+  @OneToMany(() => UserPatientEntity, (userPatient) => userPatient.user, {
+    cascade: ['insert', 'update'],
+  })
+  userPatients?: UserPatientEntity[] | null;
 
   @ApiProperty()
   @CreateDateColumn()

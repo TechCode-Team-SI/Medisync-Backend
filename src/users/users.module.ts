@@ -8,6 +8,7 @@ import { RelationalUserPersistenceModule } from './infrastructure/persistence/re
 import { UsersService } from './users.service';
 import { permissionsModule } from 'src/permissions/permissions.module';
 import { EmployeeProfilesModule } from 'src/employee-profiles/employee-profiles.module';
+import { UserPatientsModule } from 'src/user-patients/user-patients.module';
 
 const infrastructurePersistenceModule = RelationalUserPersistenceModule;
 
@@ -18,6 +19,7 @@ const infrastructurePersistenceModule = RelationalUserPersistenceModule;
     RolesModule,
     permissionsModule,
     EmployeeProfilesModule,
+    UserPatientsModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
