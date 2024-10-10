@@ -23,7 +23,7 @@ export class MedicalCenterEntity extends EntityRelationalHelper {
   tiktokName: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ nullable: true })
   email: string;
 
   @ApiProperty()
