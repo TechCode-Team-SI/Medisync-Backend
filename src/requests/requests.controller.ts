@@ -23,6 +23,10 @@ import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 import { CreateRatingDto } from 'src/ratings/dto/create-rating.dto';
 import { RatingsService } from 'src/ratings/ratings.service';
+import { RequestSavedData } from 'src/request-saved-data/domain/request-saved-data';
+import { CreateRequestSavedDataDto } from 'src/request-saved-data/dto/create-request-saved-data.dto';
+import { FindAllRequestSavedDataDto } from 'src/request-saved-data/dto/find-all-request-saved-data.dto';
+import { RequestSavedDataService } from 'src/request-saved-data/request-saved-data.service';
 import { exceptionResponses } from 'src/requests/requests.messages';
 import { getPagination } from 'src/utils/get-pagination';
 import {
@@ -35,10 +39,8 @@ import { CreateRequestDto } from './dto/create-request.dto';
 import { FindAllRequestsDto } from './dto/find-all-requests.dto';
 import { FinishRequestDto } from './dto/finish-request.dto';
 import { RequestsService } from './requests.service';
-import { RequestSavedData } from 'src/request-saved-data/domain/request-saved-data';
-import { RequestSavedDataService } from 'src/request-saved-data/request-saved-data.service';
-import { FindAllRequestSavedDataDto } from 'src/request-saved-data/dto/find-all-request-saved-data.dto';
-import { CreateRequestSavedDataDto } from 'src/request-saved-data/dto/create-request-saved-data.dto';
+import { CreateRequestPrivateDto } from './dto/create-request-private.dto';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 
 @ApiTags('Requests')
 @ApiBearerAuth()
@@ -56,14 +58,32 @@ export class RequestsController {
 
   //In private, the user can create a request with a reference
   @Post('reference')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiCreatedResponse({
     type: Request,
   })
   createWithReference(
-    @Me() userPayload: JwtPayloadType,
     @Body() createRequestDto: CreateRequestWithReferenceDto,
+    @Me() userPayload: JwtPayloadType,
   ) {
-    return this.requestsService.create(createRequestDto, userPayload.id);
+    return this.requestsService.create(createRequestDto, userPayload.id, {
+      shouldBeSameAsUser: false,
+    });
+  }
+
+  //In private, the user can create a request with a reference
+  @Post('private')
+  @UseGuards(EmployeeOnlyGuard)
+  @ApiCreatedResponse({
+    type: Request,
+  })
+  createPrivate(
+    @Body() createRequestDto: CreateRequestPrivateDto,
+    @Me() userPayload: JwtPayloadType,
+  ) {
+    return this.requestsService.create(createRequestDto, userPayload.id, {
+      shouldBeSameAsUser: false,
+    });
   }
 
   //In public, the user can create a request without a reference

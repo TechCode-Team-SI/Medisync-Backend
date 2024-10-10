@@ -4,6 +4,8 @@ import {
   FindOptionsRelations,
   DataSource,
   FindOneOptions,
+  FindOptionsWhere,
+  Like,
 } from 'typeorm';
 import { UserPatientEntity } from '../entities/user-patient.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -19,7 +21,10 @@ import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { REQUEST } from '@nestjs/core';
 import { formatOrder } from 'src/utils/utils';
-import { SortUserPatientsDto } from 'src/user-patients/dto/find-all-user-patients.dto';
+import {
+  FilterUserPatientsDto,
+  SortUserPatientsDto,
+} from 'src/user-patients/dto/find-all-user-patients.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserPatientRelationalRepository
@@ -52,11 +57,28 @@ export class UserPatientRelationalRepository
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortUserPatientsDto[] | null;
+    filterOptions?: FilterUserPatientsDto | null;
   }): Promise<PaginationResponseDto<UserPatient>> {
+    let where: FindOptionsWhere<UserPatientEntity> = {};
+    if (filterOptions?.search) {
+      where = {
+        ...where,
+        fullName: Like(`%${filterOptions.search}%`),
+      };
+    }
+    if (filterOptions?.userId) {
+      where = {
+        ...where,
+        user: {
+          id: filterOptions.userId,
+        },
+      };
+    }
     let order: FindOneOptions<UserPatientEntity>['order'] = {};
     if (sortOptions) order = formatOrder(sortOptions);
 
@@ -68,6 +90,7 @@ export class UserPatientRelationalRepository
       take: paginationOptions.limit,
       relations,
       order,
+      where,
     });
     const items = entities.map((entity) => UserPatientMapper.toDomain(entity));
 

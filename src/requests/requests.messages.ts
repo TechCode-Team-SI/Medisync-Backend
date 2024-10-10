@@ -5,37 +5,47 @@ export const exceptionResponses: HTTPErrorMessage = {
   NotFound: {
     status: HttpStatus.NOT_FOUND,
     error: 'requests_not_found',
-    message: 'Request not found',
+    message: 'Solicitud no encontrada',
   },
   RequestTemplateNotExists: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     error: 'requests_template_not_exist',
-    message: 'Request template does not exists',
+    message: 'La planilla de solicitud no existe',
   },
   SpecialtyNotExists: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     error: 'specialty_not_exist',
-    message: 'Specialty does not exists',
+    message: 'La especialidad no existe',
   },
   InvalidAnswer: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     error: 'invalid_request_answer',
-    message: 'The answer you provided for one of the fields is invalid',
+    message: 'La respuesta que ingresaste para uno de los campos es invalida',
   },
   MedicNotExists: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     error: 'medic_not_exist',
-    message: 'The medic does not exist',
+    message: 'El medico no existe',
   },
   CurrentUserNotExists: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     error: 'current_user_not_exists',
-    message: 'The current user does not exist',
+    message: 'El usuario actual no existe',
   },
   SelectedMedicNotAllowed: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     error: 'selected_medic_not_allowed',
-    message: 'The medic you selected is not valid',
+    message: 'El medico que seleccionaste no esta permitido',
+  },
+  PatientNotAllowed: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'user_patient_not_allowed',
+    message: 'Paciente no permitido',
+  },
+  PatientNotExists: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'user_patient_not_exist',
+    message: 'Paciente no existe',
   },
   CurrentMedicNotAllowed: {
     status: HttpStatus.FORBIDDEN,

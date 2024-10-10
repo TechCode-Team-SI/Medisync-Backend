@@ -26,6 +26,12 @@ export class FilterRequestDto {
   @IsString({ each: true })
   madeByIds?: string[] | null;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  madeForIds?: string[] | null;
+
   @ApiPropertyOptional({ type: RequestStatusEnum })
   @IsOptional()
   @IsEnum(RequestStatusEnum)

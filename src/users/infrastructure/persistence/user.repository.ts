@@ -39,7 +39,11 @@ export abstract class UserRepository extends BaseRepository {
 
   abstract findById(
     id: User['id'],
-    options?: findOptions & { withProfile?: boolean; withSpecialty?: boolean },
+    options?: findOptions & {
+      withProfile?: boolean;
+      withSpecialty?: boolean;
+      withUserPatients?: boolean;
+    },
   ): Promise<NullableType<User>>;
   abstract findByEmail(email: User['email']): Promise<NullableType<User>>;
 

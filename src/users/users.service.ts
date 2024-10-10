@@ -19,6 +19,10 @@ import { UserPatientRepository } from 'src/user-patients/infrastructure/persiste
 import { CreateUserPatientDto } from 'src/user-patients/dto/create-user-patient.dto';
 import { UserPatient } from 'src/user-patients/domain/user-patient';
 import { UpdateUserPatientDto } from 'src/user-patients/dto/update-user-patient.dto';
+import {
+  FilterUserPatientsDto,
+  SortUserPatientsDto,
+} from 'src/user-patients/dto/find-all-user-patients.dto';
 
 @Injectable()
 export class UsersService {
@@ -107,7 +111,11 @@ export class UsersService {
 
   findById(
     id: User['id'],
-    options?: findOptions & { withProfile?: boolean; withSpecialty?: boolean },
+    options?: findOptions & {
+      withProfile?: boolean;
+      withSpecialty?: boolean;
+      withUserPatients?: boolean;
+    },
   ): Promise<NullableType<User>> {
     return this.usersRepository.findById(id, options);
   }
@@ -201,6 +209,29 @@ export class UsersService {
     return true;
   }
 
+  async getUserPatients(
+    id: User['id'],
+    options: {
+      paginationOptions: IPaginationOptions;
+      options?: findOptions;
+      sortOptions?: SortUserPatientsDto[] | null;
+      filterOptions?: FilterUserPatientsDto | null;
+    },
+  ) {
+    const filterOptions = {
+      ...options.filterOptions,
+      userId: id,
+    };
+    return this.userPatientsRepository.findAllWithPagination({
+      ...options,
+      filterOptions,
+    });
+  }
+
+  async findUserPatient(id: string) {
+    return this.userPatientsRepository.findById(id);
+  }
+
   async createUserPatient(
     id: User['id'],
     createPatientDto: CreateUserPatientDto,
@@ -216,9 +247,24 @@ export class UsersService {
   }
 
   async updateUserPatient(
+    userId: string,
     id: UserPatient['id'],
     updatePatientDto: UpdateUserPatientDto,
   ) {
+    const user = await this.usersRepository.findById(userId, {
+      withUserPatients: true,
+    });
+    if (!user) {
+      throw new UnprocessableEntityException(exceptionResponses.UserNotFound);
+    }
+    const foundPatient = user.userPatients?.find(
+      (patient) => patient.id === id,
+    );
+    if (!foundPatient) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.PatientNotFound,
+      );
+    }
     return this.userPatientsRepository.update(id, updatePatientDto);
   }
 }

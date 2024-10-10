@@ -3,7 +3,6 @@ import { RequestTemplateEntity } from 'src/request-templates/infrastructure/pers
 import { RequestStatusEnum } from 'src/requests/requests.enum';
 import { SpecialtyEntity } from 'src/specialties/infrastructure/persistence/relational/entities/specialty.entity';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
-import { RatingEntity } from 'src/ratings/infrastructure/persistence/relational/entities/rating.entity';
 import {
   Column,
   CreateDateColumn,
@@ -15,6 +14,8 @@ import {
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { RequestValueEntity } from './request-value.entity';
+import { UserPatientEntity } from 'src/user-patients/infrastructure/persistence/relational/entities/user-patient.entity';
+import { RatingEntity } from 'src/ratings/infrastructure/persistence/relational/entities/rating.entity';
 
 @Entity({
   name: 'request',
@@ -35,6 +36,10 @@ export class RequestEntity extends EntityRelationalHelper {
   @ApiProperty()
   @Column()
   patientAddress: string;
+
+  @ApiProperty()
+  @ManyToOne(() => UserPatientEntity)
+  madeFor?: UserPatientEntity | null;
 
   @ApiProperty()
   @ManyToOne(() => UserEntity)

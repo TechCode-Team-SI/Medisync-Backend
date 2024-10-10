@@ -5,6 +5,8 @@ import { RequestTemplateDto } from 'src/request-templates/dto/request-template.d
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
 import { IsHourFormat } from 'src/utils/validators/is-hour-format';
 import { RequestValueDto } from './request-value.dto';
+import { UserPatientIdDto } from 'src/user-patients/dto/user-patient-id.dto';
+import { Type } from 'class-transformer';
 
 export class CreateRequestDto {
   @ApiProperty()
@@ -40,4 +42,9 @@ export class CreateRequestDto {
   @ApiProperty({ type: () => RequestValueDto })
   @IsNotEmpty()
   requestValues: RequestValueDto[];
+
+  @ApiProperty({ type: () => UserPatientIdDto })
+  @IsNotEmpty()
+  @Type(() => UserPatientIdDto)
+  madeFor?: UserPatientIdDto | null;
 }

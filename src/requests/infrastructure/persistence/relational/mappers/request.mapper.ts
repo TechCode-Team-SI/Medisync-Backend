@@ -1,3 +1,4 @@
+import { SelectionConfiguration } from 'src/field-questions/domain/selection-configuration';
 import { RequestTemplateMapper } from 'src/request-templates/infrastructure/persistence/relational/mappers/request-template.mapper';
 import {
   RequestFormatted,
@@ -6,12 +7,12 @@ import {
 } from 'src/requests/domain/request-formatted';
 import { RequestStatusEnum } from 'src/requests/requests.enum';
 import { SpecialtyMapper } from 'src/specialties/infrastructure/persistence/relational/mappers/specialty.mapper';
+import { UserPatientMapper } from 'src/user-patients/infrastructure/persistence/relational/mappers/user-patient.mapper';
 import { UserMapper } from 'src/users/infrastructure/persistence/relational/mappers/user.mapper';
 import { isValueInEnum } from 'src/utils/utils';
 import { Request } from '../../../../domain/request';
 import { RequestEntity } from '../entities/request.entity';
 import { RequestValueMapper } from './request-value.mapper';
-import { SelectionConfiguration } from 'src/field-questions/domain/selection-configuration';
 import { RatingMapper } from 'src/ratings/infrastructure/persistence/relational/mappers/rating.mapper';
 
 export class RequestMapper {
@@ -41,11 +42,14 @@ export class RequestMapper {
         RequestValueMapper.toDomain(value),
       );
     }
+    if (raw.madeBy) {
+      domainEntity.madeBy = UserMapper.toDomain(raw.madeBy);
+    }
     if (raw.rating) {
       domainEntity.rating = RatingMapper.toDomain(raw.rating);
     }
-    if (raw.madeBy) {
-      domainEntity.madeBy = UserMapper.toDomain(raw.madeBy);
+    if (raw.madeFor) {
+      domainEntity.madeFor = UserPatientMapper.toDomain(raw.madeFor);
     }
     if (raw.referredBy) {
       domainEntity.requestedMedic = UserMapper.toDomain(raw.requestedMedic);
@@ -71,6 +75,11 @@ export class RequestMapper {
     if (domainEntity.requestedMedic) {
       persistenceEntity.requestedMedic = UserMapper.toPersistence(
         domainEntity.requestedMedic,
+      );
+    }
+    if (domainEntity.madeFor) {
+      persistenceEntity.madeFor = UserPatientMapper.toPersistence(
+        domainEntity.madeFor,
       );
     }
     if (domainEntity.madeBy) {

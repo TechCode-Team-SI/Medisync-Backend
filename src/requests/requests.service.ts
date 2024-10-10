@@ -24,6 +24,7 @@ import { FinishRequestDto } from './dto/finish-request.dto';
 import { RequestRepository } from './infrastructure/persistence/request.repository';
 import { RequestStatusEnum } from './requests.enum';
 import { exceptionResponses } from './requests.messages';
+import { UserPatient } from 'src/user-patients/domain/user-patient';
 @Injectable()
 export class RequestsService {
   constructor(
@@ -39,6 +40,7 @@ export class RequestsService {
     createRequestDto: CreateRequestDto &
       Pick<Partial<CreateRequestWithReferenceDto>, 'referredContent'>,
     madeById: string,
+    options: { shouldBeSameAsUser: boolean } = { shouldBeSameAsUser: true },
   ) {
     const {
       requestTemplate,
@@ -47,15 +49,35 @@ export class RequestsService {
       requestedMedic,
       referredContent,
     } = createRequestDto;
+    const { madeFor, ...data } = createRequestDto;
 
     const foundUser = await this.usersService.findById(madeById, {
-      minimal: true,
+      withUserPatients: true,
     });
 
     if (!foundUser) {
       throw new UnprocessableEntityException(
         exceptionResponses.CurrentUserNotExists,
       );
+    }
+
+    let foundUserPatient: UserPatient | undefined = undefined;
+    if (madeFor) {
+      const madeForPatient = new UserPatient();
+      madeForPatient.id = madeFor.id;
+      foundUserPatient = madeForPatient;
+      if (options.shouldBeSameAsUser) {
+        const userPatient = foundUser.userPatients?.find(
+          (patient) => patient.id === madeFor?.id,
+        );
+
+        if (!userPatient) {
+          throw new UnprocessableEntityException(
+            exceptionResponses.PatientNotAllowed,
+          );
+        }
+        foundUserPatient = userPatient;
+      }
     }
 
     const foundRequestTemplate = await this.requestTemplateService.findOne(
@@ -163,7 +185,7 @@ export class RequestsService {
     }, []);
 
     const clonedPayload = {
-      ...createRequestDto,
+      ...data,
       status: RequestStatusEnum.PENDING,
       requestTemplate: foundRequestTemplate,
       requestedSpecialty: foundSpecialty,
@@ -171,6 +193,7 @@ export class RequestsService {
       requestValues: requestValuesUpdated,
       referredContent: referredContent,
       referredBy: referredContent ? foundMedic : undefined,
+      madeFor: foundUserPatient,
       madeBy: foundUser,
     };
 
@@ -205,7 +228,7 @@ export class RequestsService {
     options?: findOptions & {
       withSpecialty?: boolean;
       withMedic?: boolean;
-      withMadeBy?: boolean;
+      withmadeFor?: boolean;
     },
   ) {
     return this.requestRepository.findById(id, options);

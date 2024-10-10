@@ -54,7 +54,7 @@ export class RequestRelationalRepository
     requestedSpecialty: true,
     requestedMedic: true,
     rating: true,
-    madeBy: true,
+    madeFor: true,
     requestTemplate: {
       fields: {
         fieldQuestion: {
@@ -90,6 +90,12 @@ export class RequestRelationalRepository
       where = {
         ...where,
         madeBy: { id: In(filterOptions.madeByIds) },
+      };
+    }
+    if (filterOptions?.madeForIds) {
+      where = {
+        ...where,
+        madeFor: { id: In(filterOptions.madeForIds) },
       };
     }
     if (filterOptions?.requestedMedicIds) {
@@ -146,7 +152,7 @@ export class RequestRelationalRepository
       };
     }
     if (options?.withMadeBy) {
-      relations = { ...relations, madeBy: true };
+      relations = { ...relations, madeFor: true };
     }
     if (options?.minimal) relations = {};
 

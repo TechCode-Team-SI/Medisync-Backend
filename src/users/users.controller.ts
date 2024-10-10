@@ -41,6 +41,10 @@ import { User } from './domain/user';
 import { QueryUserDto } from './dto/query-user.dto';
 import { exceptionResponses } from './users.messages';
 import { UsersService } from './users.service';
+import { UserPatient } from 'src/user-patients/domain/user-patient';
+import { UpdateUserPatientDto } from 'src/user-patients/dto/update-user-patient.dto';
+import { CreateUserPatientDto } from 'src/user-patients/dto/create-user-patient.dto';
+import { FindAllUserPatientsDto } from 'src/user-patients/dto/find-all-user-patients.dto';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -147,6 +151,58 @@ export class UsersController {
     }
     await this.usersService.updateEmployeeStatus(id, profileStatus.status);
     return { success: true };
+  }
+
+  @ApiOkResponse({
+    type: UserPatient,
+  })
+  @Patch('/patient/me/:patientId')
+  @ApiParam({
+    name: 'patientId',
+    type: String,
+    required: true,
+  })
+  @HttpCode(HttpStatus.OK)
+  async updateUserPatient(
+    @Param('patientId') patientId: string,
+    @Me() userPayload: JwtPayloadType,
+    @Body() updateUserPatient: UpdateUserPatientDto,
+  ): Promise<UserPatient | null> {
+    return this.usersService.updateUserPatient(
+      userPayload.id,
+      patientId,
+      updateUserPatient,
+    );
+  }
+
+  @ApiOkResponse({
+    type: UserPatient,
+  })
+  @Post('/patient/me')
+  @HttpCode(HttpStatus.OK)
+  async createUserPatient(
+    @Me() userPayload: JwtPayloadType,
+    @Body() createUserPatient: CreateUserPatientDto,
+  ): Promise<UserPatient | null> {
+    return this.usersService.createUserPatient(
+      userPayload.id,
+      createUserPatient,
+    );
+  }
+
+  @Get('/patient/me')
+  @HttpCode(HttpStatus.OK)
+  async getMyUserPatients(
+    @Query() query: FindAllUserPatientsDto,
+    @Me() userPayload: JwtPayloadType,
+  ): Promise<PaginationResponseDto<UserPatient>> {
+    const paginationOptions = getPagination(query);
+
+    return this.usersService.getUserPatients(userPayload.id, {
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
+      paginationOptions,
+    });
   }
 
   @Delete(':id')

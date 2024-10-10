@@ -5,6 +5,7 @@ import { User } from 'src/users/domain/user';
 import { RequestStatusEnum } from '../requests.enum';
 import { RequestValue } from './request-value';
 import { Rating } from 'src/ratings/domain/rating';
+import { UserPatient } from 'src/user-patients/domain/user-patient';
 
 export class Request {
   @ApiProperty({
@@ -20,6 +21,9 @@ export class Request {
 
   @ApiProperty()
   patientAddress: string;
+
+  @ApiProperty({ type: () => UserPatient })
+  madeFor?: UserPatient | null;
 
   @ApiProperty({ type: () => User })
   madeBy: User;

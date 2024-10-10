@@ -220,7 +220,11 @@ export class UsersRelationalRepository
 
   async findById(
     id: User['id'],
-    options?: findOptions & { withProfile?: boolean; withSpecialty?: boolean },
+    options?: findOptions & {
+      withProfile?: boolean;
+      withSpecialty?: boolean;
+      withUserPatients?: boolean;
+    },
   ): Promise<NullableType<User>> {
     let relations = this.relations;
     if (options) relations = {};
@@ -231,6 +235,9 @@ export class UsersRelationalRepository
       relations.employeeProfile = {
         specialties: true,
       };
+    }
+    if (options?.withUserPatients) {
+      relations.userPatients = true;
     }
     if (options?.minimal) relations = {};
     const entity = await this.usersRepository.findOne({

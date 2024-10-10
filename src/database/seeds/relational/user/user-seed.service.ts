@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import { RoleEntity } from 'src/roles/infrastructure/persistence/relational/entities/role.entity';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../../../../users/infrastructure/persistence/relational/entities/user.entity';
+import { genderEnum } from 'src/employee-profiles/employee-profiles.enum';
 
 @Injectable()
 export class UserSeedService {
@@ -47,6 +48,14 @@ export class UserSeedService {
               },
             ],
           },
+          userPatients: [
+            {
+              dni: '27312234',
+              birthday: new Date('1990-01-01'),
+              fullName: 'Jane Doe',
+              gender: genderEnum.MALE,
+            },
+          ],
         }),
       );
     }
@@ -74,6 +83,14 @@ export class UserSeedService {
               },
             ],
           },
+          userPatients: [
+            {
+              dni: '27312235',
+              birthday: new Date('1990-01-01'),
+              fullName: 'John Doe',
+              gender: genderEnum.MALE,
+            },
+          ],
         }),
       );
     }
@@ -90,6 +107,14 @@ export class UserSeedService {
           email: 'juanito@example.com',
           password,
           roles: [patientRole],
+          userPatients: [
+            {
+              dni: '27312239',
+              birthday: new Date('1990-01-01'),
+              fullName: 'Juanito Moralez',
+              gender: genderEnum.MALE,
+            },
+          ],
         }),
       );
     }

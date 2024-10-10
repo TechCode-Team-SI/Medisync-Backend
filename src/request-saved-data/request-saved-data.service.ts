@@ -25,7 +25,7 @@ export class RequestSavedDataService {
   ) {
     const foundRequest = await this.requestsService.findOne(
       createRequestSavedDataDto.requestId,
-      { withMadeBy: true },
+      { withmadeFor: true },
     );
     if (!foundRequest) {
       throw new UnprocessableEntityException(
@@ -38,7 +38,7 @@ export class RequestSavedDataService {
     if (!foundUser) {
       throw new UnprocessableEntityException(exceptionResponses.UserNotExists);
     }
-    if (foundUser.id !== foundRequest.madeBy.id) {
+    if (foundUser.id !== foundRequest.madeFor?.id) {
       throw new UnprocessableEntityException(
         exceptionResponses.UserNotOwnerOfRequest,
       );

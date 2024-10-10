@@ -42,4 +42,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'user_cannot_change_own_status',
     message: 'No puedes cambiar tu propio status',
   },
+  PatientNotFound: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'user_patient_not_found',
+    message: 'Usuario paciente no encontrado',
+  },
 } as const;
