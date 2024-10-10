@@ -1,15 +1,14 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
+import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  OneToOne,
+  Entity,
   JoinColumn,
-  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
-import { ApiProperty } from '@nestjs/swagger';
-import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
-import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
 
 @Entity({
   name: 'rating',
@@ -26,7 +25,7 @@ export class RatingEntity extends EntityRelationalHelper {
   @ApiProperty({
     type: () => UserEntity,
   })
-  @ManyToOne(() => UserEntity)
+  @OneToOne(() => UserEntity)
   @JoinColumn({ name: 'ratedBy' })
   ratedBy: UserEntity;
 
