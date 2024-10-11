@@ -80,6 +80,10 @@ export class RequestEntity extends EntityRelationalHelper {
   rating: RatingEntity;
 
   @ApiPropertyOptional()
+  @ManyToOne(() => UserPatientEntity, { nullable: true })
+  savedTo?: UserPatientEntity;
+
+  @ApiPropertyOptional()
   @ManyToOne(() => UserEntity)
   referredBy?: UserEntity;
 

@@ -25,6 +25,9 @@ export class Request {
   @ApiProperty({ type: () => UserPatient })
   madeFor?: UserPatient | null;
 
+  @ApiProperty({ type: () => UserPatient })
+  savedTo?: UserPatient | null;
+
   @ApiProperty({ type: () => User })
   madeBy: User;
 

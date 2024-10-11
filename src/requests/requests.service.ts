@@ -242,6 +242,30 @@ export class RequestsService {
     return this.requestRepository.update(id, { status });
   }
 
+  async updateSaveData(id: Request['id'], userId: string, savedToId: string) {
+    const foundUser = await this.usersService.findById(userId, {
+      withUserPatients: true,
+    });
+    if (!foundUser) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.CurrentUserNotExists,
+      );
+    }
+    const foundUserPatient = foundUser.userPatients?.find(
+      (patient) => patient.id === savedToId,
+    );
+    if (!foundUserPatient) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.PatientNotAllowed,
+      );
+    }
+    const userPatient = new UserPatient();
+    userPatient.id = savedToId;
+    return this.requestRepository.update(id, {
+      savedTo: userPatient,
+    });
+  }
+
   async attend(requestId: string, medicId: string) {
     const request = await this.requestRepository.findById(requestId, {
       withMedic: true,

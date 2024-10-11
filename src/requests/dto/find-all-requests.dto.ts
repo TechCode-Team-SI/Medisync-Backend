@@ -32,6 +32,18 @@ export class FilterRequestDto {
   @IsString({ each: true })
   madeForIds?: string[] | null;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  savedToIds?: string[] | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  requestTemplateIds?: string[] | null;
+
   @ApiPropertyOptional({ type: RequestStatusEnum })
   @IsOptional()
   @IsEnum(RequestStatusEnum)

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { genderEnum } from 'src/employee-profiles/employee-profiles.enum';
 import { User } from 'src/users/domain/user';
-
+import { Request } from 'src/requests/domain/request';
 export class UserPatient {
   @ApiProperty({
     type: String,
@@ -16,6 +16,11 @@ export class UserPatient {
 
   @ApiProperty()
   dni: string;
+
+  @ApiProperty({
+    type: () => Request,
+  })
+  savedRequests?: Request[] | null;
 
   @ApiProperty({
     type: () => User,

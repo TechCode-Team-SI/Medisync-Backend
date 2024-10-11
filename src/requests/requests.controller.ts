@@ -20,13 +20,10 @@ import {
 import { Me } from 'src/auth/auth.decorator';
 import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
 import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 import { CreateRatingDto } from 'src/ratings/dto/create-rating.dto';
 import { RatingsService } from 'src/ratings/ratings.service';
-import { RequestSavedData } from 'src/request-saved-data/domain/request-saved-data';
-import { CreateRequestSavedDataDto } from 'src/request-saved-data/dto/create-request-saved-data.dto';
-import { FindAllRequestSavedDataDto } from 'src/request-saved-data/dto/find-all-request-saved-data.dto';
-import { RequestSavedDataService } from 'src/request-saved-data/request-saved-data.service';
 import { exceptionResponses } from 'src/requests/requests.messages';
 import { getPagination } from 'src/utils/get-pagination';
 import {
@@ -34,13 +31,13 @@ import {
   PaginationResponseDto,
 } from '../utils/dto/pagination-response.dto';
 import { Request } from './domain/request';
+import { CreateRequestPrivateDto } from './dto/create-request-private.dto';
 import { CreateRequestWithReferenceDto } from './dto/create-request-with-reference.dto';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { FindAllRequestsDto } from './dto/find-all-requests.dto';
 import { FinishRequestDto } from './dto/finish-request.dto';
 import { RequestsService } from './requests.service';
-import { CreateRequestPrivateDto } from './dto/create-request-private.dto';
-import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
+import { RequestFormatted } from './domain/request-formatted';
 
 @ApiTags('Requests')
 @ApiBearerAuth()
@@ -53,7 +50,6 @@ export class RequestsController {
   constructor(
     private readonly requestsService: RequestsService,
     private readonly ratingsService: RatingsService,
-    private readonly requestSavedDatasService: RequestSavedDataService,
   ) {}
 
   //In private, the user can create a request with a reference
@@ -155,9 +151,6 @@ export class RequestsController {
     type: String,
     required: true,
   })
-  @ApiOkResponse({
-    type: Request,
-  })
   async findOne(@Param('id') id: string) {
     const entity = await this.requestsService.findOneDetailed(id);
 
@@ -207,47 +200,59 @@ export class RequestsController {
     return { success: !!rating };
   }
 
-  @Get('save/:requestTemplateId')
+  @Get('save/:requestTemplateId/:madeForId')
   @ApiParam({
     name: 'requestTemplateId',
     type: String,
     required: true,
   })
-  @ApiOkResponse({
-    type: PaginationResponse(RequestSavedData),
+  @ApiParam({
+    name: 'madeForId',
+    type: String,
+    required: true,
   })
-  findAllSaved(
+  async findSaved(
     @Param('requestTemplateId') requestTemplateId: string,
-    @Query() query: FindAllRequestSavedDataDto,
-  ): Promise<PaginationResponseDto<RequestSavedData>> {
-    const paginationOptions = getPagination(query);
-
-    return this.requestSavedDatasService.findAllWithPagination({
-      paginationOptions,
-      sortOptions: query.sort,
-      filterOptions: { requestTemplateId },
+    @Param('madeForId') madeForId: string,
+  ): Promise<RequestFormatted | null> {
+    const request = await this.requestsService.findAllMinimalWithPagination({
+      paginationOptions: {
+        limit: 1,
+        page: 1,
+      },
+      filterOptions: {
+        requestTemplateIds: [requestTemplateId],
+        madeForIds: [madeForId],
+      },
     });
+
+    if (request.data.length === 0) {
+      return null;
+    }
+
+    return this.requestsService.findOneDetailed(request.data[0].id);
   }
 
-  @Post('save/:requestId')
+  @Post('save/:requestId/:madeForId')
   @ApiParam({
     name: 'requestId',
     type: String,
     required: true,
   })
-  @ApiOkResponse({
-    type: RequestSavedData,
+  @ApiParam({
+    name: 'madeForId',
+    type: String,
+    required: true,
   })
-  createSavedData(
+  async createSavedData(
     @Param('requestId') requestId: string,
-    @Body() body: CreateRequestSavedDataDto,
+    @Param('madeForId') madeForId: string,
     @Me() userPayload: JwtPayloadType,
-  ): Promise<RequestSavedData> {
-    const clonedPayload = {
-      alias: body.alias,
+  ): Promise<Request | null> {
+    return this.requestsService.updateSaveData(
       requestId,
-    };
-
-    return this.requestSavedDatasService.create(clonedPayload, userPayload.id);
+      userPayload.id,
+      madeForId,
+    );
   }
 }

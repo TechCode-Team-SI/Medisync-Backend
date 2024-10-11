@@ -34,7 +34,6 @@ import { PackagesModule } from './packages/packages.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { EmployeeProfilesModule } from './employee-profiles/employee-profiles.module';
 import { RatingsModule } from './ratings/ratings.module';
-import { RequestSavedDataModule } from './request-saved-data/request-saved-data.module';
 import { StatisticsModule } from './statistics/statistics.module';
 import { IllnessesModule } from './illnesses/illnesses.module';
 import { treatmentsModule } from './treatments/treatments.module';
@@ -71,7 +70,6 @@ import { UserPatientsModule } from './user-patients/user-patients.module';
     treatmentsModule,
     IllnessesModule,
     StatisticsModule,
-    RequestSavedDataModule,
     RatingsModule,
     PackagesModule,
     EmployeeProfilesModule,

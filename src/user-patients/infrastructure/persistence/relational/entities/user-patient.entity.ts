@@ -7,10 +7,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
+import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
 
 @Entity({
   name: 'user_patient',
@@ -40,6 +42,10 @@ export class UserPatientEntity extends EntityRelationalHelper {
   @ApiProperty()
   @Column({ nullable: false })
   birthday: Date;
+
+  @ApiProperty()
+  @OneToMany(() => RequestEntity, (request) => request.savedTo)
+  savedRequests?: RequestEntity[];
 
   @ApiProperty()
   @CreateDateColumn()

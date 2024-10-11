@@ -98,6 +98,18 @@ export class RequestRelationalRepository
         madeFor: { id: In(filterOptions.madeForIds) },
       };
     }
+    if (filterOptions?.savedToIds) {
+      where = {
+        ...where,
+        savedTo: { id: In(filterOptions.savedToIds) },
+      };
+    }
+    if (filterOptions?.requestTemplateIds) {
+      where = {
+        ...where,
+        requestTemplate: { id: In(filterOptions.requestTemplateIds) },
+      };
+    }
     if (filterOptions?.requestedMedicIds) {
       where = {
         ...where,

@@ -8,7 +8,6 @@ import { UsersModule } from 'src/users/users.module';
 import { DiagnosticsModule } from 'src/diagnostics/diagnostics.module';
 import { InstructionsModule } from 'src/instructions/instructions.module';
 import { RatingsModule } from 'src/ratings/ratings.module';
-import { RequestSavedDataModule } from 'src/request-saved-data/request-saved-data.module';
 
 @Module({
   imports: [
@@ -18,7 +17,6 @@ import { RequestSavedDataModule } from 'src/request-saved-data/request-saved-dat
     UsersModule,
     DiagnosticsModule,
     InstructionsModule,
-    forwardRef(() => RequestSavedDataModule),
     forwardRef(() => RatingsModule),
   ],
   controllers: [RequestsController],

@@ -51,6 +51,9 @@ export class RequestMapper {
     if (raw.madeFor) {
       domainEntity.madeFor = UserPatientMapper.toDomain(raw.madeFor);
     }
+    if (raw.savedTo) {
+      domainEntity.savedTo = UserPatientMapper.toDomain(raw.savedTo);
+    }
     if (raw.referredBy) {
       domainEntity.requestedMedic = UserMapper.toDomain(raw.requestedMedic);
     }
@@ -80,6 +83,11 @@ export class RequestMapper {
     if (domainEntity.madeFor) {
       persistenceEntity.madeFor = UserPatientMapper.toPersistence(
         domainEntity.madeFor,
+      );
+    }
+    if (domainEntity.savedTo) {
+      persistenceEntity.savedTo = UserPatientMapper.toPersistence(
+        domainEntity.savedTo,
       );
     }
     if (domainEntity.madeBy) {

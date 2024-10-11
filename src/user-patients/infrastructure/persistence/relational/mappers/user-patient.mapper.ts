@@ -1,6 +1,7 @@
 import { UserMapper } from 'src/users/infrastructure/persistence/relational/mappers/user.mapper';
 import { UserPatient } from '../../../../domain/user-patient';
 import { UserPatientEntity } from '../entities/user-patient.entity';
+import { RequestMapper } from 'src/requests/infrastructure/persistence/relational/mappers/request.mapper';
 
 export class UserPatientMapper {
   static toDomain(raw: UserPatientEntity): UserPatient {
@@ -12,6 +13,11 @@ export class UserPatientMapper {
     domainEntity.birthday = raw.birthday;
     if (raw.user) {
       domainEntity.user = UserMapper.toDomain(raw.user);
+    }
+    if (raw.savedRequests) {
+      domainEntity.savedRequests = raw.savedRequests.map((request) =>
+        RequestMapper.toDomain(request),
+      );
     }
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
@@ -30,6 +36,11 @@ export class UserPatientMapper {
     persistenceEntity.gender = domainEntity.gender;
     if (domainEntity.user) {
       persistenceEntity.user = UserMapper.toPersistence(domainEntity.user);
+    }
+    if (domainEntity.savedRequests) {
+      persistenceEntity.savedRequests = domainEntity.savedRequests.map(
+        (request) => RequestMapper.toPersistence(request),
+      );
     }
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
