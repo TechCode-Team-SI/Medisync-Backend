@@ -71,7 +71,7 @@ export class UsersRelationalRepository
     options?: findOptions & { employeeProfile: boolean };
   }): Promise<PaginationResponseDto<User>> {
     let order: FindOneOptions<UserEntity>['order'] = { createdAt: 'DESC' };
-    if (sortOptions) order = formatOrder<User>(sortOptions);
+    if (sortOptions) order = formatOrder(sortOptions);
 
     let relations = this.relations;
     if (options) relations = {};
@@ -144,7 +144,7 @@ export class UsersRelationalRepository
     options?: findOptions & { employeeProfile: boolean };
   }): Promise<User[]> {
     let order: FindOneOptions<UserEntity>['order'] = { createdAt: 'DESC' };
-    if (sortOptions) order = formatOrder<User>(sortOptions);
+    if (sortOptions) order = formatOrder(sortOptions);
 
     let relations = this.relations;
     if (options) relations = {};

@@ -83,7 +83,7 @@ export class RequestRelationalRepository
     filterOptions?: FilterRequestDto | null;
   }): Promise<PaginationResponseDto<Request>> {
     let order: FindOneOptions<RequestEntity>['order'] = { createdAt: 'DESC' };
-    if (sortOptions) order = formatOrder<Request>(sortOptions);
+    if (sortOptions) order = formatOrder(sortOptions);
 
     let where: FindOptionsWhere<RequestEntity> = {};
     if (filterOptions?.madeByIds) {

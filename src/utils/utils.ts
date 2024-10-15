@@ -36,9 +36,7 @@ export function isValueInEnum<T extends StandardEnum<unknown>>(
   return Object.values(enumLike).includes(value);
 }
 
-export function formatOrder<T>(
-  sortOptions: { orderBy: keyof T; order: string }[],
-) {
+export function formatOrder(sortOptions: { orderBy: string; order: string }[]) {
   return sortOptions?.reduce(
     (accumulator, sort) => ({
       ...accumulator,
@@ -61,4 +59,12 @@ export function isHourALessThanHourB(hourA: string, hourB: string) {
   }
 
   return false;
+}
+
+export function filterName(name: string) {
+  return `filters[${name}]`;
+}
+
+export function sortName(name: string) {
+  return `sort[0][${name}]`;
 }
