@@ -54,6 +54,31 @@ export class SymptomRelationalRepository
     return SymptomMapper.toDomain(newEntity);
   }
 
+  async createMultiple(data: Symptom[]): Promise<Symptom[]> {
+    const persistenceModels = data.map((specialty) =>
+      SymptomMapper.toPersistence(specialty),
+    );
+    const newEntities = await this.symptomRepository.save(
+      this.symptomRepository.create(persistenceModels),
+    );
+    return newEntities.map((newEntity) => SymptomMapper.toDomain(newEntity));
+  }
+
+  async findAllWithNames(
+    names: Symptom['name'][],
+    options?: findOptions,
+  ): Promise<Symptom[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entities = await this.symptomRepository.find({
+      where: { name: In(names) },
+      relations,
+    });
+
+    return entities.map((entity) => SymptomMapper.toDomain(entity));
+  }
+
   async findAllWithPagination({
     paginationOptions,
     options,

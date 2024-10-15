@@ -29,6 +29,11 @@ const installationModule: InstallationModule = {
       },
     ],
   },
+  illnesses: [],
+  injuries: [],
+  treatments: [],
+  pathologies: [],
+  symptoms: [],
 };
 
 export default installationModule;

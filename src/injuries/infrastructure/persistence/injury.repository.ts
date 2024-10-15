@@ -26,6 +26,15 @@ export abstract class InjuryRepository extends BaseRepository {
     filterOptions?: FilterInjuriesDto | null;
   }): Promise<PaginationResponseDto<Injury>>;
 
+  abstract createMultiple(
+    data: Omit<Injury, 'id' | 'createdAt' | 'updatedAt'>[],
+  ): Promise<Injury[]>;
+
+  abstract findAllWithNames(
+    names: string[],
+    options?: findOptions,
+  ): Promise<Injury[]>;
+
   abstract findManyByIds(
     ids: Injury['id'][],
     options?: findOptions,

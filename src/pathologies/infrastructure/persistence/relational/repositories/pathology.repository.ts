@@ -6,6 +6,7 @@ import {
   FindOneOptions,
   FindOptionsWhere,
   Like,
+  In,
 } from 'typeorm';
 import { PathologyEntity } from '../entities/pathology.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -51,6 +52,31 @@ export class PathologyRelationalRepository
       this.pathologyRepository.create(persistenceModel),
     );
     return PathologyMapper.toDomain(newEntity);
+  }
+
+  async createMultiple(data: Pathology[]): Promise<Pathology[]> {
+    const persistenceModels = data.map((specialty) =>
+      PathologyMapper.toPersistence(specialty),
+    );
+    const newEntities = await this.pathologyRepository.save(
+      this.pathologyRepository.create(persistenceModels),
+    );
+    return newEntities.map((newEntity) => PathologyMapper.toDomain(newEntity));
+  }
+
+  async findAllWithNames(
+    names: Pathology['name'][],
+    options?: findOptions,
+  ): Promise<Pathology[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entities = await this.pathologyRepository.find({
+      where: { name: In(names) },
+      relations,
+    });
+
+    return entities.map((entity) => PathologyMapper.toDomain(entity));
   }
 
   async findAllWithPagination({

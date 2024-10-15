@@ -15,6 +15,15 @@ export abstract class PathologyRepository extends BaseRepository {
     data: Omit<Pathology, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Pathology>;
 
+  abstract createMultiple(
+    data: Omit<Pathology, 'id' | 'createdAt' | 'updatedAt'>[],
+  ): Promise<Pathology[]>;
+
+  abstract findAllWithNames(
+    names: string[],
+    options?: findOptions,
+  ): Promise<Pathology[]>;
+
   abstract findAllWithPagination({
     paginationOptions,
     options,

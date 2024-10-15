@@ -54,6 +54,31 @@ export class IllnessRelationalRepository
     return IllnessMapper.toDomain(newEntity);
   }
 
+  async createMultiple(data: Illness[]): Promise<Illness[]> {
+    const persistenceModels = data.map((specialty) =>
+      IllnessMapper.toPersistence(specialty),
+    );
+    const newEntities = await this.illnessRepository.save(
+      this.illnessRepository.create(persistenceModels),
+    );
+    return newEntities.map((newEntity) => IllnessMapper.toDomain(newEntity));
+  }
+
+  async findAllWithNames(
+    names: Illness['name'][],
+    options?: findOptions,
+  ): Promise<Illness[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entities = await this.illnessRepository.find({
+      where: { name: In(names) },
+      relations,
+    });
+
+    return entities.map((entity) => IllnessMapper.toDomain(entity));
+  }
+
   async findManyByIds(
     ids: string[],
     options?: findOptions,

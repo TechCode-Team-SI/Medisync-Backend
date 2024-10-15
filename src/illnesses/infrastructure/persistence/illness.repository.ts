@@ -15,6 +15,15 @@ export abstract class IllnessRepository extends BaseRepository {
     data: Omit<Illness, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Illness>;
 
+  abstract createMultiple(
+    data: Omit<Illness, 'id' | 'createdAt' | 'updatedAt'>[],
+  ): Promise<Illness[]>;
+
+  abstract findAllWithNames(
+    names: string[],
+    options?: findOptions,
+  ): Promise<Illness[]>;
+
   abstract findManyByIds(
     ids: Illness['id'][],
     options?: findOptions,

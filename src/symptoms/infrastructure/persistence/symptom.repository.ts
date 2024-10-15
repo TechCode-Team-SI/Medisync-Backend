@@ -15,6 +15,15 @@ export abstract class SymptomRepository extends BaseRepository {
     data: Omit<Symptom, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Symptom>;
 
+  abstract createMultiple(
+    data: Omit<Symptom, 'id' | 'createdAt' | 'updatedAt'>[],
+  ): Promise<Symptom[]>;
+
+  abstract findAllWithNames(
+    names: string[],
+    options?: findOptions,
+  ): Promise<Symptom[]>;
+
   abstract findAllWithPagination({
     paginationOptions,
     options,

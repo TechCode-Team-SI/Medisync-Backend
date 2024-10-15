@@ -17,6 +17,11 @@ import { exceptionResponses } from './packages.messages';
 import { fieldQuestionsModule } from './seeds/field-questions';
 import { InstallationModule, ModuleInstallationSteps } from './seeds/type';
 import { FilterPackageDto, SortPackageDto } from './dto/find-all-packages.dto';
+import { PathologiesService } from 'src/pathologies/pathologies.service';
+import { SymptomsService } from 'src/symptoms/symptoms.service';
+import { IllnessesService } from 'src/illnesses/illnesses.service';
+import { TreatmentsService } from 'src/treatments/treatments.service';
+import { InjuriesService } from 'src/injuries/injuries.service';
 
 @Injectable()
 export class PackagesService {
@@ -26,6 +31,11 @@ export class PackagesService {
     private readonly specialtiesService: SpecialtiesService,
     private readonly fieldQuestionsService: FieldQuestionsService,
     private readonly requestTemplatesService: RequestTemplatesService,
+    private readonly pathologiesService: PathologiesService,
+    private readonly symptomsService: SymptomsService,
+    private readonly illnessesService: IllnessesService,
+    private readonly treatmentsService: TreatmentsService,
+    private readonly injuriesService: InjuriesService,
   ) {}
 
   findAllWithPagination({
@@ -86,6 +96,11 @@ export class PackagesService {
       fieldQuestions: [],
       requestTemplates: [],
       specialties: [],
+      illnesses: [],
+      injuries: [],
+      pathologies: [],
+      treatments: [],
+      symptoms: [],
     };
 
     for (const installationModule of installationModules) {
@@ -97,6 +112,12 @@ export class PackagesService {
         isPublic: installationModule.isPublic,
         requestTemplate: { id: installationModule.requestTemplate.id },
       });
+
+      installationSteps.illnesses.push(...installationModule.illnesses);
+      installationSteps.injuries.push(...installationModule.injuries);
+      installationSteps.pathologies.push(...installationModule.pathologies);
+      installationSteps.treatments.push(...installationModule.treatments);
+      installationSteps.symptoms.push(...installationModule.symptoms);
 
       installationSteps.requestTemplates.push({
         id: installationModule.requestTemplate.id,
@@ -150,6 +171,101 @@ export class PackagesService {
       });
     }
 
+    //Remove pathologies that are already installed
+    const pathologyNames = installationSteps.pathologies.map(
+      (pathology) => pathology.name,
+    );
+    const duplicatedPathologies =
+      await this.pathologiesService.findAllWithNames(pathologyNames, {
+        minimal: true,
+      });
+    if (duplicatedPathologies.length > 0) {
+      installationSteps.pathologies = installationSteps.pathologies.filter(
+        (pathology) =>
+          !duplicatedPathologies.find(
+            (duplicatedPathology) =>
+              duplicatedPathology.name === pathology.name,
+          ),
+      );
+    }
+
+    //Remove symptoms that are already installed
+    const symptomNames = installationSteps.symptoms.map(
+      (symptom) => symptom.name,
+    );
+    const duplicatedSymptoms = await this.symptomsService.findAllWithNames(
+      symptomNames,
+      {
+        minimal: true,
+      },
+    );
+    if (duplicatedSymptoms.length > 0) {
+      installationSteps.symptoms = installationSteps.symptoms.filter(
+        (symptom) =>
+          !duplicatedSymptoms.find(
+            (duplicatedSymptom) => duplicatedSymptom.name === symptom.name,
+          ),
+      );
+    }
+
+    //Remove illnesses that are already installed
+    const illnessesName = installationSteps.illnesses.map(
+      (illness) => illness.name,
+    );
+    const duplicatedIllnesses = await this.illnessesService.findAllWithNames(
+      illnessesName,
+      {
+        minimal: true,
+      },
+    );
+    if (duplicatedIllnesses.length > 0) {
+      installationSteps.illnesses = installationSteps.illnesses.filter(
+        (illness) =>
+          !duplicatedIllnesses.find(
+            (duplicatedSymptom) => duplicatedSymptom.name === illness.name,
+          ),
+      );
+    }
+
+    //Remove injuries that are already installed
+    const injuriesName = installationSteps.injuries.map(
+      (injury) => injury.name,
+    );
+    const duplicatedInjuries = await this.injuriesService.findAllWithNames(
+      injuriesName,
+      {
+        minimal: true,
+      },
+    );
+    if (duplicatedInjuries.length > 0) {
+      installationSteps.injuries = installationSteps.injuries.filter(
+        (injury) =>
+          !duplicatedInjuries.find(
+            (duplicatedSymptom) => duplicatedSymptom.name === injury.name,
+          ),
+      );
+    }
+
+    //Remove treatments that are already installed
+    const treatmentsName = installationSteps.treatments.map(
+      (treatment) => treatment.name,
+    );
+    const duplicatedTreatments = await this.treatmentsService.findAllWithNames(
+      treatmentsName,
+      {
+        minimal: true,
+      },
+    );
+    if (duplicatedTreatments.length > 0) {
+      installationSteps.treatments = installationSteps.treatments.filter(
+        (treatment) =>
+          !duplicatedTreatments.find(
+            (duplicatedTreatment) =>
+              duplicatedTreatment.name === treatment.name,
+          ),
+      );
+    }
+
     //Remove duplicated resources (field questions)
     const fieldQuestionsMap: Record<string, FieldQuestionType> = {};
     for (const fieldQuestion of installationSteps.fieldQuestions) {
@@ -183,6 +299,31 @@ export class PackagesService {
     //Create Specialties
     await this.specialtiesService.createMultiple({
       specialties: installationSteps.specialties,
+    });
+
+    //Create Pathologies
+    await this.pathologiesService.createMultiple({
+      pathologies: installationSteps.pathologies,
+    });
+
+    //Create Symptoms
+    await this.symptomsService.createMultiple({
+      symptoms: installationSteps.symptoms,
+    });
+
+    //Create Illnesses
+    await this.illnessesService.createMultiple({
+      illnesses: installationSteps.illnesses,
+    });
+
+    //Create Treatments
+    await this.treatmentsService.createMultiple({
+      treatments: installationSteps.treatments,
+    });
+
+    //Create Injuries
+    await this.injuriesService.createMultiple({
+      injuries: installationSteps.injuries,
     });
 
     //Update the package status

@@ -54,6 +54,31 @@ export class InjuryRelationalRepository
     return InjuryMapper.toDomain(newEntity);
   }
 
+  async createMultiple(data: Injury[]): Promise<Injury[]> {
+    const persistenceModels = data.map((specialty) =>
+      InjuryMapper.toPersistence(specialty),
+    );
+    const newEntities = await this.injuryRepository.save(
+      this.injuryRepository.create(persistenceModels),
+    );
+    return newEntities.map((newEntity) => InjuryMapper.toDomain(newEntity));
+  }
+
+  async findAllWithNames(
+    names: Injury['name'][],
+    options?: findOptions,
+  ): Promise<Injury[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entities = await this.injuryRepository.find({
+      where: { name: In(names) },
+      relations,
+    });
+
+    return entities.map((entity) => InjuryMapper.toDomain(entity));
+  }
+
   async findAllWithPagination({
     paginationOptions,
     options,

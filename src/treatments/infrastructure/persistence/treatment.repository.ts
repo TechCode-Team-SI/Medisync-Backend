@@ -15,6 +15,15 @@ export abstract class TreatmentRepository extends BaseRepository {
     data: Omit<Treatment, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Treatment>;
 
+  abstract createMultiple(
+    data: Omit<Treatment, 'id' | 'createdAt' | 'updatedAt'>[],
+  ): Promise<Treatment[]>;
+
+  abstract findAllWithNames(
+    names: string[],
+    options?: findOptions,
+  ): Promise<Treatment[]>;
+
   abstract findAllWithPagination({
     paginationOptions,
     options,

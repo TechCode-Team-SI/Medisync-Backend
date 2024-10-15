@@ -9,6 +9,7 @@ import {
   FilterInjuriesDto,
   SortInjuriesDto,
 } from 'src/injuries/dto/find-all-injuries.dto';
+import { CreateMultipleInjuriesDto } from './dto/create-multiple-injuries.dto';
 
 @Injectable()
 export class InjuriesService {
@@ -54,5 +55,13 @@ export class InjuriesService {
 
   findMany(ids: Injury['id'][], options?: findOptions) {
     return this.injuryRepository.findManyByIds(ids, options);
+  }
+
+  createMultiple({ injuries }: CreateMultipleInjuriesDto) {
+    return this.injuryRepository.createMultiple(injuries);
+  }
+
+  findAllWithNames(names: string[], options?: findOptions) {
+    return this.injuryRepository.findAllWithNames(names, options);
   }
 }

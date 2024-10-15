@@ -9,6 +9,7 @@ import {
   FilterSymptomsDto,
   SortSymptomsDto,
 } from 'src/symptoms/dto/find-all-symptoms.dto';
+import { CreateMultipleSymptomsDto } from './dto/create-multiple-symptoms.dto';
 
 @Injectable()
 export class SymptomsService {
@@ -54,5 +55,13 @@ export class SymptomsService {
 
   findMany(ids: Symptom['id'][], options?: findOptions) {
     return this.symptomRepository.findManyByIds(ids, options);
+  }
+
+  createMultiple({ symptoms }: CreateMultipleSymptomsDto) {
+    return this.symptomRepository.createMultiple(symptoms);
+  }
+
+  findAllWithNames(names: string[], options?: findOptions) {
+    return this.symptomRepository.findAllWithNames(names, options);
   }
 }

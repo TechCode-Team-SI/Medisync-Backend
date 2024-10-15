@@ -9,6 +9,7 @@ import {
   FilterTreatmentsDto,
   SortTreatmentsDto,
 } from 'src/treatments/dto/find-all-treatments.dto';
+import { CreateMultipleTreatmentsDto } from './dto/create-multiple-treatments.dto';
 
 @Injectable()
 export class TreatmentsService {
@@ -54,5 +55,13 @@ export class TreatmentsService {
 
   findMany(ids: Treatment['id'][], options?: findOptions) {
     return this.TreatmentRepository.findManyByIds(ids, options);
+  }
+
+  createMultiple({ treatments }: CreateMultipleTreatmentsDto) {
+    return this.TreatmentRepository.createMultiple(treatments);
+  }
+
+  findAllWithNames(names: string[], options?: findOptions) {
+    return this.TreatmentRepository.findAllWithNames(names, options);
   }
 }

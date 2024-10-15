@@ -6,6 +6,7 @@ import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Pathology } from './domain/pathology';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { SortPathologiesDto } from 'src/pathologies/dto/find-all-pathologies.dto';
+import { CreateMultiplePathologyDto } from './dto/create-multiple-pathology.dto';
 
 @Injectable()
 export class PathologiesService {
@@ -44,5 +45,13 @@ export class PathologiesService {
 
   remove(id: Pathology['id']) {
     return this.pathologyRepository.remove(id);
+  }
+
+  createMultiple({ pathologies }: CreateMultiplePathologyDto) {
+    return this.pathologyRepository.createMultiple(pathologies);
+  }
+
+  findAllWithNames(names: string[], options?: findOptions) {
+    return this.pathologyRepository.findAllWithNames(names, options);
   }
 }

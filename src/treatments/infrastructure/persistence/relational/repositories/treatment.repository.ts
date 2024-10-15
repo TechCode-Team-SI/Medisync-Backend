@@ -54,6 +54,31 @@ export class TreatmentRelationalRepository
     return TreatmentMapper.toDomain(newEntity);
   }
 
+  async createMultiple(data: Treatment[]): Promise<Treatment[]> {
+    const persistenceModels = data.map((specialty) =>
+      TreatmentMapper.toPersistence(specialty),
+    );
+    const newEntities = await this.treatmentRepository.save(
+      this.treatmentRepository.create(persistenceModels),
+    );
+    return newEntities.map((newEntity) => TreatmentMapper.toDomain(newEntity));
+  }
+
+  async findAllWithNames(
+    names: Treatment['name'][],
+    options?: findOptions,
+  ): Promise<Treatment[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entities = await this.treatmentRepository.find({
+      where: { name: In(names) },
+      relations,
+    });
+
+    return entities.map((entity) => TreatmentMapper.toDomain(entity));
+  }
+
   async findAllWithPagination({
     paginationOptions,
     options,
