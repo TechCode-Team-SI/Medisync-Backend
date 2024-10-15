@@ -7,9 +7,9 @@ import {
 
 type ApiSortPropertyOptions = ApiPropertyOptions & { isOptional?: boolean };
 
-export function ApiSortProperty(props: ApiSortPropertyOptions) {
+export function ApiSortProperty(props?: ApiSortPropertyOptions) {
   return applyDecorators((data: any, propertyKey: string) => {
-    const { name: propName, isOptional: propIsOptional, ...rest } = props;
+    const { name: propName, isOptional: propIsOptional, ...rest } = props || {};
     const name = propName || propertyKey;
     const isOptional = propIsOptional || true;
     const apiPropertyProps: ApiPropertyOptions = {

@@ -7,11 +7,12 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
 
 export class FilterRoomsDto {
   //Search by name
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ description: 'Search by name' })
   @IsOptional()
   @IsString()
   search?: string;
@@ -30,7 +31,7 @@ export class FindAllRoomsDto {
   @IsOptional()
   limit?: number;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => FilterRoomsDto })
   @IsOptional()
   @IsObject()
   @Transform(ObjectTransformer(FilterRoomsDto))

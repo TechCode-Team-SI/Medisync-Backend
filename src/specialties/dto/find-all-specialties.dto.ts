@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsNumber,
@@ -7,28 +7,30 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { OrderEnum } from 'src/common/order.enum';
+import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
+import { ApiSortProperty } from 'src/utils/decorators/sort-property';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
-import { Specialty } from '../domain/specialty';
 
 export class SortSpecialtyDto {
-  @ApiProperty()
+  @ApiSortProperty({ enum: ['createdAt', 'name'] })
   @Type(() => String)
   @IsString()
-  orderBy: keyof Specialty;
+  orderBy: string;
 
-  @ApiProperty()
+  @ApiSortProperty({ enum: OrderEnum })
   @IsString()
   order: string;
 }
 
 export class FilterSpecialtyDto {
   //Search by name
-  @ApiPropertyOptional()
+  @ApiFilterProperty()
   @IsOptional()
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ type: String, isArray: true })
   @IsOptional()
   @IsString()
   employeeProfileIds?: string[] | null;
@@ -47,7 +49,7 @@ export class FindAllSpecialtiesDto {
   @IsOptional()
   limit?: number;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => FilterSpecialtyDto })
   @IsOptional()
   @IsObject()
   @Transform(ObjectTransformer(FilterSpecialtyDto))
@@ -55,7 +57,7 @@ export class FindAllSpecialtiesDto {
   @Type(() => FilterSpecialtyDto)
   filters?: FilterSpecialtyDto | null;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => SortSpecialtyDto, isArray: true })
   @IsOptional()
   @Transform(ObjectTransformer(SortSpecialtyDto))
   @ValidateNested({ each: true })

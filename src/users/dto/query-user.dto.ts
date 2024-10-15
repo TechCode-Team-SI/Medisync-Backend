@@ -58,6 +58,7 @@ export class FilterUserDto {
   //Search by name
   @ApiFilterProperty({
     type: String,
+    description: 'search by name',
   })
   @IsOptional()
   @IsString()

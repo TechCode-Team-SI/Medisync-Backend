@@ -1,4 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
   IsNumber,
   IsObject,
@@ -6,25 +7,26 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { OrderEnum } from 'src/common/order.enum';
+import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
+import { ApiSortProperty } from 'src/utils/decorators/sort-property';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
-import { Schedule } from '../domain/schedule';
 
 export class FilterSchedulesDto {
   //Search by name
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ description: 'Search by name' })
   @IsOptional()
   @IsString()
   search?: string;
 }
 
 export class SortSchedulesDto {
-  @ApiProperty()
+  @ApiSortProperty({ enum: ['createdAt', 'name'] })
   @Type(() => String)
   @IsString()
-  orderBy: keyof Schedule;
+  orderBy: string;
 
-  @ApiProperty()
+  @ApiSortProperty({ enum: OrderEnum })
   @IsString()
   order: string;
 }
@@ -42,14 +44,14 @@ export class FindAllSchedulesDto {
   @IsOptional()
   limit?: number;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => SortSchedulesDto, isArray: true })
   @IsOptional()
   @Transform(ObjectTransformer(SortSchedulesDto))
   @ValidateNested({ each: true })
   @Type(() => SortSchedulesDto)
   sort?: SortSchedulesDto[] | null;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => FilterSchedulesDto })
   @IsOptional()
   @IsObject()
   @Transform(ObjectTransformer(FilterSchedulesDto))

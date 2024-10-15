@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsEnum,
@@ -8,40 +8,42 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { OrderEnum } from 'src/common/order.enum';
+import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
+import { ApiSortProperty } from 'src/utils/decorators/sort-property';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
-import { Ticket } from '../domain/ticket';
 import { TicketStatusEnum, TicketTypeEnum } from '../tickets.enum';
 
 export class FilterTicketDto {
-  @ApiPropertyOptional({ type: TicketStatusEnum })
+  @ApiFilterProperty({ type: String, enum: TicketStatusEnum })
   @IsOptional()
   @IsEnum(TicketStatusEnum)
   status?: TicketStatusEnum | null;
 
-  @ApiPropertyOptional({ type: TicketTypeEnum })
+  @ApiFilterProperty({ type: String, enum: TicketTypeEnum })
   @IsOptional()
   @IsEnum(TicketTypeEnum)
   type?: TicketTypeEnum | null;
 
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ isArray: true, type: String })
   @IsOptional()
   @IsString()
   createdByIds?: string[] | null;
 
   //Search by name
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ description: 'Search by title' })
   @IsOptional()
   @IsString()
   search?: string;
 }
 
 export class SortTicketDto {
-  @ApiProperty()
+  @ApiSortProperty({ enum: ['createdAt', 'title'] })
   @Type(() => String)
   @IsString()
-  orderBy: keyof Ticket;
+  orderBy: string;
 
-  @ApiProperty()
+  @ApiSortProperty({ enum: OrderEnum })
   @IsString()
   order: string;
 }
@@ -59,7 +61,7 @@ export class FindAllTicketsDto {
   @IsOptional()
   limit?: number;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => FilterTicketDto })
   @IsOptional()
   @IsObject()
   @Transform(ObjectTransformer(FilterTicketDto))
@@ -67,7 +69,7 @@ export class FindAllTicketsDto {
   @Type(() => FilterTicketDto)
   filters?: FilterTicketDto | null;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => SortTicketDto, isArray: true })
   @IsOptional()
   @Transform(ObjectTransformer(SortTicketDto))
   @ValidateNested({ each: true })

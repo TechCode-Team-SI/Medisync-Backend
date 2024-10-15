@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
@@ -9,54 +9,56 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { OrderEnum } from 'src/common/order.enum';
+import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
+import { ApiSortProperty } from 'src/utils/decorators/sort-property';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
-import { Request } from '../domain/request';
 import { RequestStatusEnum } from '../requests.enum';
 
 export class FilterRequestDto {
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ isArray: true, type: String })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   requestedMedicIds?: string[] | null;
 
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ isArray: true, type: String })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   madeByIds?: string[] | null;
 
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ isArray: true, type: String })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   madeForIds?: string[] | null;
 
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ isArray: true, type: String })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   savedToIds?: string[] | null;
 
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ isArray: true, type: String })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   requestTemplateIds?: string[] | null;
 
-  @ApiPropertyOptional({ type: RequestStatusEnum })
+  @ApiFilterProperty({ type: String, enum: RequestStatusEnum })
   @IsOptional()
   @IsEnum(RequestStatusEnum)
   status?: RequestStatusEnum | null;
 }
 
 export class SortRequestDto {
-  @ApiProperty()
+  @ApiSortProperty({ enum: ['createdAt', 'patientFullName', 'patientDNI'] })
   @Type(() => String)
   @IsString()
-  orderBy: keyof Request;
+  orderBy: string;
 
-  @ApiProperty()
+  @ApiSortProperty({ enum: OrderEnum })
   @IsString()
   order: string;
 }
@@ -74,7 +76,7 @@ export class FindAllRequestsDto {
   @IsOptional()
   limit?: number;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => FilterRequestDto })
   @IsOptional()
   @IsObject()
   @Transform(ObjectTransformer(FilterRequestDto))
@@ -82,7 +84,7 @@ export class FindAllRequestsDto {
   @Type(() => FilterRequestDto)
   filters?: FilterRequestDto | null;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => SortRequestDto, isArray: true })
   @IsOptional()
   @Transform(ObjectTransformer(SortRequestDto))
   @ValidateNested({ each: true })

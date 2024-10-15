@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsEnum,
@@ -8,29 +8,31 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { OrderEnum } from 'src/common/order.enum';
+import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
+import { ApiSortProperty } from 'src/utils/decorators/sort-property';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
 import { FieldQuestionTypeEnum } from '../field-questions.enum';
-import { FieldQuestion } from '../domain/field-question';
 
 export class SortFieldQuestionDto {
-  @ApiProperty()
+  @ApiSortProperty({ enum: ['createdAt', 'name', 'slug', 'label'] })
   @Type(() => String)
   @IsString()
-  orderBy: keyof FieldQuestion;
+  orderBy: string;
 
-  @ApiProperty()
+  @ApiSortProperty({ enum: OrderEnum })
   @IsString()
   order: string;
 }
 
 export class FilterFieldQuestionDto {
   //Search by name
-  @ApiPropertyOptional()
+  @ApiFilterProperty()
   @IsOptional()
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ type: FieldQuestionTypeEnum })
+  @ApiFilterProperty({ type: String, enum: FieldQuestionTypeEnum })
   @IsOptional()
   @IsEnum(FieldQuestionTypeEnum)
   type?: FieldQuestionTypeEnum | null;
@@ -49,7 +51,7 @@ export class FindAllFieldQuestionsDto {
   @IsOptional()
   limit?: number;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => FilterFieldQuestionDto })
   @IsOptional()
   @IsObject()
   @Transform(ObjectTransformer(FilterFieldQuestionDto))
@@ -57,7 +59,7 @@ export class FindAllFieldQuestionsDto {
   @Type(() => FilterFieldQuestionDto)
   filters?: FilterFieldQuestionDto | null;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => SortFieldQuestionDto, isArray: true })
   @IsOptional()
   @Transform(ObjectTransformer(SortFieldQuestionDto))
   @ValidateNested({ each: true })

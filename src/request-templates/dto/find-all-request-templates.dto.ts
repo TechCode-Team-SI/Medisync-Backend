@@ -1,4 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
   IsNumber,
   IsObject,
@@ -6,24 +7,25 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
-import { RequestTemplate } from '../domain/request-template';
+import { OrderEnum } from 'src/common/order.enum';
+import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
+import { ApiSortProperty } from 'src/utils/decorators/sort-property';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
 
 export class SortRequestTemplateDto {
-  @ApiProperty()
+  @ApiSortProperty({ enum: ['name', 'slug', 'createdAt'] })
   @Type(() => String)
   @IsString()
-  orderBy: keyof RequestTemplate;
+  orderBy: string;
 
-  @ApiProperty()
+  @ApiSortProperty({ enum: OrderEnum })
   @IsString()
   order: string;
 }
 
 export class FilterRequestTemplateDto {
   //Search by name
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ description: 'Search by name' })
   @IsOptional()
   @IsString()
   search?: string;
@@ -42,14 +44,14 @@ export class FindAllRequestTemplatesDto {
   @IsOptional()
   limit?: number;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => SortRequestTemplateDto, isArray: true })
   @IsOptional()
   @Transform(ObjectTransformer(SortRequestTemplateDto))
   @ValidateNested({ each: true })
   @Type(() => SortRequestTemplateDto)
   sort?: SortRequestTemplateDto[] | null;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => FilterRequestTemplateDto })
   @IsOptional()
   @IsObject()
   @Transform(ObjectTransformer(FilterRequestTemplateDto))

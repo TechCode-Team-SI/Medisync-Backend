@@ -1,4 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBooleanString,
   IsEnum,
@@ -8,36 +9,37 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { OrderEnum } from 'src/common/order.enum';
+import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
+import { ApiSortProperty } from 'src/utils/decorators/sort-property';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
-import { Notification } from '../domain/notification';
 import { NotificationTypeEnum } from '../notifications.enum';
 
 export class FilterNotificationDto {
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ type: Boolean })
   @IsOptional()
   @IsBooleanString()
   @Type(() => Boolean)
   read?: boolean;
 
-  @ApiProperty()
+  @ApiFilterProperty()
   @IsOptional()
   @IsString()
   userId?: string;
 
-  @ApiProperty()
+  @ApiFilterProperty({ type: String, enum: NotificationTypeEnum })
   @IsOptional()
   @IsEnum(NotificationTypeEnum)
   type?: NotificationTypeEnum;
 }
 
 export class SortNotificationsDto {
-  @ApiProperty()
+  @ApiSortProperty({ enum: ['createdAt', 'title', 'type'] })
   @Type(() => String)
   @IsString()
-  orderBy: keyof Notification;
+  orderBy: string;
 
-  @ApiProperty()
+  @ApiSortProperty({ enum: OrderEnum })
   @IsString()
   order: string;
 }
@@ -55,14 +57,14 @@ export class FindAllNotificationsDto {
   @IsOptional()
   limit?: number;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => SortNotificationsDto, isArray: true })
   @IsOptional()
   @Transform(ObjectTransformer(SortNotificationsDto))
   @ValidateNested({ each: true })
   @Type(() => SortNotificationsDto)
   sort?: SortNotificationsDto[] | null;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => FilterNotificationDto })
   @IsOptional()
   @IsObject()
   @Transform(ObjectTransformer(FilterNotificationDto))

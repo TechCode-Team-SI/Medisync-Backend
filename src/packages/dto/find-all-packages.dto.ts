@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsNumber,
@@ -7,24 +7,26 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { OrderEnum } from 'src/common/order.enum';
+import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
+import { ApiSortProperty } from 'src/utils/decorators/sort-property';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
-import { Package } from '../domain/package';
 
 export class FilterPackageDto {
   //Search by name
-  @ApiPropertyOptional()
+  @ApiFilterProperty({ description: 'Search by name' })
   @IsOptional()
   @IsString()
   search?: string;
 }
 
 export class SortPackageDto {
-  @ApiProperty()
+  @ApiSortProperty({ enum: ['createdAt', 'name', 'slug'] })
   @Type(() => String)
   @IsString()
-  orderBy: keyof Package;
+  orderBy: string;
 
-  @ApiProperty()
+  @ApiSortProperty({ enum: OrderEnum })
   @IsString()
   order: string;
 }
@@ -42,14 +44,14 @@ export class FindAllPackagesDto {
   @IsOptional()
   limit?: number;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => SortPackageDto, isArray: true })
   @IsOptional()
   @Transform(ObjectTransformer(SortPackageDto))
   @ValidateNested({ each: true })
   @Type(() => SortPackageDto)
   sort?: SortPackageDto[] | null;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: () => FilterPackageDto })
   @IsOptional()
   @IsObject()
   @Transform(ObjectTransformer(FilterPackageDto))
