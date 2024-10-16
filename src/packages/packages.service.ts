@@ -15,7 +15,11 @@ import { Package } from './domain/package';
 import { PackageRepository } from './infrastructure/persistence/package.repository';
 import { exceptionResponses } from './packages.messages';
 import { fieldQuestionsModule } from './seeds/field-questions';
-import { InstallationModule, ModuleInstallationSteps } from './seeds/type';
+import {
+  GlossaryData,
+  InstallationModule,
+  ModuleInstallationSteps,
+} from './seeds/type';
 import { FilterPackageDto, SortPackageDto } from './dto/find-all-packages.dto';
 import { PathologiesService } from 'src/pathologies/pathologies.service';
 import { SymptomsService } from 'src/symptoms/symptoms.service';
@@ -152,6 +156,23 @@ export class PackagesService {
       );
       installationSteps.fieldQuestions.push(...prefixedFieldQuestions);
     }
+
+    //Remove duplicated data
+    installationSteps.illnesses = this.removeDuplicateGlosaryData(
+      installationSteps.illnesses,
+    );
+    installationSteps.injuries = this.removeDuplicateGlosaryData(
+      installationSteps.injuries,
+    );
+    installationSteps.pathologies = this.removeDuplicateGlosaryData(
+      installationSteps.pathologies,
+    );
+    installationSteps.treatments = this.removeDuplicateGlosaryData(
+      installationSteps.treatments,
+    );
+    installationSteps.symptoms = this.removeDuplicateGlosaryData(
+      installationSteps.symptoms,
+    );
 
     //Verify that the selected module's specialties are not already installed
     const specialtyNames = installationSteps.specialties.map(
@@ -333,5 +354,18 @@ export class PackagesService {
       });
     }
     return true;
+  }
+
+  private removeDuplicateGlosaryData(data: GlossaryData[]) {
+    const dataMap: Record<string, boolean> = {};
+    const result: GlossaryData[] = [];
+    for (const item of data) {
+      if (!dataMap[item.name]) {
+        dataMap[item.name] = true;
+      } else {
+        result.push(item);
+      }
+    }
+    return result;
   }
 }

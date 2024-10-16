@@ -1,7 +1,7 @@
 import { FieldQuestionType } from 'src/database/seeds/relational/question/question-seed';
 import { RecursiveRequired } from 'src/utils/types/deep-required.type';
 
-type GlossaryData = {
+export type GlossaryData = {
   id: string;
   name: string;
   description: string;
