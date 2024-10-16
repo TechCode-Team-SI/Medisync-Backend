@@ -11,6 +11,7 @@ import { SymptomsModule } from 'src/symptoms/symptoms.module';
 import { IllnessesModule } from 'src/illnesses/illnesses.module';
 import { InjuriesModule } from 'src/injuries/injuries.module';
 import { treatmentsModule } from 'src/treatments/treatments.module';
+import { FilesS3Module } from 'src/files/infrastructure/uploader/s3/files.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { treatmentsModule } from 'src/treatments/treatments.module';
     IllnessesModule,
     treatmentsModule,
     InjuriesModule,
+    FilesS3Module,
   ],
   providers: [PackagesService],
   controllers: [PackagesController],

@@ -1,4 +1,5 @@
 import { FieldQuestionType } from 'src/database/seeds/relational/question/question-seed';
+import { FileDto } from 'src/files/dto/file.dto';
 import { RecursiveRequired } from 'src/utils/types/deep-required.type';
 
 export type GlossaryData = {
@@ -31,6 +32,7 @@ export type InstallationModule = {
   treatments: GlossaryData[];
   pathologies: GlossaryData[];
   symptoms: GlossaryData[];
+  image?: string;
 };
 
 export type ModuleInstallationSteps = {
@@ -50,5 +52,6 @@ export type ModuleInstallationSteps = {
     requestTemplate: {
       id: string;
     };
+    image?: FileDto | null;
   }[];
 };

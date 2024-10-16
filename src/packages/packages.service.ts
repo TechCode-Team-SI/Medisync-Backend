@@ -26,6 +26,8 @@ import { SymptomsService } from 'src/symptoms/symptoms.service';
 import { IllnessesService } from 'src/illnesses/illnesses.service';
 import { TreatmentsService } from 'src/treatments/treatments.service';
 import { InjuriesService } from 'src/injuries/injuries.service';
+import { FilesS3Service } from 'src/files/infrastructure/uploader/s3/files.service';
+import { FileDto } from 'src/files/dto/file.dto';
 
 @Injectable()
 export class PackagesService {
@@ -40,6 +42,7 @@ export class PackagesService {
     private readonly illnessesService: IllnessesService,
     private readonly treatmentsService: TreatmentsService,
     private readonly injuriesService: InjuriesService,
+    private readonly filesS3Service: FilesS3Service,
   ) {}
 
   findAllWithPagination({
@@ -108,6 +111,9 @@ export class PackagesService {
     };
 
     for (const installationModule of installationModules) {
+      //Upload image
+      const file = await this.uploadImg(installationModule.image || '');
+
       installationSteps.specialties.push({
         id: installationModule.id,
         name: installationModule.specialty,
@@ -115,6 +121,7 @@ export class PackagesService {
         isGroup: installationModule.isGroup,
         isPublic: installationModule.isPublic,
         requestTemplate: { id: installationModule.requestTemplate.id },
+        image: file,
       });
 
       installationSteps.illnesses.push(...installationModule.illnesses);
@@ -307,6 +314,7 @@ export class PackagesService {
     installationSteps.fieldQuestions = fieldQuestions.filter(
       (field) => !installedFieldSlugs.includes(field.slug),
     );
+
     //Create questions
     await this.fieldQuestionsService.createMultiple({
       fields: installationSteps.fieldQuestions,
@@ -367,5 +375,16 @@ export class PackagesService {
       }
     }
     return result;
+  }
+
+  private async uploadImg(slug: string): Promise<FileDto | null> {
+    const path = `assets/images/${slug}.jpg`;
+    try {
+      const { file } = await this.filesS3Service.createInternal(path);
+      return file;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 }

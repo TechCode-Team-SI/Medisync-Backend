@@ -16,6 +16,7 @@ const infrastructurePersistenceModule = RelationalFilePersistenceModule;
 @Module({
   imports: [
     infrastructurePersistenceModule,
+    ConfigModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

@@ -2,6 +2,7 @@ import { InstallationModule } from './type';
 
 const installationModule: InstallationModule = {
   id: '67b2f157-49b1-470e-93eb-3cfed3145fd0',
+  image: 'cardiologia',
   specialty: 'Cardiología',
   description: 'Departamento encargado de la salud del corazón',
   isGroup: false,
