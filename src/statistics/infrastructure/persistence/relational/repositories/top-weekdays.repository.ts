@@ -47,7 +47,8 @@ export class TopWeekdaysRelationalRepository
       .select([
         'weekday(request.createdAt) AS weekday',
         'count(request.id) AS requests',
-      ]);
+      ])
+      .limit(10);
 
     if (time && time !== StatisticsTimeEnum.ALL_TIME) {
       entities = await query.andWhere(this.renderTimeQuery(time)).getRawMany();

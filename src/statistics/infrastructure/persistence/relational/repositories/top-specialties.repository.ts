@@ -51,7 +51,8 @@ export class TopSpecialtiesRelationalRepository
         'specialty.name AS name',
         'file.path AS avatar',
         'count(request.id) AS requests',
-      ]);
+      ])
+      .limit(10);
 
     if (time && time !== StatisticsTimeEnum.ALL_TIME) {
       entities = await query.andWhere(this.renderTimeQuery(time)).getRawMany();
