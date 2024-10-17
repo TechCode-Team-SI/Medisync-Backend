@@ -47,4 +47,14 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'user_patient_not_found',
     message: 'Usuario paciente no encontrado',
   },
+  PatientAlreadyExists: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'user_patient_not_already_exists',
+    message: 'El usuario paciente que intenta crear ya existe',
+  },
+  UserPatientNotCreated: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'user_patient_could_not_be_created',
+    message: 'El perfil de paciente no pudo ser creado',
+  },
 } as const;

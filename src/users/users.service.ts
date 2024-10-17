@@ -35,8 +35,9 @@ export class UsersService {
   ) {}
 
   async create(createProfileDto: CreateUserDto): Promise<User> {
+    const { userPatient, ...data } = createProfileDto;
     const clonedPayload = {
-      ...createProfileDto,
+      ...data,
     };
 
     if (clonedPayload.password) {
@@ -81,13 +82,24 @@ export class UsersService {
 
     const roles = clonedPayload.roles || [];
 
-    return this.usersRepository.create(
+    const user = await this.usersRepository.create(
       {
         ...clonedPayload,
         employeeProfile,
       },
       roles,
     );
+
+    if (userPatient) {
+      const profilePatient = await this.createUserPatient(user.id, userPatient);
+      if (!profilePatient) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.UserPatientNotCreated,
+        );
+      }
+    }
+
+    return user;
   }
 
   findManyWithPagination({
@@ -242,6 +254,15 @@ export class UsersService {
       ...createPatientDto,
       user,
     };
+
+    const foundPatient = await this.userPatientsRepository.findByDNI(
+      createPatientDto.dni,
+    );
+    if (foundPatient) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.PatientAlreadyExists,
+      );
+    }
 
     return this.userPatientsRepository.create(clonedPayload);
   }

@@ -119,6 +119,21 @@ export class UserPatientRelationalRepository
     return entity ? UserPatientMapper.toDomain(entity) : null;
   }
 
+  async findByDNI(
+    dni: UserPatient['dni'],
+    options?: findOptions,
+  ): Promise<NullableType<UserPatient>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entity = await this.userPatientRepository.findOne({
+      where: { dni },
+      relations,
+    });
+
+    return entity ? UserPatientMapper.toDomain(entity) : null;
+  }
+
   async update(
     id: UserPatient['id'],
     payload: Partial<UserPatient>,

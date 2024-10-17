@@ -10,6 +10,7 @@ import {
   Request,
   SerializeOptions,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -28,6 +29,7 @@ import { LoginResponseDto } from './dto/login-response.dto';
 import { RefreshResponseDto } from './dto/refresh-response.dto';
 import { SuccessResponseDto } from './dto/success-response.dto';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
+import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 
 @ApiTags('Auth')
 @Controller({
@@ -50,6 +52,7 @@ export class AuthController {
   }
 
   @Post('register')
+  @UseInterceptors(TransactionInterceptor)
   @HttpCode(HttpStatus.OK)
   async register(
     @Body() createUserDto: AuthRegisterLoginDto,

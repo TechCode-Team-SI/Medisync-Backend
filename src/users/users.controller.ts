@@ -12,6 +12,7 @@ import {
   SerializeOptions,
   UnprocessableEntityException,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -45,6 +46,7 @@ import { UserPatient } from 'src/user-patients/domain/user-patient';
 import { UpdateUserPatientDto } from 'src/user-patients/dto/update-user-patient.dto';
 import { CreateUserPatientDto } from 'src/user-patients/dto/create-user-patient.dto';
 import { FindAllUserPatientsDto } from 'src/user-patients/dto/find-all-user-patients.dto';
+import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -65,6 +67,7 @@ export class UsersController {
   @Permissions(PermissionsEnum.CREATE_USER)
   @UseGuards(PermissionsGuard)
   @Post()
+  @UseInterceptors(TransactionInterceptor)
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createProfileDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createProfileDto);

@@ -91,10 +91,24 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<LoginResponseDto> {
+    const { userPatient, ...data } = dto;
+
     const user = await this.usersService.create({
-      ...dto,
-      email: dto.email,
+      ...data,
+      email: data.email,
     });
+
+    if (userPatient) {
+      const patientProfile = await this.usersService.createUserPatient(
+        user.id,
+        userPatient,
+      );
+      if (!patientProfile) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.UserPatientNotCreated,
+        );
+      }
+    }
 
     const hash = crypto
       .createHash('sha256')

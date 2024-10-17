@@ -32,4 +32,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'invalid_confirm_email',
     message: 'confirmacion de email invalida',
   },
+  UserPatientNotCreated: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'user_patient_could_not_be_created',
+    message: 'El perfil de paciente no pudo ser creado',
+  },
 } as const;

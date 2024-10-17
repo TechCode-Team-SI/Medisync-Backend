@@ -8,11 +8,13 @@ import {
   MinLength,
   ValidateNested,
   IsString,
+  IsObject,
 } from 'class-validator';
 import { FileDto } from '../../files/dto/file.dto';
 import { RoleDto } from '../../roles/dto/role.dto';
 import { lowerCaseTransformer } from '../../utils/transformers/lower-case.transformer';
 import { EmployeeProfileDto } from 'src/employee-profiles/dto/employee-profile.dto';
+import { CreateUserPatientDto } from 'src/user-patients/dto/create-user-patient.dto';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'test1@example.com', type: String })
@@ -43,6 +45,11 @@ export class CreateUserDto {
   @ValidateNested()
   @Type(() => EmployeeProfileDto)
   employeeProfile?: EmployeeProfileDto | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsObject()
+  userPatient?: CreateUserPatientDto | null;
 
   @ApiProperty({ example: '0412-1234567' })
   @IsOptional()

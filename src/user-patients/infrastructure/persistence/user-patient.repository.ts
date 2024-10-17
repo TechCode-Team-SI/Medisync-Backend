@@ -30,6 +30,11 @@ export abstract class UserPatientRepository extends BaseRepository {
     options?: findOptions,
   ): Promise<NullableType<UserPatient>>;
 
+  abstract findByDNI(
+    dni: UserPatient['dni'],
+    options?: findOptions,
+  ): Promise<NullableType<UserPatient>>;
+
   abstract update(
     id: UserPatient['id'],
     payload: DeepPartial<Omit<UserPatient, 'dni'>>,
