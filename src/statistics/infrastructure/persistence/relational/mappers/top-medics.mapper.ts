@@ -7,7 +7,7 @@ export class TopMedicsMapper {
     domainEntity.medicId = raw.medicId;
     domainEntity.fullName = raw.fullName;
     domainEntity.avatar = raw.avatar;
-    domainEntity.requests = raw.requests;
+    domainEntity.requests = Number(raw.requests);
 
     return domainEntity;
   }

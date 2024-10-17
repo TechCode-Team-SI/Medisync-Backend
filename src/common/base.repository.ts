@@ -14,4 +14,8 @@ export class BaseRepository {
       this.request[ENTITY_MANAGER_KEY] || this.datasource;
     return entityManager.getRepository(entityCls);
   }
+
+  protected getEntityManager(): EntityManager {
+    return this.request[ENTITY_MANAGER_KEY] || this.datasource;
+  }
 }

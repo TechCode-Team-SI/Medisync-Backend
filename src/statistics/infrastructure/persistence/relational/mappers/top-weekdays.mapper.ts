@@ -6,7 +6,7 @@ export class TopWeekdaysMapper {
   static toDomain(raw: TopWeekdaysEntity): TopWeekdays {
     const domainEntity = new TopWeekdays();
     domainEntity.weekday = WeekDays[raw.weekday];
-    domainEntity.requests = raw.requests;
+    domainEntity.requests = Number(raw.requests);
 
     return domainEntity;
   }

@@ -2,17 +2,11 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
+import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
 import { StatisticsTimeEnum } from 'src/statistics/statistics-time.enum';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { TopSpecialties } from '../../../../domain/top-specialties';
 import { TopSpecialtiesRepository } from '../../top-specialties.repository';
-import {
-  TopSpecialtiesAllTimeEntity,
-  TopSpecialtiesCurrentDayEntity,
-  TopSpecialtiesCurrentMonthEntity,
-  TopSpecialtiesCurrentYearEntity,
-  TopSpecialtiesEntity,
-} from '../entities/top-specialties.entity';
 import { TopSpecialtiesMapper } from '../mappers/top-specialties.mapper';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -28,24 +22,42 @@ export class TopSpecialtiesRelationalRepository
     super(datasource, request);
   }
 
-  private getTopSpecialtiesRepository(
-    time?: StatisticsTimeEnum,
-  ): Repository<TopSpecialtiesEntity> {
+  private renderTimeQuery(time?: StatisticsTimeEnum): string {
     switch (time) {
-      default:
-      case StatisticsTimeEnum.ALL_TIME:
-        return this.getRepository(TopSpecialtiesAllTimeEntity);
       case StatisticsTimeEnum.THIS_YEAR:
-        return this.getRepository(TopSpecialtiesCurrentYearEntity);
+        return '(year(request.createdAt) = year(now()))';
       case StatisticsTimeEnum.THIS_MONTH:
-        return this.getRepository(TopSpecialtiesCurrentMonthEntity);
+        return '(year(request.createdAt) = year(now())) && (month(request.createdAt) = month(now()))';
       case StatisticsTimeEnum.TODAY:
-        return this.getRepository(TopSpecialtiesCurrentDayEntity);
+        return 'Date(request.createdAt)=Curdate()';
+      default:
+        return '';
     }
   }
 
   async findAll(time?: StatisticsTimeEnum): Promise<TopSpecialties[]> {
-    const entities = await this.getTopSpecialtiesRepository(time).find();
+    const entityManager = this.getEntityManager();
+    let entities: any[] = [];
+    const query = entityManager
+      .getRepository(RequestEntity)
+      .createQueryBuilder('request')
+      .leftJoin('request.requestedSpecialty', 'specialty')
+      .leftJoin('specialty.image', 'file', 'specialty.imageId = file.id')
+      .where('request.status <> :status', { status: 'cancelled' })
+      .groupBy('request.requestedSpecialtyId')
+      .orderBy('count(request.id)', 'DESC')
+      .select([
+        'request.requestedSpecialtyId AS specialtyId',
+        'specialty.name AS name',
+        'file.path AS avatar',
+        'count(request.id) AS requests',
+      ]);
+
+    if (time && time !== StatisticsTimeEnum.ALL_TIME) {
+      entities = await query.andWhere(this.renderTimeQuery(time)).getRawMany();
+    } else {
+      entities = await query.getRawMany();
+    }
 
     return entities.map((entity) => TopSpecialtiesMapper.toDomain(entity));
   }

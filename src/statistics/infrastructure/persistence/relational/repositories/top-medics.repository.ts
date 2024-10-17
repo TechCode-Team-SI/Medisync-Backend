@@ -2,17 +2,11 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
+import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
 import { StatisticsTimeEnum } from 'src/statistics/statistics-time.enum';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { TopMedics } from '../../../../domain/top-medics';
 import { TopMedicsRepository } from '../../top-medics.repository';
-import {
-  TopMedicsAllTimeEntity,
-  TopMedicsCurrentDayEntity,
-  TopMedicsCurrentMonthEntity,
-  TopMedicsCurrentYearEntity,
-  TopMedicsEntity,
-} from '../entities/top-medics.entity';
 import { TopMedicsMapper } from '../mappers/top-medics.mapper';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -28,24 +22,46 @@ export class TopMedicsRelationalRepository
     super(datasource, request);
   }
 
-  private getTopMedicsRepository(
-    time?: StatisticsTimeEnum,
-  ): Repository<TopMedicsEntity> {
+  private renderTimeQuery(time?: StatisticsTimeEnum): string {
     switch (time) {
-      default:
-      case StatisticsTimeEnum.ALL_TIME:
-        return this.getRepository(TopMedicsAllTimeEntity);
       case StatisticsTimeEnum.THIS_YEAR:
-        return this.getRepository(TopMedicsCurrentYearEntity);
+        return '(year(request.createdAt) = year(now()))';
       case StatisticsTimeEnum.THIS_MONTH:
-        return this.getRepository(TopMedicsCurrentMonthEntity);
+        return '(year(request.createdAt) = year(now())) && (month(request.createdAt) = month(now()))';
       case StatisticsTimeEnum.TODAY:
-        return this.getRepository(TopMedicsCurrentDayEntity);
+        return 'Date(request.createdAt)=Curdate()';
+      default:
+        return '';
     }
   }
 
   async findAll(time?: StatisticsTimeEnum): Promise<TopMedics[]> {
-    const entities = await this.getTopMedicsRepository(time).find();
+    const entityManager = this.getEntityManager();
+    let entities: any[] = [];
+    const query = entityManager
+      .getRepository(RequestEntity)
+      .createQueryBuilder('request')
+      .leftJoin(
+        'request.requestedMedic',
+        'user',
+        'request.requestedMedicId = user.id',
+      )
+      .leftJoin('user.photo', 'file', 'user.photoId = file.id')
+      .where('request.status <> :status', { status: 'cancelled' })
+      .groupBy('request.requestedMedicId')
+      .orderBy('count(request.id)', 'DESC')
+      .select([
+        'request.requestedMedicId AS medicId',
+        'user.fullName AS fullName',
+        'file.path AS avatar',
+        'count(request.id) AS requests',
+      ]);
+
+    if (time && time !== StatisticsTimeEnum.ALL_TIME) {
+      entities = await query.andWhere(this.renderTimeQuery(time)).getRawMany();
+    } else {
+      entities = await query.getRawMany();
+    }
 
     return entities.map((entity) => TopMedicsMapper.toDomain(entity));
   }

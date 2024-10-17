@@ -7,7 +7,7 @@ export class TopSpecialtiesMapper {
     domainEntity.specialtyId = raw.specialtyId;
     domainEntity.name = raw.name;
     domainEntity.avatar = raw.avatar;
-    domainEntity.requests = raw.requests;
+    domainEntity.requests = Number(raw.requests);
 
     return domainEntity;
   }

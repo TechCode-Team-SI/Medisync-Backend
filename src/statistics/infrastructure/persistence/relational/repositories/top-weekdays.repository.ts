@@ -2,17 +2,11 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
+import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
 import { StatisticsTimeEnum } from 'src/statistics/statistics-time.enum';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { TopWeekdays } from '../../../../domain/top-weekdays';
 import { TopWeekdaysRepository } from '../../top-weekdays.repository';
-import {
-  TopWeekdaysAllTimeEntity,
-  TopWeekdaysCurrentDayEntity,
-  TopWeekdaysCurrentMonthEntity,
-  TopWeekdaysCurrentYearEntity,
-  TopWeekdaysEntity,
-} from '../entities/top-weekdays.entity';
 import { TopWeekdaysMapper } from '../mappers/top-weekdays.mapper';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -28,24 +22,38 @@ export class TopWeekdaysRelationalRepository
     super(datasource, request);
   }
 
-  private getTopWeekdaysRepository(
-    time?: StatisticsTimeEnum,
-  ): Repository<TopWeekdaysEntity> {
+  private renderTimeQuery(time?: StatisticsTimeEnum): string {
     switch (time) {
-      default:
-      case StatisticsTimeEnum.ALL_TIME:
-        return this.getRepository(TopWeekdaysAllTimeEntity);
       case StatisticsTimeEnum.THIS_YEAR:
-        return this.getRepository(TopWeekdaysCurrentYearEntity);
+        return '(year(request.createdAt) = year(now()))';
       case StatisticsTimeEnum.THIS_MONTH:
-        return this.getRepository(TopWeekdaysCurrentMonthEntity);
+        return '(year(request.createdAt) = year(now())) && (month(request.createdAt) = month(now()))';
       case StatisticsTimeEnum.TODAY:
-        return this.getRepository(TopWeekdaysCurrentDayEntity);
+        return 'Date(request.createdAt)=Curdate()';
+      default:
+        return '';
     }
   }
 
   async findAll(time?: StatisticsTimeEnum): Promise<TopWeekdays[]> {
-    const entities = await this.getTopWeekdaysRepository(time).find();
+    const entityManager = this.getEntityManager();
+    let entities: any[] = [];
+    const query = entityManager
+      .getRepository(RequestEntity)
+      .createQueryBuilder('request')
+      .where('request.status <> :status', { status: 'cancelled' })
+      .groupBy('weekday(request.createdAt)')
+      .orderBy('count(request.id)', 'DESC')
+      .select([
+        'weekday(request.createdAt) AS weekday',
+        'count(request.id) AS requests',
+      ]);
+
+    if (time && time !== StatisticsTimeEnum.ALL_TIME) {
+      entities = await query.andWhere(this.renderTimeQuery(time)).getRawMany();
+    } else {
+      entities = await query.getRawMany();
+    }
 
     return entities.map((entity) => TopWeekdaysMapper.toDomain(entity));
   }
