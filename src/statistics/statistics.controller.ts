@@ -7,6 +7,7 @@ import { FindTopGeneralDto } from './dto/find-top-general.dto';
 import { StatisticsService } from './statistics.service';
 import { TopSpecialties } from './domain/top-specialties';
 import { TopWeekdays } from './domain/top-weekdays';
+import { Tart } from 'src/statistics-metadata/statistics-metadata.type';
 
 @ApiTags('Statistics')
 @ApiBearerAuth()
@@ -44,5 +45,13 @@ export class StatisticsController {
     @Query() query: FindTopGeneralDto,
   ): Promise<TopWeekdays[]> {
     return this.statisticsService.findtopWeekdays(query.time);
+  }
+
+  @Get()
+  @ApiOkResponse({
+    type: PaginationResponse(TopMedics),
+  })
+  async findAllStatisticGraphsMetadata(): Promise<Tart[]> {
+    return this.statisticsService.findStatisticsGraphMetadata();
   }
 }

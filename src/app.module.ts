@@ -56,8 +56,11 @@ import { SchedulesModule } from './schedules/schedules.module';
 
 import { UserPatientsModule } from './user-patients/user-patients.module';
 
+import { StatisticsMetadataModule } from './statistics-metadata/statistics-metadata.module';
+
 @Module({
   imports: [
+    StatisticsMetadataModule,
     UserPatientsModule,
     SchedulesModule,
     NotificationUsersModule,

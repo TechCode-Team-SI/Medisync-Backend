@@ -29,14 +29,17 @@ export class CreateRequestDto {
 
   @ApiProperty({ type: RequestTemplateDto })
   @IsNotEmpty()
+  @Type(() => RequestTemplateDto)
   requestTemplate: RequestTemplateDto;
 
   @ApiProperty({ type: EmployeeProfileIdDto })
   @IsNotEmpty()
+  @Type(() => EmployeeProfileIdDto)
   requestedMedic: EmployeeProfileIdDto;
 
   @ApiProperty({ type: SpecialtyDto })
   @IsNotEmpty()
+  @Type(() => SpecialtyDto)
   requestedSpecialty: SpecialtyDto;
 
   @ApiProperty({ type: () => RequestValueDto })
