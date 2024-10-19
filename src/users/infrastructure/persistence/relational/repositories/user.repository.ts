@@ -48,6 +48,7 @@ export class UsersRelationalRepository
     roles: true,
     employeeProfile: {
       schedule: true,
+      specialties: true,
     },
   };
 
