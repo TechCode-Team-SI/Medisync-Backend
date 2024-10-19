@@ -7,6 +7,8 @@ import { StatisticsMetadata } from './domain/statistics-metadata';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { SortStatisticsMetadataDto } from 'src/statistics-metadata/dto/find-all-statistics-metadata.dto';
 import { FieldQuestionRepository } from 'src/field-questions/infrastructure/persistence/field-question.repository';
+import { FilterAvailableFieldQuestions } from './dto/get-avalable-field-questions.dto';
+import { FilterAvailableSpecialties } from './dto/get-available-specialties.dto';
 
 @Injectable()
 export class StatisticsMetadataService {
@@ -64,5 +66,39 @@ export class StatisticsMetadataService {
 
   remove(id: StatisticsMetadata['id']) {
     return this.statisticsMetadataRepository.remove(id);
+  }
+
+  getAvailableSpecialtiesForGraph(
+    fieldQuestionId: string,
+    {
+      paginationOptions,
+      filterOptions,
+    }: {
+      paginationOptions: IPaginationOptions;
+      filterOptions?: FilterAvailableSpecialties | null;
+    },
+  ) {
+    return this.statisticsMetadataRepository.getAvailableSpecialtiesForGraph(
+      fieldQuestionId,
+      {
+        paginationOptions,
+        filterOptions,
+      },
+    );
+  }
+
+  getAvailableFieldQuestionsForGraph({
+    paginationOptions,
+    filterOptions,
+  }: {
+    paginationOptions: IPaginationOptions;
+    filterOptions?: FilterAvailableFieldQuestions | null;
+  }) {
+    return this.statisticsMetadataRepository.getAvailableFieldQuestionsForGraph(
+      {
+        paginationOptions,
+        filterOptions,
+      },
+    );
   }
 }

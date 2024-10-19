@@ -6,7 +6,13 @@ import { StatisticsMetadata } from '../../domain/statistics-metadata';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
 import { SortStatisticsMetadataDto } from 'src/statistics-metadata/dto/find-all-statistics-metadata.dto';
-import { Tart } from 'src/statistics-metadata/statistics-metadata.type';
+import {
+  AvailableFieldQuestion,
+  AvailableSpecialty,
+  Tart,
+} from 'src/statistics-metadata/statistics-metadata.type';
+import { FilterAvailableFieldQuestions } from 'src/statistics-metadata/dto/get-avalable-field-questions.dto';
+import { FilterAvailableSpecialties } from 'src/statistics-metadata/dto/get-available-specialties.dto';
 
 export abstract class StatisticsMetadataRepository extends BaseRepository {
   abstract create(
@@ -42,4 +48,21 @@ export abstract class StatisticsMetadataRepository extends BaseRepository {
   abstract remove(id: StatisticsMetadata['id']): Promise<void>;
 
   abstract genTartMetadata(metadata: StatisticsMetadata): Promise<Tart>;
+
+  abstract getAvailableSpecialtiesForGraph(
+    fieldQuestionId: string,
+    {
+      paginationOptions,
+    }: {
+      filterOptions?: FilterAvailableSpecialties | null;
+      paginationOptions: IPaginationOptions;
+    },
+  ): Promise<PaginationResponseDto<AvailableSpecialty>>;
+
+  abstract getAvailableFieldQuestionsForGraph({
+    paginationOptions,
+  }: {
+    filterOptions?: FilterAvailableFieldQuestions | null;
+    paginationOptions: IPaginationOptions;
+  }): Promise<PaginationResponseDto<AvailableFieldQuestion>>;
 }

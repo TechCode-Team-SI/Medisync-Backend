@@ -1,3 +1,5 @@
+import { FieldQuestionType } from 'src/database/seeds/relational/question/question-seed';
+
 export type Tart = {
   label: string;
   description: string;
@@ -5,4 +7,15 @@ export type Tart = {
     label: string;
     probabilities: number;
   }[];
+};
+
+export type AvailableSpecialty = {
+  id: string;
+  name: string;
+};
+
+export type AvailableFieldQuestion = {
+  id: string;
+  name: string;
+  type: FieldQuestionType;
 };

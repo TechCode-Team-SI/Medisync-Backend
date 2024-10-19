@@ -6,7 +6,11 @@ import { SelectionEntity } from 'src/field-questions/infrastructure/persistence/
 import { SortStatisticsMetadataDto } from 'src/statistics-metadata/dto/find-all-statistics-metadata.dto';
 import { FilteredByType } from 'src/statistics-metadata/statistics-metadata.enum';
 import { exceptionResponses } from 'src/statistics-metadata/statistics-metadata.messages';
-import { Tart } from 'src/statistics-metadata/statistics-metadata.type';
+import {
+  AvailableFieldQuestion,
+  AvailableSpecialty,
+  Tart,
+} from 'src/statistics-metadata/statistics-metadata.type';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
@@ -23,6 +27,9 @@ import { StatisticsMetadata } from '../../../../domain/statistics-metadata';
 import { StatisticsMetadataRepository } from '../../statistics-metadata.repository';
 import { StatisticsMetadataEntity } from '../entities/statistics-metadata.entity';
 import { StatisticsMetadataMapper } from '../mappers/statistics-metadata.mapper';
+import { RequestValueEntity } from 'src/requests/infrastructure/persistence/relational/entities/request-value.entity';
+import { FilterAvailableFieldQuestions } from 'src/statistics-metadata/dto/get-avalable-field-questions.dto';
+import { FilterAvailableSpecialties } from 'src/statistics-metadata/dto/get-available-specialties.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class StatisticsMetadataRelationalRepository
@@ -164,6 +171,7 @@ export class StatisticsMetadataRelationalRepository
       .innerJoin('s.requestValues', 'rv')
       .innerJoin('rv.request', 'r')
       .innerJoin('s.fieldQuestion', 'fq')
+      .where('r.status <> :status', { status: 'cancelled' })
       .where('fq.id = :fqId', { fqId: metadata.fieldQuestion?.id })
       .groupBy('s.id')
       .select(['s.id AS selectionId', 's.value AS value']);
@@ -194,5 +202,95 @@ export class StatisticsMetadataRelationalRepository
     };
 
     return result;
+  }
+
+  async getAvailableSpecialtiesForGraph(
+    fieldQuestionId: string,
+    {
+      paginationOptions,
+      filterOptions,
+    }: {
+      filterOptions?: FilterAvailableSpecialties | null;
+      paginationOptions: IPaginationOptions;
+    },
+  ): Promise<PaginationResponseDto<AvailableSpecialty>> {
+    const entityManager = this.getEntityManager();
+    const query = entityManager
+      .getRepository(RequestValueEntity)
+      .createQueryBuilder('rv')
+      .innerJoin('rv.request', 'r')
+      .innerJoin('r.requestedSpecialty', 'specialty')
+      .innerJoin('rv.fieldQuestion', 'fq')
+      .where('r.status <> :status', { status: 'cancelled' })
+      .where('fq.id = :fqId', { fqId: fieldQuestionId })
+      .groupBy('specialty.id, specialty.name')
+      .select(['specialty.id as id', 'specialty.name as name']);
+
+    if (filterOptions?.search) {
+      query.andWhere('specialty.name LIKE :search', {
+        search: `%${filterOptions.search}%`,
+      });
+    }
+
+    const count = await query.getCount();
+
+    query
+      .skip((paginationOptions.page - 1) * paginationOptions.limit)
+      .take(paginationOptions.limit);
+
+    const items: AvailableSpecialty[] = await query.getRawMany();
+
+    return Pagination(
+      { items, count },
+      {
+        limit: paginationOptions.limit,
+        page: paginationOptions.page,
+        domain: 'statistics-metadata',
+      },
+    );
+  }
+
+  async getAvailableFieldQuestionsForGraph({
+    paginationOptions,
+    filterOptions,
+  }: {
+    filterOptions?: FilterAvailableFieldQuestions | null;
+    paginationOptions: IPaginationOptions;
+  }): Promise<PaginationResponseDto<AvailableFieldQuestion>> {
+    const entityManager = this.getEntityManager();
+    const query = entityManager
+      .getRepository(RequestValueEntity)
+      .createQueryBuilder('rv')
+      .innerJoin('rv.request', 'r')
+      .innerJoin('rv.fieldQuestion', 'fq')
+      .where('r.status <> :status', { status: 'cancelled' })
+      .groupBy('fq.id, fq.name, fq.type')
+      .select(['fq.id as id', 'fq.name as name, fq.type as type']);
+
+    if (filterOptions?.search) {
+      query.andWhere('fq.name LIKE :search', {
+        search: `%${filterOptions.search}%`,
+      });
+    }
+    if (filterOptions?.type) {
+      query.andWhere('fq.type = :type', { type: filterOptions.type });
+    }
+
+    const count = await query.getCount();
+
+    query
+      .skip((paginationOptions.page - 1) * paginationOptions.limit)
+      .take(paginationOptions.limit);
+
+    const items: AvailableFieldQuestion[] = await query.getRawMany();
+
+    return Pagination(
+      { items, count },
+      {
+        limit: paginationOptions.limit,
+        page: paginationOptions.page,
+        domain: 'statistics-metadata',
+      },
+    );
   }
 }

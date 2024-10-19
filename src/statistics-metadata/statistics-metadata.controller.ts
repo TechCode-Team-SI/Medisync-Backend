@@ -29,6 +29,12 @@ import {
 import { FindAllStatisticsMetadataDto } from './dto/find-all-statistics-metadata.dto';
 import { exceptionResponses } from 'src/statistics-metadata/statistics-metadata.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import {
+  AvailableFieldQuestion,
+  AvailableSpecialty,
+} from './statistics-metadata.type';
+import { GetAvailableFieldQuestionsDto } from './dto/get-avalable-field-questions.dto';
+import { GetAvailableSpecialtiesDto } from './dto/get-available-specialties.dto';
 
 @ApiTags('StatisticsMetadata')
 @ApiBearerAuth()
@@ -62,6 +68,43 @@ export class StatisticsMetadataController {
     return this.statisticsMetadataService.findAllWithPagination({
       paginationOptions,
       sortOptions: query.sort,
+    });
+  }
+
+  @Get('specialties/:fieldQuestionId')
+  @ApiParam({
+    name: 'fieldQuestionId',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({
+    type: PaginationResponse(StatisticsMetadata),
+  })
+  async getAvailableSpecialtiesForgraph(
+    @Param('fieldQuestionId') fieldQuestionId: string,
+    @Query() query: GetAvailableSpecialtiesDto,
+  ): Promise<PaginationResponseDto<AvailableSpecialty>> {
+    const pagination = getPagination(query);
+    return this.statisticsMetadataService.getAvailableSpecialtiesForGraph(
+      fieldQuestionId,
+      {
+        paginationOptions: pagination,
+        filterOptions: query.filters,
+      },
+    );
+  }
+
+  @Get('field-questions')
+  @ApiOkResponse({
+    type: PaginationResponse(StatisticsMetadata),
+  })
+  async getAvailableFieldQuestionsForGraph(
+    @Query() query: GetAvailableFieldQuestionsDto,
+  ): Promise<PaginationResponseDto<AvailableFieldQuestion>> {
+    const paginationOptions = getPagination(query);
+    return this.statisticsMetadataService.getAvailableFieldQuestionsForGraph({
+      paginationOptions,
+      filterOptions: query.filters,
     });
   }
 
