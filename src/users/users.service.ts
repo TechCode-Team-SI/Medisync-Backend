@@ -240,6 +240,21 @@ export class UsersService {
     });
   }
 
+  async getAllUserPatients(options: {
+    paginationOptions: IPaginationOptions;
+    options?: findOptions;
+    sortOptions?: SortUserPatientsDto[] | null;
+    filterOptions?: FilterUserPatientsDto | null;
+  }) {
+    const filterOptions = {
+      ...options.filterOptions,
+    };
+    return this.userPatientsRepository.findAllWithPagination({
+      ...options,
+      filterOptions,
+    });
+  }
+
   async findUserPatient(id: string) {
     return this.userPatientsRepository.findById(id);
   }

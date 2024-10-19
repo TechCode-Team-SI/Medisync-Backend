@@ -208,6 +208,20 @@ export class UsersController {
     });
   }
 
+  @Get('/patient/all')
+  @HttpCode(HttpStatus.OK)
+  async getAllUserPatients(
+    @Query() query: FindAllUserPatientsDto,
+  ): Promise<PaginationResponseDto<UserPatient>> {
+    const paginationOptions = getPagination(query);
+
+    return this.usersService.getAllUserPatients({
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
+      paginationOptions,
+    });
+  }
+
   @Delete(':id')
   @ApiParam({
     name: 'id',
