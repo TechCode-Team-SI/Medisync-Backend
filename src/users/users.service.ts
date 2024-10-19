@@ -111,7 +111,10 @@ export class UsersService {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-    options?: findOptions & { employeeProfile: boolean };
+    options?: findOptions & {
+      employeeProfile?: boolean;
+      specialties?: boolean;
+    };
   }): Promise<PaginationResponseDto<User>> {
     return this.usersRepository.findManyWithPagination({
       filterOptions,

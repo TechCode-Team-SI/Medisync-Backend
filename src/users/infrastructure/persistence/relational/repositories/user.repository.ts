@@ -69,7 +69,7 @@ export class UsersRelationalRepository
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-    options?: findOptions & { employeeProfile: boolean };
+    options?: findOptions & { employeeProfile: boolean; specialties: boolean };
   }): Promise<PaginationResponseDto<User>> {
     let order: FindOneOptions<UserEntity>['order'] = { createdAt: 'DESC' };
     if (sortOptions) order = formatOrder(sortOptions);
@@ -78,6 +78,14 @@ export class UsersRelationalRepository
     if (options) relations = {};
     if (options?.employeeProfile)
       relations = { ...relations, employeeProfile: true };
+    if (options?.specialties) {
+      relations = {
+        ...relations,
+        employeeProfile: {
+          specialties: true,
+        },
+      };
+    }
     if (options?.minimal) relations = {};
 
     let where: FindOptionsWhere<UserEntity> = {};
