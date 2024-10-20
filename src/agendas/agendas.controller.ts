@@ -29,6 +29,9 @@ import {
 import { FindAllAgendasDto } from './dto/find-all-agendas.dto';
 import { exceptionResponses } from 'src/agendas/agendas.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Agendas')
 @ApiBearerAuth()
@@ -41,6 +44,8 @@ export class AgendasController {
   constructor(private readonly agendasService: AgendasService) {}
 
   @Post()
+  @Permissions(PermissionsEnum.MANAGE_AGENDA)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: Agenda,
   })
@@ -84,6 +89,8 @@ export class AgendasController {
   }
 
   @Patch(':id')
+  @Permissions(PermissionsEnum.MANAGE_AGENDA)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -97,6 +104,8 @@ export class AgendasController {
   }
 
   @Delete(':id')
+  @Permissions(PermissionsEnum.MANAGE_AGENDA)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -107,6 +116,8 @@ export class AgendasController {
   }
 
   @Post('specialty/:id/:specialtyId')
+  @Permissions(PermissionsEnum.ASSIGN_AGENDA)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'specialtyId',
     type: String,
@@ -123,6 +134,8 @@ export class AgendasController {
   }
 
   @Post('employee/:id/:employeeId')
+  @Permissions(PermissionsEnum.ASSIGN_AGENDA)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'employeeId',
     type: String,

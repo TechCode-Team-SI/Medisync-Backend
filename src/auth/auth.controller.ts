@@ -71,6 +71,7 @@ export class AuthController {
   }
 
   @Post('confirm')
+  @UseInterceptors(TransactionInterceptor)
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)

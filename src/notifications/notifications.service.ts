@@ -71,7 +71,7 @@ export class NotificationsService {
   ) {
     const users = await this.usersRepository.findAll({
       filterOptions: {
-        permissionSlugs: [PermissionsEnum.ACCESS_MOBILE],
+        permissionSlugs: [PermissionsEnum.USE_MOBILE],
       },
     });
     const userIds = users.map((user) => user.id);
