@@ -2,6 +2,7 @@ import { InstallationModule } from './type';
 
 const installationModule: InstallationModule = {
   id: 'b59e6c5b-b844-4f73-bcc4-0f1d45c3a5b4',
+  image: 'ginecologia',
   specialty: 'Gineco-obstetricia',
   description: 'Especialidad encargada de la salud de la mujer',
   isGroup: false,

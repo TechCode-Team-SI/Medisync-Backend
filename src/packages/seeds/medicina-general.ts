@@ -2,6 +2,7 @@ import { InstallationModule } from './type';
 
 const installationModule: InstallationModule = {
   id: 'f7896370-d5ff-46fb-a43a-3491b8cb1637',
+  image: 'medicina-general',
   specialty: 'Medicina general',
   description: 'Nivel de atención médica que realiza procedimientos sencillos',
   isGroup: false,

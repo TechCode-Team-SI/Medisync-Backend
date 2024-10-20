@@ -2,6 +2,7 @@ import { InstallationModule } from './type';
 
 const installationModule: InstallationModule = {
   id: '9fe690fb-fb50-43a3-8196-3efaa0470154',
+  image: 'cirugia',
   specialty: 'Cirugía',
   description:
     'Departamento donde se realizan intervenciones quirúrgicas variadas',

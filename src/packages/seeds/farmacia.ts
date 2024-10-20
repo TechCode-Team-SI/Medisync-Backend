@@ -2,6 +2,7 @@ import { InstallationModule } from './type';
 
 const installationModule: InstallationModule = {
   id: '995a6ad3-07b9-4500-b21f-e6c9d549d617',
+  image: 'farmacia',
   specialty: 'Farmacia',
   description:
     'Departamento donde se preparan, dispensan y controlan los medicamentos',
