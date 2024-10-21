@@ -10,7 +10,9 @@ import {
   DataSource,
   FindOptionsRelations,
   FindOptionsWhere,
+  IsNull,
   Like,
+  Not,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -60,9 +62,23 @@ export class RoomRelationalRepository
     options?: findOptions;
     filterOptions?: FilterRoomsDto | null;
   }): Promise<PaginationResponseDto<Room>> {
-    let where: FindOptionsWhere<RoomEntity> = {};
+    let where: FindOptionsWhere<RoomEntity> | FindOptionsWhere<RoomEntity>[] =
+      {};
     if (filterOptions?.search)
       where = { ...where, name: Like(`%${filterOptions.search}%`) };
+    if (filterOptions?.occupied !== undefined) {
+      switch (filterOptions.occupied) {
+        case true:
+          where = [
+            { ...where, employeeProfile: Not(IsNull()) },
+            { ...where, specialty: Not(IsNull()) },
+          ];
+          break;
+        case false:
+          where = { ...where, employeeProfile: IsNull(), specialty: IsNull() };
+          break;
+      }
+    }
 
     let relations = this.relations;
     if (options?.minimal) relations = {};

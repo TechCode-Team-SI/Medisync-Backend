@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsNumber,
   IsObject,
   IsOptional,
@@ -8,6 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
+import { BooleanTransformer } from 'src/utils/transformers/boolean.transformer';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
 
 export class FilterRoomsDto {
@@ -16,6 +18,12 @@ export class FilterRoomsDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiFilterProperty({ type: Boolean })
+  @IsOptional()
+  @Transform(BooleanTransformer)
+  @IsBoolean()
+  occupied?: boolean;
 }
 
 export class FindAllRoomsDto {

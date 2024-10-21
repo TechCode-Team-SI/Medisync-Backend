@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
-  IsBooleanString,
+  IsBoolean,
   IsEnum,
   IsNumber,
   IsObject,
@@ -12,14 +12,15 @@ import {
 import { OrderEnum } from 'src/common/order.enum';
 import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
 import { ApiSortProperty } from 'src/utils/decorators/sort-property';
+import { BooleanTransformer } from 'src/utils/transformers/boolean.transformer';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
 import { NotificationTypeEnum } from '../notifications.enum';
 
 export class FilterNotificationDto {
   @ApiFilterProperty({ type: Boolean })
   @IsOptional()
-  @IsBooleanString()
-  @Type(() => Boolean)
+  @Transform(BooleanTransformer)
+  @IsBoolean()
   read?: boolean;
 
   @ApiFilterProperty()
