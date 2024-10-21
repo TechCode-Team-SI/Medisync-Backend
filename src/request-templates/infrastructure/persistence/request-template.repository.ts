@@ -38,6 +38,11 @@ export abstract class RequestTemplateRepository {
     options?: findOptions,
   ): Promise<NullableType<RequestTemplate>>;
 
+  abstract findBySpecialtyId(
+    specialtyId: string,
+    options?: findOptions,
+  ): Promise<NullableType<RequestTemplate>>;
+
   abstract findAllBySlug(
     slugs: RequestTemplate['slug'][],
     options?: findOptions,

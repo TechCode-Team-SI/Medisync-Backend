@@ -141,6 +141,13 @@ export class RequestTemplatesService {
     return this.requestTemplateRepository.findById(id, options);
   }
 
+  findBySpecialtyId(specialtyId: string, options?: findOptions) {
+    return this.requestTemplateRepository.findBySpecialtyId(
+      specialtyId,
+      options,
+    );
+  }
+
   update(
     id: RequestTemplate['id'],
     updateRequestTemplateDto: UpdateRequestTemplateDto,

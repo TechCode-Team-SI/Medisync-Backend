@@ -81,4 +81,24 @@ export class RequestTemplatesController {
 
     return entity;
   }
+
+  @Get('/specialty/:specialtyId')
+  @ApiParam({
+    name: 'specialtyId',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({
+    type: RequestTemplate,
+  })
+  async findBySpecialtyId(@Param('specialtyId') specialtyId: string) {
+    const entity =
+      await this.requestTemplatesService.findBySpecialtyId(specialtyId);
+
+    if (!entity) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+
+    return entity;
+  }
 }

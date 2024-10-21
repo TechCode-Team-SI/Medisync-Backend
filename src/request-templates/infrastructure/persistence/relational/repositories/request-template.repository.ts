@@ -136,6 +136,21 @@ export class RequestTemplateRelationalRepository
     return entity ? RequestTemplateMapper.toDomain(entity) : null;
   }
 
+  async findBySpecialtyId(
+    specialtyId: string,
+    options?: findOptions,
+  ): Promise<NullableType<RequestTemplate>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entity = await this.requestTemplateRepository.findOne({
+      where: { specialties: { id: specialtyId } },
+      relations,
+    });
+
+    return entity ? RequestTemplateMapper.toDomain(entity) : null;
+  }
+
   async findBySlug(
     slug: RequestTemplate['slug'],
     options?: findOptions,

@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { FileDto } from 'src/files/dto/file.dto';
+import { RequestTemplateDto } from 'src/request-templates/dto/request-template.dto';
 
 export class CreateSpecialtyInternalDto {
   @ApiPropertyOptional()
@@ -34,4 +35,8 @@ export class CreateSpecialtyInternalDto {
   @ApiPropertyOptional({ type: () => FileDto })
   @IsOptional()
   image?: FileDto | null;
+
+  @ApiPropertyOptional({ type: () => RequestTemplateDto })
+  @IsOptional()
+  requestTemplate?: RequestTemplateDto | null;
 }
