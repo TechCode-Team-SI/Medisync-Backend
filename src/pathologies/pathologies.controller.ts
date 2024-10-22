@@ -29,6 +29,9 @@ import {
 import { FindAllPathologiesDto } from './dto/find-all-pathologies.dto';
 import { exceptionResponses } from 'src/pathologies/pathologies.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Pathologies')
 @ApiBearerAuth()
@@ -41,6 +44,8 @@ export class PathologiesController {
   constructor(private readonly pathologiesService: PathologiesService) {}
 
   @Post()
+  @Permissions(PermissionsEnum.MANAGE_PATHOLOGIES)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: Pathology,
   })
@@ -83,6 +88,8 @@ export class PathologiesController {
   }
 
   @Patch(':id')
+  @Permissions(PermissionsEnum.MANAGE_PATHOLOGIES)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -99,6 +106,8 @@ export class PathologiesController {
   }
 
   @Delete(':id')
+  @Permissions(PermissionsEnum.MANAGE_PATHOLOGIES)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
