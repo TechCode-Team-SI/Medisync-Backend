@@ -28,6 +28,9 @@ import { FindAllPackagesDto } from './dto/find-all-packages.dto';
 import { exceptionResponses } from './packages.messages';
 import { PackagesService } from './packages.service';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Packages')
 @ApiBearerAuth()
@@ -73,6 +76,8 @@ export class PackagesController {
   }
 
   @Post()
+  @Permissions(PermissionsEnum.CONFIGURE_PACKAGES)
+  @UseGuards(PermissionsGuard)
   @UseInterceptors(TransactionInterceptor)
   @ApiOkResponse()
   async seed(
