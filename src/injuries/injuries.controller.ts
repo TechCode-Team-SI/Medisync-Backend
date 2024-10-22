@@ -29,6 +29,9 @@ import {
 import { FindAllInjuriesDto } from './dto/find-all-injuries.dto';
 import { exceptionResponses } from 'src/injuries/injuries.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Injuries')
 @ApiBearerAuth()
@@ -41,6 +44,8 @@ export class InjuriesController {
   constructor(private readonly injuriesService: InjuriesService) {}
 
   @Post()
+  @Permissions(PermissionsEnum.MANAGE_INJURIES)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: Injury,
   })
@@ -84,6 +89,8 @@ export class InjuriesController {
   }
 
   @Patch(':id')
+  @Permissions(PermissionsEnum.MANAGE_INJURIES)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -97,6 +104,8 @@ export class InjuriesController {
   }
 
   @Delete(':id')
+  @Permissions(PermissionsEnum.MANAGE_INJURIES)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
