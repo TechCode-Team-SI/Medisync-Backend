@@ -28,12 +28,6 @@ const permissions: Permissions = [
     description: 'Permite usar la aplicación en un dispositivo móvil',
   },
   {
-    name: 'Acceso Escritorio',
-    slug: PermissionsEnum.ACCESS_DESKTOP,
-    description:
-      'Permite el acceso a la aplicación desde un dispositivo de escritorio',
-  },
-  {
     name: 'Crear Rol',
     slug: PermissionsEnum.CREATE_ROLE,
     description: 'Permite crear un rol nuevo',

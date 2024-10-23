@@ -16,7 +16,7 @@ const roles: Roles = [
   {
     name: 'Medico',
     slug: 'medic',
-    permissions: [PermissionsEnum.ACCESS_DESKTOP, PermissionsEnum.USE_MOBILE],
+    permissions: [PermissionsEnum.USE_MOBILE],
   },
   {
     name: 'Paciente',
