@@ -32,11 +32,6 @@ export const rolesProduction: Roles = [
     permissions: [PermissionsEnum.USE_MOBILE],
   },
   {
-    name: 'Usuario movil no confirmado',
-    slug: RolesEnum.UNCONFIRMED_MOBILE_USER,
-    permissions: [],
-  },
-  {
     name: 'Dueño',
     slug: RolesEnum.OWNER,
     //TODO: Update permissions to match the actual permissions
