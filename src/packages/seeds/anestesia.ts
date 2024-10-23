@@ -2,6 +2,7 @@ import { InstallationModule } from './type';
 
 const installationModule: InstallationModule = {
   id: '278c4c42-7269-4a1d-95da-854ad6a876d7',
+  image: 'anestesiologia',
   specialty: 'Anestesia',
   description:
     'Departamento hecho para garantizar la seguridad y el bienestar del paciente durante procedimientos quirúrgicos y algunos exámenes médicos',

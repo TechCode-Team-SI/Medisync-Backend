@@ -1,3 +1,4 @@
+import { SpecialtyMapper } from 'src/specialties/infrastructure/persistence/relational/mappers/specialty.mapper';
 import { RequestTemplate } from '../../../../domain/request-template';
 import { RequestTemplateEntity } from '../entities/request-template.entity';
 import { RequestTemplateFieldMapper } from './request-template-field.mapper';
@@ -13,6 +14,11 @@ export class RequestTemplateMapper {
         RequestTemplateFieldMapper.toDomain(field),
       );
       domainEntity.fields.sort((a, b) => a.order - b.order);
+    }
+    if (raw.specialties) {
+      domainEntity.specialties = raw.specialties.map((specialty) =>
+        SpecialtyMapper.toDomain(specialty),
+      );
     }
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;

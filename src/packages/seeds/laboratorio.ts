@@ -2,6 +2,7 @@ import { InstallationModule } from './type';
 
 const installationModule: InstallationModule = {
   id: '46264213-0dbe-4a2c-8e8e-763fcf123cc0',
+  image: 'laboratorio',
   specialty: 'Laboratorio',
   description: 'Departamento especializado en analizar muestras biológicas',
   isGroup: true,

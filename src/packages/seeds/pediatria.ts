@@ -2,6 +2,7 @@ import { InstallationModule } from './type';
 
 const installationModule: InstallationModule = {
   id: '7ee81567-88e7-4546-bed3-869c95289dd3',
+  image: 'pediatria',
   specialty: 'Pediatría',
   description: 'Especialidad encargada de la salud de los niños',
   isGroup: false,

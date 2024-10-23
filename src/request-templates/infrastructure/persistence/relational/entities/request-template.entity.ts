@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { RequestTemplateFieldEntity } from './request-template-field.entity';
+import { SpecialtyEntity } from 'src/specialties/infrastructure/persistence/relational/entities/specialty.entity';
 
 @Entity({
   name: 'request_template',
@@ -25,6 +26,10 @@ export class RequestTemplateEntity extends EntityRelationalHelper {
   @ApiProperty()
   @Column({ unique: true })
   slug: string;
+
+  @ApiProperty()
+  @OneToMany(() => SpecialtyEntity, (specialty) => specialty.requestTemplate)
+  specialties?: SpecialtyEntity[];
 
   @ApiProperty()
   @OneToMany(

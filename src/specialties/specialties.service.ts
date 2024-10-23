@@ -1,19 +1,20 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { CreateSpecialtyDto } from './dto/create-specialty.dto';
-import { UpdateSpecialtyDto } from './dto/update-specialty.dto';
-import { SpecialtyRepository } from './infrastructure/persistence/specialty.repository';
+import { FilesService } from 'src/files/files.service';
+import { RequestTemplate } from 'src/request-templates/domain/request-template';
+import { RequestTemplatesService } from 'src/request-templates/request-templates.service';
+import { UsersService } from 'src/users/users.service';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Specialty } from './domain/specialty';
-import { FilesService } from 'src/files/files.service';
-import { exceptionResponses } from './specialties.messages';
-import { findOptions } from 'src/utils/types/fine-options.type';
 import { CreateMultipleSpecialtyInternalDto } from './dto/create-multiple-specialty-internal.dto';
-import { CreateSpecialtyInternalDto } from './dto/create-specialty-internal.dto';
-import { UsersService } from 'src/users/users.service';
+import { CreateSpecialtyDto } from './dto/create-specialty.dto';
 import {
   FilterSpecialtyDto,
   SortSpecialtyDto,
 } from './dto/find-all-specialties.dto';
+import { UpdateSpecialtyDto } from './dto/update-specialty.dto';
+import { SpecialtyRepository } from './infrastructure/persistence/specialty.repository';
+import { exceptionResponses } from './specialties.messages';
 
 @Injectable()
 export class SpecialtiesService {
@@ -21,6 +22,7 @@ export class SpecialtiesService {
     private readonly specialtyRepository: SpecialtyRepository,
     private readonly filesService: FilesService,
     private readonly usersService: UsersService,
+    private readonly requestTemplateService: RequestTemplatesService,
   ) {}
 
   async create(createSpecialtyDto: CreateSpecialtyDto) {
@@ -35,11 +37,26 @@ export class SpecialtiesService {
       }
       createSpecialtyDto.image = fileObject;
     }
-    return this.specialtyRepository.create(createSpecialtyDto);
+
+    let foundRequestTemplate: RequestTemplate | null = null;
+    if (createSpecialtyDto.requestTemplate) {
+      foundRequestTemplate = await this.requestTemplateService.findOne(
+        createSpecialtyDto.requestTemplate.id,
+      );
+      if (!foundRequestTemplate) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.RequestTemplateNotExists,
+        );
+      }
+    }
+    return this.specialtyRepository.create({
+      ...createSpecialtyDto,
+      requestTemplate: foundRequestTemplate,
+    });
   }
 
   async createMultiple({ specialties }: CreateMultipleSpecialtyInternalDto) {
-    const payloads: CreateSpecialtyInternalDto[] = await Promise.all(
+    const payloads = await Promise.all(
       specialties.map(async (specialty) => {
         const data = { ...specialty };
         if (data.image?.id) {
@@ -51,7 +68,22 @@ export class SpecialtiesService {
           }
           data.image = fileObject;
         }
-        return data;
+
+        let foundRequestTemplate: RequestTemplate | null = null;
+        if (data.requestTemplate) {
+          foundRequestTemplate = await this.requestTemplateService.findOne(
+            data.requestTemplate.id,
+          );
+          if (!foundRequestTemplate) {
+            throw new UnprocessableEntityException(
+              exceptionResponses.RequestTemplateNotExists,
+            );
+          }
+        }
+        return {
+          ...data,
+          requestTemplate: foundRequestTemplate,
+        };
       }),
     );
 

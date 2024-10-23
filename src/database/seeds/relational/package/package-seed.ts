@@ -57,11 +57,6 @@ const packages: Packages = [
     slug: 'hemoterapia',
   },
   {
-    name: 'Emergencia',
-    description: 'Departamento para brindar atención inmediata',
-    slug: 'emergencia',
-  },
-  {
     name: 'Cardiologia',
     description: 'Departamento encargado de la salud del corazón',
     slug: 'cardiologia',
