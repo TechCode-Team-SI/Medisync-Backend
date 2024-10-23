@@ -79,6 +79,8 @@ export class UsersController {
   @SerializeOptions({
     groups: ['admin'],
   })
+  @Permissions(PermissionsEnum.VIEW_ALL_USERS)
+  @UseGuards(PermissionsGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(

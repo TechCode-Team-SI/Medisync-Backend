@@ -29,6 +29,9 @@ import {
 import { FindAllSchedulesDto } from './dto/find-all-schedules.dto';
 import { exceptionResponses } from 'src/schedules/schedules.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Schedules')
 @ApiBearerAuth()
@@ -41,6 +44,8 @@ export class SchedulesController {
   constructor(private readonly schedulesService: SchedulesService) {}
 
   @Post()
+  @Permissions(PermissionsEnum.MANAGE_SCHEDULE)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: Schedule,
   })
@@ -84,6 +89,8 @@ export class SchedulesController {
   }
 
   @Patch(':id')
+  @Permissions(PermissionsEnum.MANAGE_SCHEDULE)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -100,6 +107,8 @@ export class SchedulesController {
   }
 
   @Delete(':id')
+  @Permissions(PermissionsEnum.MANAGE_SCHEDULE)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,

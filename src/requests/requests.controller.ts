@@ -38,6 +38,9 @@ import { FindAllRequestsDto } from './dto/find-all-requests.dto';
 import { FinishRequestDto } from './dto/finish-request.dto';
 import { RequestsService } from './requests.service';
 import { RequestFormatted } from './domain/request-formatted';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Requests')
 @ApiBearerAuth()
@@ -96,6 +99,8 @@ export class RequestsController {
   }
 
   @Get()
+  @Permissions(PermissionsEnum.VIEW_ALL_REQUESTS)
+  @UseGuards(PermissionsGuard)
   @ApiOkResponse({
     type: PaginationResponse(Request),
   })

@@ -29,6 +29,9 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { exceptionResponses } from './roles.messages';
 import { RolesService } from './roles.service';
 import { getPagination } from 'src/utils/get-pagination';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Roles')
 @ApiBearerAuth()
@@ -41,6 +44,8 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Post()
+  @Permissions(PermissionsEnum.MANAGE_ROLES)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: Role,
   })
@@ -49,6 +54,8 @@ export class RolesController {
   }
 
   @Get()
+  @Permissions(PermissionsEnum.MANAGE_ROLES)
+  @UseGuards(PermissionsGuard)
   @ApiOkResponse({
     type: PaginationResponse(Role),
   })
@@ -64,6 +71,8 @@ export class RolesController {
   }
 
   @Get(':id')
+  @Permissions(PermissionsEnum.MANAGE_ROLES)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,

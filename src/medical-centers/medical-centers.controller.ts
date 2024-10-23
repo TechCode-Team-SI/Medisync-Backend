@@ -12,6 +12,9 @@ import { exceptionResponses } from 'src/medical-centers/medical-centers.messages
 import { MedicalCenter } from './domain/medical-center';
 import { UpdateMedicalCenterDto } from './dto/update-medical-center.dto';
 import { MedicalCentersService } from './medical-centers.service';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Medicalcenters')
 @Controller({
@@ -36,6 +39,8 @@ export class MedicalCentersController {
   }
 
   @Patch()
+  @Permissions(PermissionsEnum.CONFIGURE_MEDICAL_CENTER)
+  @UseGuards(PermissionsGuard)
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({

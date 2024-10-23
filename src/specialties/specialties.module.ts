@@ -5,6 +5,7 @@ import { RelationalSpecialtyPersistenceModule } from './infrastructure/persisten
 import { FilesModule } from 'src/files/files.module';
 import { UsersModule } from 'src/users/users.module';
 import { RequestTemplatesModule } from 'src/request-templates/request-templates.module';
+import { permissionsModule } from 'src/permissions/permissions.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { RequestTemplatesModule } from 'src/request-templates/request-templates.
     FilesModule,
     UsersModule,
     RequestTemplatesModule,
+    permissionsModule,
   ],
   controllers: [SpecialtiesController],
   providers: [SpecialtiesService],

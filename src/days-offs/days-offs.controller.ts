@@ -32,6 +32,9 @@ import { exceptionResponses } from 'src/days-offs/days-offs.messages';
 import { getPagination } from 'src/utils/get-pagination';
 import { Me } from 'src/auth/auth.decorator';
 import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Daysoffs')
 @ApiBearerAuth()
@@ -62,6 +65,8 @@ export class DaysOffsController {
   }
 
   @Post('employee/:employeeId')
+  @Permissions(PermissionsEnum.EDIT_USER)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: DaysOff,
   })
@@ -82,6 +87,8 @@ export class DaysOffsController {
   }
 
   @Post('agenda/:agendaId')
+  @Permissions(PermissionsEnum.MANAGE_AGENDA)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: DaysOff,
   })
@@ -90,11 +97,29 @@ export class DaysOffsController {
     type: String,
     required: true,
   })
-  createForSpeciality(
+  createForAgenda(
     @Body() createDaysOffDto: CreateDaysOffDto,
     @Param('agendaId') agendaId: string,
   ) {
     return this.daysOffsService.create(createDaysOffDto, 'agenda', agendaId);
+  }
+
+  @Post('specialty/:specialtyId')
+  @Permissions(PermissionsEnum.MANAGE_SPECIALTIES)
+  @UseGuards(PermissionsGuard)
+  @ApiCreatedResponse({
+    type: DaysOff,
+  })
+  @ApiParam({
+    name: 'specialtyId',
+    type: String,
+    required: true,
+  })
+  createForSpeciality(
+    @Body() createDaysOffDto: CreateDaysOffDto,
+    @Param('specialtyId') agendaId: string,
+  ) {
+    return this.daysOffsService.create(createDaysOffDto, 'specialty', agendaId);
   }
 
   @Get()

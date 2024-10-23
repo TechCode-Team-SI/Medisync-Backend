@@ -16,16 +16,12 @@ const roles: Roles = [
   {
     name: 'Medico',
     slug: 'medic',
-    permissions: [
-      PermissionsEnum.ACCESS_DESKTOP,
-      PermissionsEnum.ACCESS_MOBILE,
-      PermissionsEnum.USE_MOBILE,
-    ],
+    permissions: [PermissionsEnum.ACCESS_DESKTOP, PermissionsEnum.USE_MOBILE],
   },
   {
     name: 'Paciente',
     slug: 'patient',
-    permissions: [PermissionsEnum.ACCESS_MOBILE, PermissionsEnum.USE_MOBILE],
+    permissions: [PermissionsEnum.USE_MOBILE],
   },
 ];
 
@@ -33,12 +29,12 @@ export const rolesProduction: Roles = [
   {
     name: 'Usuario movil',
     slug: RolesEnum.MOBILE_USER,
-    permissions: [PermissionsEnum.ACCESS_MOBILE, PermissionsEnum.USE_MOBILE],
+    permissions: [PermissionsEnum.USE_MOBILE],
   },
   {
     name: 'Usuario movil no confirmado',
     slug: RolesEnum.UNCONFIRMED_MOBILE_USER,
-    permissions: [PermissionsEnum.ACCESS_MOBILE],
+    permissions: [],
   },
   {
     name: 'Dueño',
