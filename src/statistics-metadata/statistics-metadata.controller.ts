@@ -35,6 +35,9 @@ import {
 } from './statistics-metadata.type';
 import { GetAvailableFieldQuestionsDto } from './dto/get-avalable-field-questions.dto';
 import { GetAvailableSpecialtiesDto } from './dto/get-available-specialties.dto';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('StatisticsMetadata')
 @ApiBearerAuth()
@@ -49,6 +52,8 @@ export class StatisticsMetadataController {
   ) {}
 
   @Post()
+  @Permissions(PermissionsEnum.MANAGE_STATISTICS)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: StatisticsMetadata,
   })
@@ -128,6 +133,8 @@ export class StatisticsMetadataController {
   }
 
   @Patch(':id')
+  @Permissions(PermissionsEnum.MANAGE_STATISTICS)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -147,6 +154,8 @@ export class StatisticsMetadataController {
   }
 
   @Delete(':id')
+  @Permissions(PermissionsEnum.MANAGE_STATISTICS)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
