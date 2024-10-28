@@ -166,7 +166,7 @@ export class DaysOffsController {
   })
   async findAllDaysOffsRanged(
     @Query() query: FindAllDaysOffsRangedDto,
-  ): Promise<DaysOff[]> {
+  ): Promise<string[]> {
     return this.daysOffsService.findAllDaysOffs(query);
   }
 

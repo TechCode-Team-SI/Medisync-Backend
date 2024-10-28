@@ -31,7 +31,7 @@ export abstract class DaysOffRepository extends BaseRepository {
     specialtyId?: string | null;
     startDate: Date;
     endDate: Date;
-  }): Promise<DaysOff[]>;
+  }): Promise<string[]>;
 
   abstract findById(
     id: DaysOff['id'],

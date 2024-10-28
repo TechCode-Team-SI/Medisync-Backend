@@ -95,7 +95,7 @@ export class DaysOffsService {
     specialtyId?: string | null;
     startDate: Date;
     endDate: Date;
-  }): Promise<DaysOff[]> {
+  }): Promise<string[]> {
     return this.daysOffRepository.findAllDaysOffs(props);
   }
 

@@ -110,7 +110,7 @@ export class DaysOffRelationalRepository
     specialtyId?: string | null;
     startDate: Date;
     endDate: Date;
-  }): Promise<DaysOff[]> {
+  }): Promise<string[]> {
     const entityFiltering = new Brackets((qb) => {
       if (props.employeeProfileId) {
         qb.orWhere('daysOff.employeeProfileId = :employeeProfileId', {
@@ -154,18 +154,14 @@ export class DaysOffRelationalRepository
           }).andWhere(entityFiltering);
         }),
       )
-      .select([
-        'id',
-        'daysOff.from as `from`',
-        'daysOff.to as `to`',
-        'createdAt',
-        'updatedAt',
-      ])
+      .select(['daysOff.from as `from`', 'daysOff.to as `to`'])
       .getRawMany();
 
-    const items = entities.map((entity) => DaysOffMapper.toDomain(entity));
+    const items = entities
+      .map((entity) => DaysOffMapper.toDomainSingleDays(entity))
+      .flat();
 
-    return items;
+    return [...new Set(items)];
   }
 
   async findById(
