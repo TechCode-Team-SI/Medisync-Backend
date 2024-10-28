@@ -10,12 +10,14 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { AgendaEntity } from 'src/agendas/infrastructure/persistence/relational/entities/agenda.entity';
+import { DaysOffEntity } from 'src/days-offs/infrastructure/persistence/relational/entities/days-off.entity';
 
 @Entity({
   name: 'specialty',
@@ -70,6 +72,10 @@ export class SpecialtyEntity extends EntityRelationalHelper {
   })
   @ManyToOne(() => AgendaEntity)
   agenda: AgendaEntity;
+
+  @ApiProperty()
+  @OneToMany(() => DaysOffEntity, (daysOff) => daysOff.agenda)
+  daysOffs?: DaysOffEntity;
 
   @ApiProperty()
   @CreateDateColumn()
