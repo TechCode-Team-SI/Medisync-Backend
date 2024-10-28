@@ -257,6 +257,20 @@ export class UsersRelationalRepository
     return entity ? UserMapper.toDomain(entity) : null;
   }
 
+  async findAvailableSchedule(id: User['id']): Promise<NullableType<User>> {
+    const entity = await this.usersRepository.findOne({
+      where: { id },
+      relations: {
+        employeeProfile: {
+          schedule: true,
+          agenda: true,
+        },
+      },
+    });
+
+    return entity ? UserMapper.toDomain(entity) : null;
+  }
+
   async count(): Promise<number> {
     return this.usersRepository.count();
   }

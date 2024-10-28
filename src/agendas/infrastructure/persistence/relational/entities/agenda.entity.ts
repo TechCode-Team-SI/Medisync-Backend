@@ -2,11 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
+import { DaysOffEntity } from 'src/days-offs/infrastructure/persistence/relational/entities/days-off.entity';
 
 @Entity({
   name: 'agenda',
@@ -23,6 +25,10 @@ export class AgendaEntity extends EntityRelationalHelper {
   @ApiProperty()
   @Column()
   weekdays: string;
+
+  @ApiProperty()
+  @OneToMany(() => DaysOffEntity, (daysOff) => daysOff.agenda)
+  daysOffs?: DaysOffEntity;
 
   @ApiProperty()
   @CreateDateColumn()

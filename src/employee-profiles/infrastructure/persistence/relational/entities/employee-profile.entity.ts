@@ -11,10 +11,12 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
+import { DaysOffEntity } from 'src/days-offs/infrastructure/persistence/relational/entities/days-off.entity';
 
 @Entity({
   name: 'employee_profile',
@@ -69,6 +71,10 @@ export class EmployeeProfileEntity extends EntityRelationalHelper {
   @ApiProperty()
   @Column()
   address: string;
+
+  @ApiProperty()
+  @OneToMany(() => DaysOffEntity, (daysOff) => daysOff.agenda)
+  daysOffs?: DaysOffEntity;
 
   @ApiProperty()
   @Column({ type: 'boolean', default: true })

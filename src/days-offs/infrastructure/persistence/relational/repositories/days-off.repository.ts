@@ -12,6 +12,7 @@ import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { formatOrder } from 'src/utils/utils';
 import {
+  Brackets,
   DataSource,
   FindOneOptions,
   FindOptionsRelations,
@@ -101,6 +102,70 @@ export class DaysOffRelationalRepository
         domain: 'days-offs',
       },
     );
+  }
+
+  async findAllDaysOffs(props: {
+    employeeProfileId?: string | null;
+    agendaId?: string | null;
+    specialtyId?: string | null;
+    startDate: Date;
+    endDate: Date;
+  }): Promise<DaysOff[]> {
+    const entityFiltering = new Brackets((qb) => {
+      if (props.employeeProfileId) {
+        qb.orWhere('daysOff.employeeProfileId = :employeeProfileId', {
+          employeeProfileId: props.employeeProfileId,
+        });
+      }
+      if (props.agendaId) {
+        qb.orWhere('daysOff.agendaId = :agendaId', {
+          agendaId: props.agendaId,
+        });
+      }
+      if (props.specialtyId) {
+        qb.orWhere('daysOff.specialtyId = :specialtyId', {
+          specialtyId: props.specialtyId,
+        });
+      }
+    });
+    const entityManager = this.getEntityManager();
+    const entities = await entityManager
+      .getRepository(DaysOffEntity)
+      .createQueryBuilder('daysOff')
+      .orWhere(
+        new Brackets((qb) => {
+          qb.where(':from between daysOff.from and daysOff.to', {
+            from: props.startDate,
+          }).andWhere(entityFiltering);
+        }),
+      )
+      .orWhere(
+        new Brackets((qb) => {
+          qb.where(':to between daysOff.from and daysOff.to', {
+            to: props.endDate,
+          }).andWhere(entityFiltering);
+        }),
+      )
+      .orWhere(
+        new Brackets((qb) => {
+          qb.where(':from < daysOff.from and :to > daysOff.to', {
+            from: props.endDate,
+            to: props.endDate,
+          }).andWhere(entityFiltering);
+        }),
+      )
+      .select([
+        'id',
+        'daysOff.from as `from`',
+        'daysOff.to as `to`',
+        'createdAt',
+        'updatedAt',
+      ])
+      .getRawMany();
+
+    const items = entities.map((entity) => DaysOffMapper.toDomain(entity));
+
+    return items;
   }
 
   async findById(

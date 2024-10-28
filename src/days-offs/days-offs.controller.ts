@@ -35,6 +35,7 @@ import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
 import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { Permissions } from 'src/permissions/permissions.decorator';
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
+import { FindAllDaysOffsRangedDto } from './dto/find-all-days-offs-ranged.dto';
 
 @ApiTags('Daysoffs')
 @ApiBearerAuth()
@@ -157,6 +158,16 @@ export class DaysOffsController {
         employeeIds: [userPayload.employeeId],
       },
     });
+  }
+
+  @Get('ranged')
+  @ApiOkResponse({
+    type: PaginationResponse(DaysOff),
+  })
+  async findAllDaysOffsRanged(
+    @Query() query: FindAllDaysOffsRangedDto,
+  ): Promise<DaysOff[]> {
+    return this.daysOffsService.findAllDaysOffs(query);
   }
 
   @Get(':id')

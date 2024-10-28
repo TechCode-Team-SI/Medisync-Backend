@@ -89,6 +89,16 @@ export class DaysOffsService {
     });
   }
 
+  findAllDaysOffs(props: {
+    employeeProfileId?: string | null;
+    agendaId?: string | null;
+    specialtyId?: string | null;
+    startDate: Date;
+    endDate: Date;
+  }): Promise<DaysOff[]> {
+    return this.daysOffRepository.findAllDaysOffs(props);
+  }
+
   findOne(id: DaysOff['id'], options?: findOptions) {
     return this.daysOffRepository.findById(id, options);
   }
