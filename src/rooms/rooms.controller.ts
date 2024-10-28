@@ -29,10 +29,12 @@ import {
 import { FindAllRoomsDto } from './dto/find-all-rooms.dto';
 import { exceptionResponses } from 'src/rooms/rooms.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 
 @ApiTags('Rooms')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
+@UseGuards(EmployeeOnlyGuard)
 @Controller({
   path: 'rooms',
   version: '1',

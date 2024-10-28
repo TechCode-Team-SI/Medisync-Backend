@@ -32,10 +32,12 @@ import { exceptionResponses } from 'src/days-offs/days-offs.messages';
 import { getPagination } from 'src/utils/get-pagination';
 import { Me } from 'src/auth/auth.decorator';
 import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 
 @ApiTags('Daysoffs')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
+@UseGuards(EmployeeOnlyGuard)
 @Controller({
   path: 'days-offs',
   version: '1',

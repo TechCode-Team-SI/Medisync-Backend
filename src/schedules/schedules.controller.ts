@@ -29,10 +29,12 @@ import {
 import { FindAllSchedulesDto } from './dto/find-all-schedules.dto';
 import { exceptionResponses } from 'src/schedules/schedules.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 
 @ApiTags('Schedules')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
+@UseGuards(EmployeeOnlyGuard)
 @Controller({
   path: 'schedules',
   version: '1',

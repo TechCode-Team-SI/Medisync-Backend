@@ -29,10 +29,12 @@ import {
 import { FindAllAgendasDto } from './dto/find-all-agendas.dto';
 import { exceptionResponses } from 'src/agendas/agendas.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 
 @ApiTags('Agendas')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
+@UseGuards(EmployeeOnlyGuard)
 @Controller({
   path: 'agendas',
   version: '1',
