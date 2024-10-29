@@ -4,6 +4,15 @@ import { EmployeeProfile } from 'src/employee-profiles/domain/employee-profile';
 import { EmployeeProfileRepository } from 'src/employee-profiles/infrastructure/persistence/employee-profile.repository';
 import { EmployeeProfileMapper } from 'src/employee-profiles/infrastructure/persistence/relational/mappers/employee-profile.mapper';
 import { RolesService } from 'src/roles/roles.service';
+import { SpecialtyRepository } from 'src/specialties/infrastructure/persistence/specialty.repository';
+import { UserPatient } from 'src/user-patients/domain/user-patient';
+import { CreateUserPatientDto } from 'src/user-patients/dto/create-user-patient.dto';
+import {
+  FilterUserPatientsDto,
+  SortUserPatientsDto,
+} from 'src/user-patients/dto/find-all-user-patients.dto';
+import { UpdateUserPatientDto } from 'src/user-patients/dto/update-user-patient.dto';
+import { UserPatientRepository } from 'src/user-patients/infrastructure/persistence/user-patient.repository';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { FilesService } from '../files/files.service';
@@ -15,16 +24,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { exceptionResponses } from './users.messages';
-import { UserPatientRepository } from 'src/user-patients/infrastructure/persistence/user-patient.repository';
-import { CreateUserPatientDto } from 'src/user-patients/dto/create-user-patient.dto';
-import { UserPatient } from 'src/user-patients/domain/user-patient';
-import { UpdateUserPatientDto } from 'src/user-patients/dto/update-user-patient.dto';
-import {
-  FilterUserPatientsDto,
-  SortUserPatientsDto,
-} from 'src/user-patients/dto/find-all-user-patients.dto';
-import { SpecialtyRepository } from 'src/specialties/infrastructure/persistence/specialty.repository';
-import { Specialty } from 'src/specialties/domain/specialty';
 
 @Injectable()
 export class UsersService {
@@ -330,10 +329,33 @@ export class UsersService {
     }
     const specialtiesFiltered = specialties.filter(
       (specialty) => specialty !== null,
-    ) as Specialty[];
+    );
 
     return this.employeeProfilesRepository.update(user.employeeProfile.id, {
       specialties: specialtiesFiltered,
+    });
+  }
+
+  async updateUserRoles(userId: string, roleIds: string[]) {
+    const user = await this.usersRepository.findById(userId, {
+      withProfile: true,
+    });
+    if (!user) {
+      throw new UnprocessableEntityException(exceptionResponses.UserNotFound);
+    }
+    if (!user.employeeProfile) {
+      throw new UnprocessableEntityException(exceptionResponses.NotEmployee);
+    }
+    const roles = await Promise.all(
+      roleIds.map((id) => this.rolesService.findOne(id)),
+    );
+    if (!roles || roles.length !== roleIds.length) {
+      throw new UnprocessableEntityException(exceptionResponses.RoleNotExist);
+    }
+    const rolesFiltered = roles.filter((role) => role !== null);
+
+    return this.usersRepository.update(user.id, {
+      roles: rolesFiltered,
     });
   }
 }

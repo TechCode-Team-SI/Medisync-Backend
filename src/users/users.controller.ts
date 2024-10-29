@@ -49,6 +49,7 @@ import { CreateUserPatientDto } from 'src/user-patients/dto/create-user-patient.
 import { FindAllUserPatientsDto } from 'src/user-patients/dto/find-all-user-patients.dto';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 import { AddOrRemoveSpecialtiesDto } from './dto/add-or-remove-specialties.dto';
+import { AddOrRemoveRolesDto } from './dto/add-or-remove-roles.dto';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -242,12 +243,25 @@ export class UsersController {
   //TODO: update user specialties
   @Put('/specialties')
   @HttpCode(HttpStatus.OK)
-  async removeSpecialty(
+  async updateSpecialties(
     @Body() addOrRemoveSpecialties: AddOrRemoveSpecialtiesDto,
   ): Promise<SuccessResponseDto> {
     await this.usersService.updateUserSpecialties(
       addOrRemoveSpecialties.id,
       addOrRemoveSpecialties.specialtyIds,
+    );
+    return { success: true };
+  }
+
+  //TODO: update user roles
+  @Put('/roles')
+  @HttpCode(HttpStatus.OK)
+  async updateRoles(
+    @Body() addOrRemoveSpecialties: AddOrRemoveRolesDto,
+  ): Promise<SuccessResponseDto> {
+    await this.usersService.updateUserRoles(
+      addOrRemoveSpecialties.id,
+      addOrRemoveSpecialties.roleIds,
     );
     return { success: true };
   }
