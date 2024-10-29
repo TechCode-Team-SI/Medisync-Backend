@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   SerializeOptions,
   UnprocessableEntityException,
@@ -47,6 +48,7 @@ import { UpdateUserPatientDto } from 'src/user-patients/dto/update-user-patient.
 import { CreateUserPatientDto } from 'src/user-patients/dto/create-user-patient.dto';
 import { FindAllUserPatientsDto } from 'src/user-patients/dto/find-all-user-patients.dto';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
+import { AddOrRemoveSpecialtiesDto } from './dto/add-or-remove-specialties.dto';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -235,5 +237,18 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: User['id']): Promise<void> {
     return this.usersService.remove(id);
+  }
+
+  //TODO: update user specialties
+  @Put('/specialties')
+  @HttpCode(HttpStatus.OK)
+  async removeSpecialty(
+    @Body() addOrRemoveSpecialties: AddOrRemoveSpecialtiesDto,
+  ): Promise<SuccessResponseDto> {
+    await this.usersService.updateUserSpecialties(
+      addOrRemoveSpecialties.id,
+      addOrRemoveSpecialties.specialtyIds,
+    );
+    return { success: true };
   }
 }

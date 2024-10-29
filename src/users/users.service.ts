@@ -23,6 +23,8 @@ import {
   FilterUserPatientsDto,
   SortUserPatientsDto,
 } from 'src/user-patients/dto/find-all-user-patients.dto';
+import { SpecialtyRepository } from 'src/specialties/infrastructure/persistence/specialty.repository';
+import { Specialty } from 'src/specialties/domain/specialty';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +34,7 @@ export class UsersService {
     private readonly rolesService: RolesService,
     private readonly employeeProfilesRepository: EmployeeProfileRepository,
     private readonly userPatientsRepository: UserPatientRepository,
+    private readonly specialtiesRepository: SpecialtyRepository,
   ) {}
 
   async create(createProfileDto: CreateUserDto): Promise<User> {
@@ -305,5 +308,32 @@ export class UsersService {
       );
     }
     return this.userPatientsRepository.update(id, updatePatientDto);
+  }
+
+  async updateUserSpecialties(userId: string, specialtyIds: string[]) {
+    const user = await this.usersRepository.findById(userId, {
+      withSpecialty: true,
+    });
+    if (!user) {
+      throw new UnprocessableEntityException(exceptionResponses.UserNotFound);
+    }
+    if (!user.employeeProfile) {
+      throw new UnprocessableEntityException(exceptionResponses.NotEmployee);
+    }
+    const specialties = await Promise.all(
+      specialtyIds.map((id) => this.specialtiesRepository.findById(id)),
+    );
+    if (!specialties || specialties.length !== specialtyIds.length) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.SpecialtyNotExist,
+      );
+    }
+    const specialtiesFiltered = specialties.filter(
+      (specialty) => specialty !== null,
+    ) as Specialty[];
+
+    return this.employeeProfilesRepository.update(user.employeeProfile.id, {
+      specialties: specialtiesFiltered,
+    });
   }
 }
