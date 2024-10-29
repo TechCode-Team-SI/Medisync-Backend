@@ -25,6 +25,7 @@ import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { exceptionResponses } from './users.messages';
 import { AgendaRepository } from 'src/agendas/infrastructure/persistence/agenda.repository';
+import { ScheduleRepository } from 'src/schedules/infrastructure/persistence/schedule.repository';
 
 @Injectable()
 export class UsersService {
@@ -36,6 +37,7 @@ export class UsersService {
     private readonly userPatientsRepository: UserPatientRepository,
     private readonly specialtiesRepository: SpecialtyRepository,
     private readonly agendasRepository: AgendaRepository,
+    private readonly schedulesRepository: ScheduleRepository,
   ) {}
 
   async create(createProfileDto: CreateUserDto): Promise<User> {
@@ -384,6 +386,33 @@ export class UsersService {
     } else {
       return this.employeeProfilesRepository.update(user.employeeProfile.id, {
         agenda: null,
+      });
+    }
+  }
+
+  async updateUserSchedule(userId: string, scheduleId?: string | null) {
+    const user = await this.usersRepository.findById(userId, {
+      withProfile: true,
+    });
+    if (!user) {
+      throw new UnprocessableEntityException(exceptionResponses.UserNotFound);
+    }
+    if (!user.employeeProfile) {
+      throw new UnprocessableEntityException(exceptionResponses.NotEmployee);
+    }
+    if (scheduleId) {
+      const schedule = await this.schedulesRepository.findById(scheduleId);
+      if (!schedule) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.ScheduleNotExist,
+        );
+      }
+      return this.employeeProfilesRepository.update(user.employeeProfile.id, {
+        schedule,
+      });
+    } else {
+      return this.employeeProfilesRepository.update(user.employeeProfile.id, {
+        schedule: null,
       });
     }
   }

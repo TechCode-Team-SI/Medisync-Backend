@@ -77,4 +77,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'agenda_not_exist',
     message: 'La agenda no existe',
   },
+  ScheduleNotExist: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'schedule_not_exist',
+    message: 'El horario no existe',
+  },
 } as const;

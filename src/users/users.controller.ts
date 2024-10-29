@@ -50,7 +50,8 @@ import { FindAllUserPatientsDto } from 'src/user-patients/dto/find-all-user-pati
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 import { AddOrRemoveSpecialtiesDto } from './dto/add-or-remove-specialties.dto';
 import { AddOrRemoveRolesDto } from './dto/add-or-remove-roles.dto';
-import { UpdateUserAgendaDto } from './dto/update-user-agenda.dto copy';
+import { UpdateUserAgendaDto } from './dto/update-user-agenda.dto';
+import { UpdateUserScheduleDto } from './dto/update-user-schedule.dto';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -276,6 +277,19 @@ export class UsersController {
     await this.usersService.updateUserAgenda(
       updateUserAgenda.id,
       updateUserAgenda.agendaId,
+    );
+    return { success: true };
+  }
+
+  //TODO: update user schedule pending permissions
+  @Put('/schedule')
+  @HttpCode(HttpStatus.OK)
+  async updateSchedule(
+    @Body() updateUserSchedule: UpdateUserScheduleDto,
+  ): Promise<SuccessResponseDto> {
+    await this.usersService.updateUserSchedule(
+      updateUserSchedule.id,
+      updateUserSchedule.scheduleId,
     );
     return { success: true };
   }
