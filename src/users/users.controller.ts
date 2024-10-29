@@ -50,6 +50,7 @@ import { FindAllUserPatientsDto } from 'src/user-patients/dto/find-all-user-pati
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 import { AddOrRemoveSpecialtiesDto } from './dto/add-or-remove-specialties.dto';
 import { AddOrRemoveRolesDto } from './dto/add-or-remove-roles.dto';
+import { UpdateUserAgendaDto } from './dto/update-user-agenda.dto copy';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -240,7 +241,7 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 
-  //TODO: update user specialties
+  //TODO: update user specialties pending permissions
   @Put('/specialties')
   @HttpCode(HttpStatus.OK)
   async updateSpecialties(
@@ -253,15 +254,28 @@ export class UsersController {
     return { success: true };
   }
 
-  //TODO: update user roles
+  //TODO: update user roles pending permissions
   @Put('/roles')
   @HttpCode(HttpStatus.OK)
   async updateRoles(
-    @Body() addOrRemoveSpecialties: AddOrRemoveRolesDto,
+    @Body() addOrRemoveRoles: AddOrRemoveRolesDto,
   ): Promise<SuccessResponseDto> {
     await this.usersService.updateUserRoles(
-      addOrRemoveSpecialties.id,
-      addOrRemoveSpecialties.roleIds,
+      addOrRemoveRoles.id,
+      addOrRemoveRoles.roleIds,
+    );
+    return { success: true };
+  }
+
+  //TODO: update user agenda pending permissions
+  @Put('/agenda')
+  @HttpCode(HttpStatus.OK)
+  async updateAgenda(
+    @Body() updateUserAgenda: UpdateUserAgendaDto,
+  ): Promise<SuccessResponseDto> {
+    await this.usersService.updateUserAgenda(
+      updateUserAgenda.id,
+      updateUserAgenda.agendaId,
     );
     return { success: true };
   }

@@ -62,7 +62,7 @@ export class EmployeeProfileEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @ManyToOne(() => AgendaEntity)
-  agenda: AgendaEntity;
+  agenda?: AgendaEntity | null;
 
   @ApiProperty()
   @Column()

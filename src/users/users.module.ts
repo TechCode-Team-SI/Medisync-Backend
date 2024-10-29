@@ -10,6 +10,7 @@ import { permissionsModule } from 'src/permissions/permissions.module';
 import { EmployeeProfilesModule } from 'src/employee-profiles/employee-profiles.module';
 import { UserPatientsModule } from 'src/user-patients/user-patients.module';
 import { SpecialtiesModule } from 'src/specialties/specialties.module';
+import { AgendasModule } from 'src/agendas/agendas.module';
 
 const infrastructurePersistenceModule = RelationalUserPersistenceModule;
 
@@ -22,6 +23,7 @@ const infrastructurePersistenceModule = RelationalUserPersistenceModule;
     EmployeeProfilesModule,
     UserPatientsModule,
     forwardRef(() => SpecialtiesModule),
+    AgendasModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],

@@ -72,4 +72,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'specialty_not_exist',
     message: 'La especialidad no existe',
   },
+  AgendaNotExist: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'agenda_not_exist',
+    message: 'La agenda no existe',
+  },
 } as const;

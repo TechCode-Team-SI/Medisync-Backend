@@ -53,6 +53,8 @@ export class EmployeeProfileMapper {
       persistenceEntity.agenda = AgendaMapper.toPersistence(
         domainEntity.agenda,
       );
+    } else if (domainEntity.agenda === null) {
+      persistenceEntity.agenda = null;
     }
     if (domainEntity.schedule) {
       persistenceEntity.schedule = ScheduleMapper.toPersistence(
