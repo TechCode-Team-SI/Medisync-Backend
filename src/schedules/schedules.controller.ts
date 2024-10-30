@@ -88,6 +88,21 @@ export class SchedulesController {
     return entity;
   }
 
+  @Get('user/:userId')
+  @ApiParam({
+    name: 'userId',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({
+    type: Schedule,
+  })
+  async findOneByUser(@Param('userId') userId: string) {
+    const entity = await this.schedulesService.findOneByUser(userId);
+
+    return entity;
+  }
+
   @Patch(':id')
   @Permissions(PermissionsEnum.MANAGE_SCHEDULE)
   @UseGuards(PermissionsGuard)

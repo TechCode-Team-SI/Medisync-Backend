@@ -58,7 +58,7 @@ export class EmployeeProfileEntity extends EntityRelationalHelper {
     type: () => ScheduleEntity,
   })
   @ManyToOne(() => ScheduleEntity)
-  schedule: ScheduleEntity;
+  schedule?: ScheduleEntity | null;
 
   @ApiProperty()
   @ManyToOne(() => AgendaEntity)

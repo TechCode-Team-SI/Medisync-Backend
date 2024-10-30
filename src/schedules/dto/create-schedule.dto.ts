@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, Validate } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Validate,
+} from 'class-validator';
 import { IsHourFormat } from 'src/utils/validators/is-hour-format';
 
 export class CreateScheduleDto {
@@ -19,4 +25,9 @@ export class CreateScheduleDto {
   @IsString()
   @Validate(IsHourFormat)
   to: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber()
+  slotTime?: number;
 }

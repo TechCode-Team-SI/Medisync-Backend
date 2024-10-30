@@ -238,7 +238,9 @@ export class UsersRelationalRepository
     let relations = this.relations;
     if (options) relations = {};
     if (options?.withProfile) {
-      relations.employeeProfile = true;
+      relations.employeeProfile = {
+        schedule: true,
+      };
     }
     if (options?.withSpecialty) {
       relations.employeeProfile = {

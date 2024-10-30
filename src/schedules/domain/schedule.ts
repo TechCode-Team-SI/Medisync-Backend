@@ -16,6 +16,9 @@ export class Schedule {
   @ApiProperty()
   to: string;
 
+  @ApiProperty()
+  slotTime: number;
+
   @ApiPropertyOptional({
     type: () => EmployeeProfile,
   })

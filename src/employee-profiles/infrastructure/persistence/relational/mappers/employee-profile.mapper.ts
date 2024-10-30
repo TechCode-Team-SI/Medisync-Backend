@@ -60,6 +60,8 @@ export class EmployeeProfileMapper {
       persistenceEntity.schedule = ScheduleMapper.toPersistence(
         domainEntity.schedule,
       );
+    } else if (domainEntity.schedule === null) {
+      persistenceEntity.schedule = null;
     }
 
     return persistenceEntity;

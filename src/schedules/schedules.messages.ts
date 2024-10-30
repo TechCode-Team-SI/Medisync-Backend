@@ -17,4 +17,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'schedule_has_employees',
     message: 'El horario tiene empleados asignados',
   },
+  UserNotExist: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'user_not_exist',
+    message: 'El usuario no existe',
+  },
 } as const;
