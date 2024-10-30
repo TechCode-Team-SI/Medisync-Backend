@@ -13,6 +13,7 @@ import { CreateDaysOffDto } from './dto/create-days-off.dto';
 import { UpdateDaysOffDto } from './dto/update-days-off.dto';
 import { DaysOffRepository } from './infrastructure/persistence/days-off.repository';
 import { SpecialtyRepository } from 'src/specialties/infrastructure/persistence/specialty.repository';
+import { UserRepository } from 'src/users/infrastructure/persistence/user.repository';
 
 @Injectable()
 export class DaysOffsService {
@@ -20,6 +21,7 @@ export class DaysOffsService {
     private readonly daysOffRepository: DaysOffRepository,
     private readonly agendaRepository: AgendaRepository,
     private readonly employeeProfileRepository: EmployeeProfileRepository,
+    private readonly userRepository: UserRepository,
     private readonly specialtyRepository: SpecialtyRepository,
   ) {}
 
@@ -89,14 +91,32 @@ export class DaysOffsService {
     });
   }
 
-  findAllDaysOffs(props: {
-    employeeProfileId?: string | null;
-    agendaId?: string | null;
+  async findAllDaysOffs(props: {
+    userId?: string | null;
     specialtyId?: string | null;
     startDate: Date;
     endDate: Date;
   }): Promise<string[]> {
-    return this.daysOffRepository.findAllDaysOffs(props);
+    const payload: {
+      employeeProfileId?: string | null;
+      agendaId?: string | null;
+      specialtyId?: string | null;
+      startDate: Date;
+      endDate: Date;
+    } = { ...props };
+    if (props.userId) {
+      const user = await this.userRepository.findById(props.userId, {
+        withProfile: true,
+      });
+      if (!user) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.UserNotExists,
+        );
+      }
+      payload.employeeProfileId = user.employeeProfile?.id;
+      payload.agendaId = user.employeeProfile?.agenda?.id;
+    }
+    return this.daysOffRepository.findAllDaysOffs(payload);
   }
 
   findOne(id: DaysOff['id'], options?: findOptions) {

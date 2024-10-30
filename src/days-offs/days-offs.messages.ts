@@ -22,6 +22,11 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'employee_not_exists',
     message: 'El empleado no existe',
   },
+  UserNotExists: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'user_not_exists',
+    message: 'El usuario no existe',
+  },
   InvalidType: {
     status: HttpStatus.UNPROCESSABLE_ENTITY,
     error: 'type_invalid',
