@@ -158,7 +158,12 @@ export class UsersRelationalRepository
     let relations = this.relations;
     if (options) relations = {};
     if (options?.employeeProfile)
-      relations = { ...relations, employeeProfile: true };
+      relations = {
+        ...relations,
+        employeeProfile: {
+          agenda: true,
+        },
+      };
     if (options?.minimal) relations = {};
 
     let where: FindOptionsWhere<UserEntity> = {};
