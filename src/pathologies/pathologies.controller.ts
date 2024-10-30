@@ -29,6 +29,7 @@ import {
 import { FindAllPathologiesDto } from './dto/find-all-pathologies.dto';
 import { exceptionResponses } from 'src/pathologies/pathologies.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { Permissions } from 'src/permissions/permissions.decorator';
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
@@ -44,6 +45,7 @@ export class PathologiesController {
   constructor(private readonly pathologiesService: PathologiesService) {}
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_PATHOLOGIES)
   @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
@@ -88,6 +90,7 @@ export class PathologiesController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_PATHOLOGIES)
   @UseGuards(PermissionsGuard)
   @ApiParam({
@@ -106,6 +109,7 @@ export class PathologiesController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_PATHOLOGIES)
   @UseGuards(PermissionsGuard)
   @ApiParam({

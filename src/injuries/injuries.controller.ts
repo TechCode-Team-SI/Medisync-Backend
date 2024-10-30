@@ -29,6 +29,7 @@ import {
 import { FindAllInjuriesDto } from './dto/find-all-injuries.dto';
 import { exceptionResponses } from 'src/injuries/injuries.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { Permissions } from 'src/permissions/permissions.decorator';
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
@@ -44,6 +45,7 @@ export class InjuriesController {
   constructor(private readonly injuriesService: InjuriesService) {}
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_INJURIES)
   @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
@@ -89,6 +91,7 @@ export class InjuriesController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_INJURIES)
   @UseGuards(PermissionsGuard)
   @ApiParam({
@@ -104,6 +107,7 @@ export class InjuriesController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_INJURIES)
   @UseGuards(PermissionsGuard)
   @ApiParam({

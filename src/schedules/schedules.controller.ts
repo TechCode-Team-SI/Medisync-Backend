@@ -29,6 +29,7 @@ import {
 import { FindAllSchedulesDto } from './dto/find-all-schedules.dto';
 import { exceptionResponses } from 'src/schedules/schedules.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { Permissions } from 'src/permissions/permissions.decorator';
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
@@ -44,6 +45,7 @@ export class SchedulesController {
   constructor(private readonly schedulesService: SchedulesService) {}
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_SCHEDULE)
   @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
@@ -104,6 +106,7 @@ export class SchedulesController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_SCHEDULE)
   @UseGuards(PermissionsGuard)
   @ApiParam({
@@ -122,6 +125,7 @@ export class SchedulesController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_SCHEDULE)
   @UseGuards(PermissionsGuard)
   @ApiParam({

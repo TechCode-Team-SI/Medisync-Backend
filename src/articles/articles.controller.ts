@@ -33,6 +33,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { FindAllArticlesDto } from './dto/find-all-articles.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { Permissions } from 'src/permissions/permissions.decorator';
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
@@ -50,6 +51,7 @@ export class ArticlesController {
   @UseGuards(PermissionsGuard)
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
+  @UseGuards(EmployeeOnlyGuard)
   @UseInterceptors(TransactionInterceptor)
   @ApiCreatedResponse({
     type: Article,
@@ -101,6 +103,7 @@ export class ArticlesController {
   @UseGuards(PermissionsGuard)
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -118,6 +121,7 @@ export class ArticlesController {
   @UseGuards(PermissionsGuard)
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,

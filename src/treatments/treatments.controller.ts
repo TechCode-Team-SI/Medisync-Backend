@@ -29,6 +29,7 @@ import {
 import { FindAlltreatmentsDto } from './dto/find-all-treatments.dto';
 import { exceptionResponses } from 'src/treatments/treatments.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { Permissions } from 'src/permissions/permissions.decorator';
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
@@ -44,6 +45,7 @@ export class treatmentsController {
   constructor(private readonly TreatmentsService: TreatmentsService) {}
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_TREATMENTS)
   @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
@@ -89,6 +91,7 @@ export class treatmentsController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_TREATMENTS)
   @UseGuards(PermissionsGuard)
   @ApiParam({
@@ -107,6 +110,7 @@ export class treatmentsController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_TREATMENTS)
   @UseGuards(PermissionsGuard)
   @ApiParam({

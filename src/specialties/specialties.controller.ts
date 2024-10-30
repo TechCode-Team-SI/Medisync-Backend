@@ -31,6 +31,7 @@ import { exceptionResponses } from 'src/specialties/specialties.messages';
 import { getPagination } from 'src/utils/get-pagination';
 import { Me } from 'src/auth/auth.decorator';
 import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { Permissions } from 'src/permissions/permissions.decorator';
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
@@ -46,6 +47,7 @@ export class SpecialtiesController {
   constructor(private readonly specialtiesService: SpecialtiesService) {}
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_SPECIALTIES)
   @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
@@ -108,6 +110,7 @@ export class SpecialtiesController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_SPECIALTIES)
   @UseGuards(PermissionsGuard)
   @ApiParam({
@@ -126,6 +129,7 @@ export class SpecialtiesController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_SPECIALTIES)
   @UseGuards(PermissionsGuard)
   @ApiParam({

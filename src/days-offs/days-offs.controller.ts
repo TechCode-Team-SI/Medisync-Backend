@@ -32,6 +32,7 @@ import { exceptionResponses } from 'src/days-offs/days-offs.messages';
 import { getPagination } from 'src/utils/get-pagination';
 import { Me } from 'src/auth/auth.decorator';
 import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { Permissions } from 'src/permissions/permissions.decorator';
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
@@ -48,6 +49,7 @@ export class DaysOffsController {
   constructor(private readonly daysOffsService: DaysOffsService) {}
 
   @Post('for-me')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiCreatedResponse({
     type: DaysOff,
   })
@@ -66,6 +68,7 @@ export class DaysOffsController {
   }
 
   @Post('employee/:employeeId')
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.EDIT_USER)
   @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
@@ -88,6 +91,7 @@ export class DaysOffsController {
   }
 
   @Post('agenda/:agendaId')
+  @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_AGENDA)
   @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
@@ -190,6 +194,7 @@ export class DaysOffsController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -203,6 +208,7 @@ export class DaysOffsController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
