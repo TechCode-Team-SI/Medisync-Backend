@@ -6,6 +6,7 @@ import { DaysOffsService } from './days-offs.service';
 import { RelationalDaysOffPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
 import { SpecialtiesModule } from 'src/specialties/specialties.module';
 import { permissionsModule } from 'src/permissions/permissions.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { permissionsModule } from 'src/permissions/permissions.module';
     EmployeeProfilesModule,
     SpecialtiesModule,
     permissionsModule,
+    UsersModule,
   ],
   controllers: [DaysOffsController],
   providers: [DaysOffsService],
