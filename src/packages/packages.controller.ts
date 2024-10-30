@@ -28,6 +28,7 @@ import { FindAllPackagesDto } from './dto/find-all-packages.dto';
 import { exceptionResponses } from './packages.messages';
 import { PackagesService } from './packages.service';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 
 @ApiTags('Packages')
 @ApiBearerAuth()
@@ -73,6 +74,7 @@ export class PackagesController {
   }
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @UseInterceptors(TransactionInterceptor)
   @ApiOkResponse()
   async seed(
