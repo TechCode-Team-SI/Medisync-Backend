@@ -26,6 +26,8 @@ import { ConfirmEmailTokenRepository } from './infrastructure/persistence/confir
 import { PasswordTokenRepository } from './infrastructure/persistence/password-token.repository';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
+import { RolesService } from 'src/roles/roles.service';
+import { RolesEnum } from 'src/roles/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -37,6 +39,7 @@ export class AuthService {
     private configService: ConfigService<AllConfigType>,
     private passwordTokenRepository: PasswordTokenRepository,
     private confirmEmailTokenRepository: ConfirmEmailTokenRepository,
+    private rolesService: RolesService,
   ) {}
 
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
@@ -155,6 +158,16 @@ export class AuthService {
     }
 
     await this.confirmEmailTokenRepository.deleteById(confirmEmailToken.id);
+
+    const role = await this.rolesService.findbySlug(RolesEnum.MOBILE_USER);
+
+    if (!role) {
+      throw new UnprocessableEntityException(exceptionResponses.RoleNotExists);
+    }
+
+    await this.usersService.update(user.id, {
+      roles: [{ id: role.id }],
+    });
 
     return {
       success: true,

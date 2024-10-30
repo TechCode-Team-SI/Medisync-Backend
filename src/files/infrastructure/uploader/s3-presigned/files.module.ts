@@ -10,6 +10,7 @@ import { exceptionResponses } from 'src/files/files.messages';
 import { AllConfigType } from '../../../../config/config.type';
 import { RelationalFilePersistenceModule } from '../../persistence/relational/relational-persistence.module';
 import { FilesS3PresignedService } from './files.service';
+import sharp from 'sharp';
 
 const infrastructurePersistenceModule = RelationalFilePersistenceModule;
 
@@ -51,7 +52,22 @@ const infrastructurePersistenceModule = RelationalFilePersistenceModule;
             s3: s3,
             bucket: '',
             acl: 'public-read',
-            contentType: multerS3.AUTO_CONTENT_TYPE,
+            contentType: (
+              req: Express.Request,
+              file: Express.Multer.File,
+              callback: (
+                error: any,
+                mime?: string,
+                stream?: NodeJS.ReadableStream,
+              ) => void,
+            ) => {
+              const mime = 'application/octet-stream';
+              const outStream = sharp().resize({ width: 500, height: 500 });
+
+              file.stream.pipe(outStream);
+
+              callback(null, mime, outStream);
+            },
             key: (request, file, callback) => {
               callback(
                 null,

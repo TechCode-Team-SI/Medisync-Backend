@@ -32,6 +32,9 @@ import { getPagination } from 'src/utils/get-pagination';
 import { Me } from 'src/auth/auth.decorator';
 import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
 import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Specialties')
 @ApiBearerAuth()
@@ -45,6 +48,8 @@ export class SpecialtiesController {
 
   @Post()
   @UseGuards(EmployeeOnlyGuard)
+  @Permissions(PermissionsEnum.MANAGE_SPECIALTIES)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: Specialty,
   })
@@ -106,6 +111,8 @@ export class SpecialtiesController {
 
   @Patch(':id')
   @UseGuards(EmployeeOnlyGuard)
+  @Permissions(PermissionsEnum.MANAGE_SPECIALTIES)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -123,6 +130,8 @@ export class SpecialtiesController {
 
   @Delete(':id')
   @UseGuards(EmployeeOnlyGuard)
+  @Permissions(PermissionsEnum.MANAGE_SPECIALTIES)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,

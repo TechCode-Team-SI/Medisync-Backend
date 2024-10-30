@@ -7,6 +7,7 @@ import path from 'path';
 import { exceptionResponses } from 'src/files/files.messages';
 import { FileType } from '../../../domain/file';
 import { FileRepository } from '../../persistence/file.repository';
+import { resizeImage } from 'src/utils/resize-image';
 
 @Injectable()
 export class FilesLocalService {
@@ -19,6 +20,8 @@ export class FilesLocalService {
     if (!file) {
       throw new UnprocessableEntityException(exceptionResponses.SelectFile);
     }
+
+    await resizeImage(file.path);
 
     return {
       file: await this.fileRepository.create({

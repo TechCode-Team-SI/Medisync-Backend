@@ -30,6 +30,9 @@ import { FindAllSymptomsDto } from './dto/find-all-symptoms.dto';
 import { exceptionResponses } from 'src/symptoms/symptoms.messages';
 import { getPagination } from 'src/utils/get-pagination';
 import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Symptoms')
 @ApiBearerAuth()
@@ -43,6 +46,8 @@ export class SymptomsController {
 
   @Post()
   @UseGuards(EmployeeOnlyGuard)
+  @Permissions(PermissionsEnum.MANAGE_SYMPTOMS)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: Symptom,
   })
@@ -86,6 +91,8 @@ export class SymptomsController {
   }
 
   @Patch(':id')
+  @Permissions(PermissionsEnum.MANAGE_SYMPTOMS)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -99,6 +106,8 @@ export class SymptomsController {
   }
 
   @Delete(':id')
+  @Permissions(PermissionsEnum.MANAGE_SYMPTOMS)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,

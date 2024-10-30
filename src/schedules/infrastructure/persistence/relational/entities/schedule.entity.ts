@@ -4,7 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -30,10 +30,14 @@ export class ScheduleEntity extends EntityRelationalHelper {
   @Column({ nullable: false })
   to: string;
 
+  @ApiProperty()
+  @Column({ nullable: false, default: 30 })
+  slotTime: number;
+
   @ApiProperty({
     type: () => EmployeeProfileEntity,
   })
-  @ManyToOne(() => EmployeeProfileEntity)
+  @OneToMany(() => EmployeeProfileEntity, (employee) => employee.schedule)
   employees: EmployeeProfileEntity[];
 
   @ApiProperty()

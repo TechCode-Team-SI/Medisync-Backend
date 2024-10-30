@@ -325,35 +325,37 @@ export class PackagesService {
       templates: installationSteps.requestTemplates,
     });
 
-    //Create Specialties
-    await this.specialtiesService.createMultiple({
-      specialties: installationSteps.specialties,
-    });
+    await Promise.all([
+      //Create Specialties
+      this.specialtiesService.createMultiple({
+        specialties: installationSteps.specialties,
+      }),
 
-    //Create Pathologies
-    await this.pathologiesService.createMultiple({
-      pathologies: installationSteps.pathologies,
-    });
+      //Create Pathologies
+      this.pathologiesService.createMultiple({
+        pathologies: installationSteps.pathologies,
+      }),
 
-    //Create Symptoms
-    await this.symptomsService.createMultiple({
-      symptoms: installationSteps.symptoms,
-    });
+      //Create Symptoms
+      this.symptomsService.createMultiple({
+        symptoms: installationSteps.symptoms,
+      }),
 
-    //Create Illnesses
-    await this.illnessesService.createMultiple({
-      illnesses: installationSteps.illnesses,
-    });
+      //Create Illnesses
+      this.illnessesService.createMultiple({
+        illnesses: installationSteps.illnesses,
+      }),
 
-    //Create Treatments
-    await this.treatmentsService.createMultiple({
-      treatments: installationSteps.treatments,
-    });
+      //Create Treatments
+      this.treatmentsService.createMultiple({
+        treatments: installationSteps.treatments,
+      }),
 
-    //Create Injuries
-    await this.injuriesService.createMultiple({
-      injuries: installationSteps.injuries,
-    });
+      //Create Injuries
+      this.injuriesService.createMultiple({
+        injuries: installationSteps.injuries,
+      }),
+    ]);
 
     //Update the package status
     for (const packageMetadata of packagesMetadata) {

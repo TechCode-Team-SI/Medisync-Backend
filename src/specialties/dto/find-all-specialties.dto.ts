@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsNumber,
   IsObject,
   IsOptional,
@@ -10,6 +11,7 @@ import {
 import { OrderEnum } from 'src/common/order.enum';
 import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
 import { ApiSortProperty } from 'src/utils/decorators/sort-property';
+import { BooleanTransformer } from 'src/utils/transformers/boolean.transformer';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
 
 export class SortSpecialtyDto {
@@ -34,6 +36,12 @@ export class FilterSpecialtyDto {
   @IsOptional()
   @IsString()
   employeeProfileIds?: string[] | null;
+
+  @ApiFilterProperty({ type: Boolean })
+  @IsOptional()
+  @Transform(BooleanTransformer)
+  @IsBoolean()
+  isDisabled?: boolean | null;
 }
 
 export class FindAllSpecialtiesDto {

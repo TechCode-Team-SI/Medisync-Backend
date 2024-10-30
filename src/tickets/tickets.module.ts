@@ -4,11 +4,13 @@ import { TicketsController } from './tickets.controller';
 import { RelationalTicketPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
 import { UsersModule } from 'src/users/users.module';
 import { TicketCommentsModule } from 'src/ticket-comments/ticket-comments.module';
+import { permissionsModule } from 'src/permissions/permissions.module';
 
 @Module({
   imports: [
     RelationalTicketPersistenceModule,
     UsersModule,
+    permissionsModule,
     forwardRef(() => TicketCommentsModule),
   ],
   controllers: [TicketsController],

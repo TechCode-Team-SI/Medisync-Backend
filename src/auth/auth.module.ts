@@ -12,6 +12,7 @@ import { UsersModule } from '../users/users.module';
 import { RelationalPasswordTokenPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordTokenEntity } from './infrastructure/persistence/relational/entities/password-token.entity';
+import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PasswordTokenEntity } from './infrastructure/persistence/relational/ent
     SessionModule,
     PassportModule,
     MailModule,
+    RolesModule,
     RelationalPasswordTokenPersistenceModule,
     TypeOrmModule.forFeature([PasswordTokenEntity]),
     JwtModule.register({}),

@@ -30,6 +30,9 @@ import { FindAllRoomsDto } from './dto/find-all-rooms.dto';
 import { exceptionResponses } from 'src/rooms/rooms.messages';
 import { getPagination } from 'src/utils/get-pagination';
 import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Rooms')
 @ApiBearerAuth()
@@ -43,6 +46,8 @@ export class RoomsController {
 
   @Post()
   @UseGuards(EmployeeOnlyGuard)
+  @Permissions(PermissionsEnum.MANAGE_AREAS)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: Room,
   })
@@ -86,6 +91,8 @@ export class RoomsController {
 
   @Patch(':id')
   @UseGuards(EmployeeOnlyGuard)
+  @Permissions(PermissionsEnum.MANAGE_AREAS)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -100,6 +107,8 @@ export class RoomsController {
 
   @Delete(':id')
   @UseGuards(EmployeeOnlyGuard)
+  @Permissions(PermissionsEnum.MANAGE_AREAS)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,

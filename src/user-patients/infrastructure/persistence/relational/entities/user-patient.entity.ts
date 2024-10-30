@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
+import { UserPatientFamilyRelationship } from 'src/user-patients/user-patients.enum';
 
 @Entity({
   name: 'user_patient',
@@ -46,6 +47,15 @@ export class UserPatientEntity extends EntityRelationalHelper {
   @ApiProperty()
   @OneToMany(() => RequestEntity, (request) => request.savedTo)
   savedRequests?: RequestEntity[];
+
+  @ApiProperty()
+  @Column({
+    nullable: false,
+    default: UserPatientFamilyRelationship.ME,
+    enum: UserPatientFamilyRelationship,
+    type: 'enum',
+  })
+  familyRelationship: UserPatientFamilyRelationship;
 
   @ApiProperty()
   @CreateDateColumn()

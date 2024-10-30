@@ -4,6 +4,15 @@ import { EmployeeProfile } from 'src/employee-profiles/domain/employee-profile';
 import { EmployeeProfileRepository } from 'src/employee-profiles/infrastructure/persistence/employee-profile.repository';
 import { EmployeeProfileMapper } from 'src/employee-profiles/infrastructure/persistence/relational/mappers/employee-profile.mapper';
 import { RolesService } from 'src/roles/roles.service';
+import { SpecialtyRepository } from 'src/specialties/infrastructure/persistence/specialty.repository';
+import { UserPatient } from 'src/user-patients/domain/user-patient';
+import { CreateUserPatientDto } from 'src/user-patients/dto/create-user-patient.dto';
+import {
+  FilterUserPatientsDto,
+  SortUserPatientsDto,
+} from 'src/user-patients/dto/find-all-user-patients.dto';
+import { UpdateUserPatientDto } from 'src/user-patients/dto/update-user-patient.dto';
+import { UserPatientRepository } from 'src/user-patients/infrastructure/persistence/user-patient.repository';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { FilesService } from '../files/files.service';
@@ -15,14 +24,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { exceptionResponses } from './users.messages';
-import { UserPatientRepository } from 'src/user-patients/infrastructure/persistence/user-patient.repository';
-import { CreateUserPatientDto } from 'src/user-patients/dto/create-user-patient.dto';
-import { UserPatient } from 'src/user-patients/domain/user-patient';
-import { UpdateUserPatientDto } from 'src/user-patients/dto/update-user-patient.dto';
-import {
-  FilterUserPatientsDto,
-  SortUserPatientsDto,
-} from 'src/user-patients/dto/find-all-user-patients.dto';
+import { AgendaRepository } from 'src/agendas/infrastructure/persistence/agenda.repository';
+import { ScheduleRepository } from 'src/schedules/infrastructure/persistence/schedule.repository';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +35,9 @@ export class UsersService {
     private readonly rolesService: RolesService,
     private readonly employeeProfilesRepository: EmployeeProfileRepository,
     private readonly userPatientsRepository: UserPatientRepository,
+    private readonly specialtiesRepository: SpecialtyRepository,
+    private readonly agendasRepository: AgendaRepository,
+    private readonly schedulesRepository: ScheduleRepository,
   ) {}
 
   async create(createProfileDto: CreateUserDto): Promise<User> {
@@ -305,5 +311,109 @@ export class UsersService {
       );
     }
     return this.userPatientsRepository.update(id, updatePatientDto);
+  }
+
+  async updateUserSpecialties(userId: string, specialtyIds: string[]) {
+    const user = await this.usersRepository.findById(userId, {
+      withSpecialty: true,
+    });
+    if (!user) {
+      throw new UnprocessableEntityException(exceptionResponses.UserNotFound);
+    }
+    if (!user.employeeProfile) {
+      throw new UnprocessableEntityException(exceptionResponses.NotEmployee);
+    }
+    const specialties = await Promise.all(
+      specialtyIds.map((id) => this.specialtiesRepository.findById(id)),
+    );
+    if (!specialties || specialties.length !== specialtyIds.length) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.SpecialtyNotExist,
+      );
+    }
+    const specialtiesFiltered = specialties.filter(
+      (specialty) => specialty !== null,
+    );
+
+    return this.employeeProfilesRepository.update(user.employeeProfile.id, {
+      specialties: specialtiesFiltered,
+    });
+  }
+
+  async updateUserRoles(userId: string, roleIds: string[]) {
+    const user = await this.usersRepository.findById(userId, {
+      withProfile: true,
+    });
+    if (!user) {
+      throw new UnprocessableEntityException(exceptionResponses.UserNotFound);
+    }
+    if (!user.employeeProfile) {
+      throw new UnprocessableEntityException(exceptionResponses.NotEmployee);
+    }
+    const roles = await Promise.all(
+      roleIds.map((id) => this.rolesService.findOne(id)),
+    );
+    if (!roles || roles.length !== roleIds.length) {
+      throw new UnprocessableEntityException(exceptionResponses.RoleNotExist);
+    }
+    const rolesFiltered = roles.filter((role) => role !== null);
+
+    return this.usersRepository.update(user.id, {
+      roles: rolesFiltered,
+    });
+  }
+
+  async updateUserAgenda(userId: string, agendaId?: string | null) {
+    const user = await this.usersRepository.findById(userId, {
+      withProfile: true,
+    });
+    if (!user) {
+      throw new UnprocessableEntityException(exceptionResponses.UserNotFound);
+    }
+    if (!user.employeeProfile) {
+      throw new UnprocessableEntityException(exceptionResponses.NotEmployee);
+    }
+    if (agendaId) {
+      const agenda = await this.agendasRepository.findById(agendaId);
+      if (!agenda) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.AgendaNotExist,
+        );
+      }
+      return this.employeeProfilesRepository.update(user.employeeProfile.id, {
+        agenda,
+      });
+    } else {
+      return this.employeeProfilesRepository.update(user.employeeProfile.id, {
+        agenda: null,
+      });
+    }
+  }
+
+  async updateUserSchedule(userId: string, scheduleId?: string | null) {
+    const user = await this.usersRepository.findById(userId, {
+      withProfile: true,
+    });
+    if (!user) {
+      throw new UnprocessableEntityException(exceptionResponses.UserNotFound);
+    }
+    if (!user.employeeProfile) {
+      throw new UnprocessableEntityException(exceptionResponses.NotEmployee);
+    }
+    if (scheduleId) {
+      const schedule = await this.schedulesRepository.findById(scheduleId);
+      if (!schedule) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.ScheduleNotExist,
+        );
+      }
+      return this.employeeProfilesRepository.update(user.employeeProfile.id, {
+        schedule,
+      });
+    } else {
+      return this.employeeProfilesRepository.update(user.employeeProfile.id, {
+        schedule: null,
+      });
+    }
   }
 }

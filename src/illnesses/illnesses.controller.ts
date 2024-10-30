@@ -30,6 +30,10 @@ import { FindAllIllnessesDto } from './dto/find-all-illnesses.dto';
 import { exceptionResponses } from 'src/illnesses/illnesses.messages';
 import { getPagination } from 'src/utils/get-pagination';
 import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
+
 @ApiTags('Illnesses')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -42,6 +46,8 @@ export class IllnessesController {
 
   @Post()
   @UseGuards(EmployeeOnlyGuard)
+  @Permissions(PermissionsEnum.MANAGE_ILLNESSES)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: Illness,
   })
@@ -86,6 +92,8 @@ export class IllnessesController {
 
   @Patch(':id')
   @UseGuards(EmployeeOnlyGuard)
+  @Permissions(PermissionsEnum.MANAGE_ILLNESSES)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -100,6 +108,8 @@ export class IllnessesController {
 
   @Delete(':id')
   @UseGuards(EmployeeOnlyGuard)
+  @Permissions(PermissionsEnum.MANAGE_ILLNESSES)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,

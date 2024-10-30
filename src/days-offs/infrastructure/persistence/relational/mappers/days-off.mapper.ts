@@ -3,6 +3,7 @@ import { DaysOff } from '../../../../domain/days-off';
 import { DaysOffEntity } from '../entities/days-off.entity';
 import { EmployeeProfileMapper } from 'src/employee-profiles/infrastructure/persistence/relational/mappers/employee-profile.mapper';
 import { SpecialtyMapper } from 'src/specialties/infrastructure/persistence/relational/mappers/specialty.mapper';
+import { addDays } from 'date-fns';
 
 export class DaysOffMapper {
   static toDomain(raw: DaysOffEntity): DaysOff {
@@ -25,6 +26,17 @@ export class DaysOffMapper {
     domainEntity.updatedAt = raw.updatedAt;
 
     return domainEntity;
+  }
+
+  static toDomainSingleDays(raw: DaysOffEntity): string[] {
+    const domainEntities: string[] = [];
+    let startDate = raw.from;
+    while (startDate <= raw.to) {
+      domainEntities.push(startDate.toISOString());
+      startDate = addDays(startDate, 1);
+    }
+
+    return domainEntities;
   }
 
   static toPersistence(domainEntity: DaysOff): DaysOffEntity {

@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   SerializeOptions,
   UnprocessableEntityException,
@@ -47,6 +48,10 @@ import { UpdateUserPatientDto } from 'src/user-patients/dto/update-user-patient.
 import { CreateUserPatientDto } from 'src/user-patients/dto/create-user-patient.dto';
 import { FindAllUserPatientsDto } from 'src/user-patients/dto/find-all-user-patients.dto';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
+import { AddOrRemoveSpecialtiesDto } from './dto/add-or-remove-specialties.dto';
+import { AddOrRemoveRolesDto } from './dto/add-or-remove-roles.dto';
+import { UpdateUserAgendaDto } from './dto/update-user-agenda.dto';
+import { UpdateUserScheduleDto } from './dto/update-user-schedule.dto';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -79,6 +84,8 @@ export class UsersController {
   @SerializeOptions({
     groups: ['admin'],
   })
+  //@Permissions(PermissionsEnum.VIEW_ALL_USERS)
+  //@UseGuards(PermissionsGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(
@@ -233,5 +240,57 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: User['id']): Promise<void> {
     return this.usersService.remove(id);
+  }
+
+  //TODO: update user specialties pending permissions
+  @Put('/specialties')
+  @HttpCode(HttpStatus.OK)
+  async updateSpecialties(
+    @Body() addOrRemoveSpecialties: AddOrRemoveSpecialtiesDto,
+  ): Promise<SuccessResponseDto> {
+    await this.usersService.updateUserSpecialties(
+      addOrRemoveSpecialties.id,
+      addOrRemoveSpecialties.specialtyIds,
+    );
+    return { success: true };
+  }
+
+  //TODO: update user roles pending permissions
+  @Put('/roles')
+  @HttpCode(HttpStatus.OK)
+  async updateRoles(
+    @Body() addOrRemoveRoles: AddOrRemoveRolesDto,
+  ): Promise<SuccessResponseDto> {
+    await this.usersService.updateUserRoles(
+      addOrRemoveRoles.id,
+      addOrRemoveRoles.roleIds,
+    );
+    return { success: true };
+  }
+
+  //TODO: update user agenda pending permissions
+  @Put('/agenda')
+  @HttpCode(HttpStatus.OK)
+  async updateAgenda(
+    @Body() updateUserAgenda: UpdateUserAgendaDto,
+  ): Promise<SuccessResponseDto> {
+    await this.usersService.updateUserAgenda(
+      updateUserAgenda.id,
+      updateUserAgenda.agendaId,
+    );
+    return { success: true };
+  }
+
+  //TODO: update user schedule pending permissions
+  @Put('/schedule')
+  @HttpCode(HttpStatus.OK)
+  async updateSchedule(
+    @Body() updateUserSchedule: UpdateUserScheduleDto,
+  ): Promise<SuccessResponseDto> {
+    await this.usersService.updateUserSchedule(
+      updateUserSchedule.id,
+      updateUserSchedule.scheduleId,
+    );
+    return { success: true };
   }
 }

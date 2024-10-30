@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { genderEnum } from 'src/employee-profiles/employee-profiles.enum';
 import { User } from 'src/users/domain/user';
 import { Request } from 'src/requests/domain/request';
+import { UserPatientFamilyRelationship } from '../user-patients.enum';
 export class UserPatient {
   @ApiProperty({
     type: String,
@@ -26,6 +27,9 @@ export class UserPatient {
     type: () => User,
   })
   user?: User | null;
+
+  @ApiProperty()
+  familyRelationship: UserPatientFamilyRelationship;
 
   @ApiProperty()
   birthday: Date;

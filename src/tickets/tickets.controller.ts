@@ -33,6 +33,10 @@ import { Ticket } from './domain/ticket';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { FindAllTicketsDto } from './dto/find-all-tickets.dto';
 import { TicketsService } from './tickets.service';
+import { TicketTypeEnum } from './tickets.enum';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Tickets')
 @ApiBearerAuth()
@@ -71,6 +75,42 @@ export class TicketsController {
     return this.ticketsService.findAllWithPagination({
       paginationOptions,
       filterOptions: query.filters,
+    });
+  }
+
+  @Get('suggestion')
+  @Permissions(PermissionsEnum.VIEW_SUGGESTION)
+  @UseGuards(PermissionsGuard)
+  @ApiOkResponse({
+    type: PaginationResponse(Ticket),
+  })
+  async findAllSuggestion(
+    @Query() query: FindAllTicketsDto,
+  ): Promise<PaginationResponseDto<Ticket>> {
+    const type = TicketTypeEnum.SUGGESTION;
+    const paginationOptions = getPagination(query);
+
+    return this.ticketsService.findAllWithPagination({
+      paginationOptions,
+      filterOptions: { type },
+    });
+  }
+
+  @Get('complaint')
+  @Permissions(PermissionsEnum.VIEW_COMPLAINT)
+  @UseGuards(PermissionsGuard)
+  @ApiOkResponse({
+    type: PaginationResponse(Ticket),
+  })
+  async findAllComplaint(
+    @Query() query: FindAllTicketsDto,
+  ): Promise<PaginationResponseDto<Ticket>> {
+    const type = TicketTypeEnum.COMPLAINT;
+    const paginationOptions = getPagination(query);
+
+    return this.ticketsService.findAllWithPagination({
+      paginationOptions,
+      filterOptions: { type },
     });
   }
 

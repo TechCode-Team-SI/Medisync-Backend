@@ -11,6 +11,7 @@ export class UserPatientMapper {
     domainEntity.dni = raw.dni;
     domainEntity.gender = raw.gender;
     domainEntity.birthday = raw.birthday;
+    domainEntity.familyRelationship = raw.familyRelationship;
     if (raw.user) {
       domainEntity.user = UserMapper.toDomain(raw.user);
     }
@@ -34,6 +35,7 @@ export class UserPatientMapper {
     persistenceEntity.dni = domainEntity.dni;
     persistenceEntity.birthday = domainEntity.birthday;
     persistenceEntity.gender = domainEntity.gender;
+    persistenceEntity.familyRelationship = domainEntity.familyRelationship;
     if (domainEntity.user) {
       persistenceEntity.user = UserMapper.toPersistence(domainEntity.user);
     }

@@ -25,6 +25,14 @@ export abstract class DaysOffRepository extends BaseRepository {
     filterOptions?: FilterDaysOffsDto | null;
   }): Promise<PaginationResponseDto<DaysOff>>;
 
+  abstract findAllDaysOffs(props: {
+    employeeProfileId?: string | null;
+    agendaId?: string | null;
+    specialtyId?: string | null;
+    startDate: Date;
+    endDate: Date;
+  }): Promise<string[]>;
+
   abstract findById(
     id: DaysOff['id'],
     options?: findOptions,

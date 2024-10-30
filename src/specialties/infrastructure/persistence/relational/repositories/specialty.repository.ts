@@ -88,7 +88,9 @@ export class SpecialtyRelationalRepository
         ...where,
         employees: { id: In([filterOptions.employeeProfileIds]) },
       };
-
+    if (filterOptions?.isDisabled) {
+      where = { ...where, isDisabled: filterOptions.isDisabled };
+    }
     let relations = this.relations;
     if (options?.minimal) relations = {};
 

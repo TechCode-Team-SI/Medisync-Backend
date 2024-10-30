@@ -57,4 +57,29 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'user_patient_could_not_be_created',
     message: 'El perfil de paciente no pudo ser creado',
   },
+  SpecialtyAlreadyOwned: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'specialty_already_owned',
+    message: 'El usuario ya tiene la especialidad',
+  },
+  SpecialtyNotOwned: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'specialty_not_owned',
+    message: 'El usuario no tiene la especialidad',
+  },
+  SpecialtyNotExist: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'specialty_not_exist',
+    message: 'La especialidad no existe',
+  },
+  AgendaNotExist: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'agenda_not_exist',
+    message: 'La agenda no existe',
+  },
+  ScheduleNotExist: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'schedule_not_exist',
+    message: 'El horario no existe',
+  },
 } as const;

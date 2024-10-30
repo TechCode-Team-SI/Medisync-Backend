@@ -158,7 +158,12 @@ export class UsersRelationalRepository
     let relations = this.relations;
     if (options) relations = {};
     if (options?.employeeProfile)
-      relations = { ...relations, employeeProfile: true };
+      relations = {
+        ...relations,
+        employeeProfile: {
+          agenda: true,
+        },
+      };
     if (options?.minimal) relations = {};
 
     let where: FindOptionsWhere<UserEntity> = {};
@@ -238,7 +243,9 @@ export class UsersRelationalRepository
     let relations = this.relations;
     if (options) relations = {};
     if (options?.withProfile) {
-      relations.employeeProfile = true;
+      relations.employeeProfile = {
+        schedule: true,
+      };
     }
     if (options?.withSpecialty) {
       relations.employeeProfile = {
@@ -252,6 +259,20 @@ export class UsersRelationalRepository
     const entity = await this.usersRepository.findOne({
       where: { id },
       relations,
+    });
+
+    return entity ? UserMapper.toDomain(entity) : null;
+  }
+
+  async findAvailableSchedule(id: User['id']): Promise<NullableType<User>> {
+    const entity = await this.usersRepository.findOne({
+      where: { id },
+      relations: {
+        employeeProfile: {
+          schedule: true,
+          agenda: true,
+        },
+      },
     });
 
     return entity ? UserMapper.toDomain(entity) : null;

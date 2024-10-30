@@ -121,6 +121,9 @@ export class SpecialtiesService {
     }
     if (filterOptions?.search)
       filterOpts = { ...filterOpts, search: filterOptions.search };
+    if (filterOptions?.isDisabled) {
+      filterOpts = { ...filterOpts, isDisabled: filterOptions.isDisabled };
+    }
 
     return this.specialtyRepository.findAllWithPagination({
       paginationOptions: {

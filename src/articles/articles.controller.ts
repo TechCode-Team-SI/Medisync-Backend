@@ -34,6 +34,9 @@ import { FindAllArticlesDto } from './dto/find-all-articles.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Articles')
 @Controller({
@@ -44,6 +47,8 @@ export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
   @Post()
+  @Permissions(PermissionsEnum.MANAGE_ARTICLES)
+  @UseGuards(PermissionsGuard)
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @UseGuards(EmployeeOnlyGuard)
@@ -94,6 +99,8 @@ export class ArticlesController {
   }
 
   @Patch(':id')
+  @Permissions(PermissionsEnum.MANAGE_ARTICLES)
+  @UseGuards(PermissionsGuard)
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @UseGuards(EmployeeOnlyGuard)
@@ -110,6 +117,8 @@ export class ArticlesController {
   }
 
   @Delete(':id')
+  @Permissions(PermissionsEnum.MANAGE_ARTICLES)
+  @UseGuards(PermissionsGuard)
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @UseGuards(EmployeeOnlyGuard)

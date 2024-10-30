@@ -26,6 +26,9 @@ import { RequestTemplate } from './domain/request-template';
 import { CreateRequestTemplateDto } from './dto/create-request-template.dto';
 import { FindAllRequestTemplatesDto } from './dto/find-all-request-templates.dto';
 import { RequestTemplatesService } from './request-templates.service';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Requesttemplates')
 @ApiBearerAuth()
@@ -40,6 +43,8 @@ export class RequestTemplatesController {
   ) {}
 
   @Post()
+  @Permissions(PermissionsEnum.MANAGE_FORMS)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: RequestTemplate,
   })

@@ -4,12 +4,14 @@ import { EmployeeProfilesModule } from 'src/employee-profiles/employee-profiles.
 import { RoomsService } from './rooms.service';
 import { RoomsController } from './rooms.controller';
 import { RelationalRoomPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
+import { permissionsModule } from 'src/permissions/permissions.module';
 
 @Module({
   imports: [
     RelationalRoomPersistenceModule,
     SpecialtiesModule,
     EmployeeProfilesModule,
+    permissionsModule,
   ],
   controllers: [RoomsController],
   providers: [RoomsService],

@@ -15,10 +15,15 @@ import {
 } from 'src/schedules/dto/find-all-schedules.dto';
 import { isHourALessThanHourB } from 'src/utils/utils';
 import { exceptionResponses } from './schedules.messages';
+import { UserRepository } from 'src/users/infrastructure/persistence/user.repository';
+import { ScheduleMapper } from './infrastructure/persistence/relational/mappers/schedule.mapper';
 
 @Injectable()
 export class SchedulesService {
-  constructor(private readonly scheduleRepository: ScheduleRepository) {}
+  constructor(
+    private readonly scheduleRepository: ScheduleRepository,
+    private readonly usersRepository: UserRepository,
+  ) {}
 
   create(createScheduleDto: CreateScheduleDto) {
     if (!isHourALessThanHourB(createScheduleDto.from, createScheduleDto.to)) {
@@ -51,6 +56,25 @@ export class SchedulesService {
 
   findOne(id: Schedule['id'], options?: findOptions) {
     return this.scheduleRepository.findById(id, options);
+  }
+
+  async findOneByUser(id: string) {
+    const user = await this.usersRepository.findById(id, { withProfile: true });
+    if (!user) {
+      throw new NotFoundException(exceptionResponses.UserNotExist);
+    }
+    if (!user.employeeProfile?.schedule) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+    const schedule = await this.scheduleRepository.findById(
+      user.employeeProfile.schedule.id,
+    );
+
+    if (!schedule) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+
+    return ScheduleMapper.toDomainSlotted(schedule);
   }
 
   async update(id: Schedule['id'], updateScheduleDto: UpdateScheduleDto) {
