@@ -37,7 +37,6 @@ import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 @ApiTags('Daysoffs')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
-@UseGuards(EmployeeOnlyGuard)
 @Controller({
   path: 'days-offs',
   version: '1',
@@ -46,6 +45,7 @@ export class DaysOffsController {
   constructor(private readonly daysOffsService: DaysOffsService) {}
 
   @Post('for-me')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiCreatedResponse({
     type: DaysOff,
   })
@@ -64,6 +64,7 @@ export class DaysOffsController {
   }
 
   @Post('employee/:employeeId')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiCreatedResponse({
     type: DaysOff,
   })
@@ -84,6 +85,7 @@ export class DaysOffsController {
   }
 
   @Post('agenda/:agendaId')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiCreatedResponse({
     type: DaysOff,
   })
@@ -156,6 +158,7 @@ export class DaysOffsController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -169,6 +172,7 @@ export class DaysOffsController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,

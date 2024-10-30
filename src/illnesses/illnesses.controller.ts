@@ -29,7 +29,7 @@ import {
 import { FindAllIllnessesDto } from './dto/find-all-illnesses.dto';
 import { exceptionResponses } from 'src/illnesses/illnesses.messages';
 import { getPagination } from 'src/utils/get-pagination';
-
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 @ApiTags('Illnesses')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -41,6 +41,7 @@ export class IllnessesController {
   constructor(private readonly illnessesService: IllnessesService) {}
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @ApiCreatedResponse({
     type: Illness,
   })
@@ -84,6 +85,7 @@ export class IllnessesController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -97,6 +99,7 @@ export class IllnessesController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,

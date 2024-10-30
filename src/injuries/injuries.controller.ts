@@ -29,6 +29,7 @@ import {
 import { FindAllInjuriesDto } from './dto/find-all-injuries.dto';
 import { exceptionResponses } from 'src/injuries/injuries.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 
 @ApiTags('Injuries')
 @ApiBearerAuth()
@@ -41,6 +42,7 @@ export class InjuriesController {
   constructor(private readonly injuriesService: InjuriesService) {}
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @ApiCreatedResponse({
     type: Injury,
   })
@@ -84,6 +86,7 @@ export class InjuriesController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -97,6 +100,7 @@ export class InjuriesController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,

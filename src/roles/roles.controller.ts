@@ -29,6 +29,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { exceptionResponses } from './roles.messages';
 import { RolesService } from './roles.service';
 import { getPagination } from 'src/utils/get-pagination';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 
 @ApiTags('Roles')
 @ApiBearerAuth()
@@ -41,6 +42,7 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @ApiCreatedResponse({
     type: Role,
   })
@@ -81,6 +83,7 @@ export class RolesController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -94,6 +97,7 @@ export class RolesController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,

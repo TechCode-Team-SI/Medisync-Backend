@@ -34,7 +34,6 @@ import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 @ApiTags('Rooms')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
-@UseGuards(EmployeeOnlyGuard)
 @Controller({
   path: 'rooms',
   version: '1',
@@ -43,6 +42,7 @@ export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @ApiCreatedResponse({
     type: Room,
   })
@@ -85,6 +85,7 @@ export class RoomsController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -98,6 +99,7 @@ export class RoomsController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,

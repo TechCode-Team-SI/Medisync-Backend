@@ -29,6 +29,7 @@ import {
 import { FindAllPathologiesDto } from './dto/find-all-pathologies.dto';
 import { exceptionResponses } from 'src/pathologies/pathologies.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 
 @ApiTags('Pathologies')
 @ApiBearerAuth()
@@ -41,6 +42,7 @@ export class PathologiesController {
   constructor(private readonly pathologiesService: PathologiesService) {}
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @ApiCreatedResponse({
     type: Pathology,
   })
@@ -83,6 +85,7 @@ export class PathologiesController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -99,6 +102,7 @@ export class PathologiesController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,

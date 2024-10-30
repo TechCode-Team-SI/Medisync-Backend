@@ -33,6 +33,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { FindAllArticlesDto } from './dto/find-all-articles.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 
 @ApiTags('Articles')
 @Controller({
@@ -45,6 +46,7 @@ export class ArticlesController {
   @Post()
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
+  @UseGuards(EmployeeOnlyGuard)
   @UseInterceptors(TransactionInterceptor)
   @ApiCreatedResponse({
     type: Article,
@@ -94,6 +96,7 @@ export class ArticlesController {
   @Patch(':id')
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -109,6 +112,7 @@ export class ArticlesController {
   @Delete(':id')
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,

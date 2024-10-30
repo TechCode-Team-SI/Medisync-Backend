@@ -34,7 +34,6 @@ import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 @ApiTags('Schedules')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
-@UseGuards(EmployeeOnlyGuard)
 @Controller({
   path: 'schedules',
   version: '1',
@@ -43,6 +42,7 @@ export class SchedulesController {
   constructor(private readonly schedulesService: SchedulesService) {}
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
   @ApiCreatedResponse({
     type: Schedule,
   })
@@ -86,6 +86,7 @@ export class SchedulesController {
   }
 
   @Patch(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -102,6 +103,7 @@ export class SchedulesController {
   }
 
   @Delete(':id')
+  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
