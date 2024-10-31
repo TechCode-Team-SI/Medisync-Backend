@@ -43,7 +43,12 @@ export class ArticleRelationalRepository
     return this.getRepository(ArticleEntity);
   }
 
-  private relations: FindOptionsRelations<ArticleEntity> = { updatedBy: true };
+  private relations: FindOptionsRelations<ArticleEntity> = {
+    updatedBy: {
+      roles: false,
+    },
+    image: true,
+  };
 
   async create(data: Article): Promise<Article> {
     const persistenceModel = ArticleMapper.toPersistence(data);

@@ -1,14 +1,15 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { FilesService } from 'src/files/files.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { UsersService } from 'src/users/users.service';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { exceptionResponses } from './articles.messages';
 import { Article } from './domain/article';
 import { CreateArticleDto } from './dto/create-article.dto';
+import { FilterArticleDto, SortArticleDto } from './dto/find-all-articles.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticleRepository } from './infrastructure/persistence/article.repository';
-import { findOptions } from 'src/utils/types/fine-options.type';
-import { FilterArticleDto, SortArticleDto } from './dto/find-all-articles.dto';
-import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class ArticlesService {
@@ -16,6 +17,7 @@ export class ArticlesService {
     private readonly articleRepository: ArticleRepository,
     private usersService: UsersService,
     private notificationsService: NotificationsService,
+    private readonly filesService: FilesService,
   ) {}
 
   async create(createArticleDto: CreateArticleDto, userId: string) {
@@ -24,15 +26,28 @@ export class ArticlesService {
       throw new UnprocessableEntityException(exceptionResponses);
     }
 
-    const data = {
+    const clonedPayload: Omit<Article, 'id' | 'createdAt' | 'updatedAt'> = {
       ...createArticleDto,
       updatedBy: user,
     };
-    const result = await this.articleRepository.create(data);
+
+    if (createArticleDto.photo?.id) {
+      const fileObject = await this.filesService.findById(
+        createArticleDto.photo.id,
+      );
+      if (!fileObject) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.AvatarNotExist,
+        );
+      }
+      clonedPayload.image = fileObject;
+    }
+
+    const result = await this.articleRepository.create(clonedPayload);
 
     await this.notificationsService.createForAllMobileUsers({
       title: 'Nuevo Articulo disponible!',
-      content: `Hay un nuevo articulo medico disponible en nuestra plataforma: ${data.title}`,
+      content: `Hay un nuevo articulo medico disponible en nuestra plataforma: ${clonedPayload.title}`,
     });
 
     return result;
@@ -64,8 +79,24 @@ export class ArticlesService {
     return this.articleRepository.findById(id, options);
   }
 
-  update(id: Article['id'], updateArticleDto: UpdateArticleDto) {
-    return this.articleRepository.update(id, updateArticleDto);
+  async update(id: Article['id'], updateArticleDto: UpdateArticleDto) {
+    const clonedPayload: Partial<Article> = {
+      ...updateArticleDto,
+    };
+
+    if (updateArticleDto.photo?.id) {
+      const fileObject = await this.filesService.findById(
+        updateArticleDto.photo.id,
+      );
+      if (!fileObject) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.AvatarNotExist,
+        );
+      }
+      clonedPayload.image = fileObject;
+    }
+
+    return this.articleRepository.update(id, clonedPayload);
   }
 
   remove(id: Article['id']) {

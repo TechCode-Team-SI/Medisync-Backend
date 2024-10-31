@@ -5,6 +5,7 @@ import { ArticlesService } from './articles.service';
 import { RelationalArticlePersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
 import { NotificationsModule } from 'src/notifications/notifications.module';
 import { permissionsModule } from 'src/permissions/permissions.module';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { permissionsModule } from 'src/permissions/permissions.module';
     UsersModule,
     NotificationsModule,
     permissionsModule,
+    FilesModule,
   ],
   controllers: [ArticlesController],
   providers: [ArticlesService],
