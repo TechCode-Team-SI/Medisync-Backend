@@ -5,6 +5,7 @@ import { RoomsService } from './rooms.service';
 import { RoomsController } from './rooms.controller';
 import { RelationalRoomPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
 import { permissionsModule } from 'src/permissions/permissions.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { permissionsModule } from 'src/permissions/permissions.module';
     SpecialtiesModule,
     EmployeeProfilesModule,
     permissionsModule,
+    UsersModule,
   ],
   controllers: [RoomsController],
   providers: [RoomsService],
