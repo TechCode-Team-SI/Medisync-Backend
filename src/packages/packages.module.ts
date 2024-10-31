@@ -13,6 +13,7 @@ import { InjuriesModule } from 'src/injuries/injuries.module';
 import { treatmentsModule } from 'src/treatments/treatments.module';
 import { FilesS3Module } from 'src/files/infrastructure/uploader/s3/files.module';
 import { permissionsModule } from 'src/permissions/permissions.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { permissionsModule } from 'src/permissions/permissions.module';
     InjuriesModule,
     FilesS3Module,
     permissionsModule,
+    UsersModule,
   ],
   providers: [PackagesService],
   controllers: [PackagesController],
