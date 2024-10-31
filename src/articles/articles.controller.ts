@@ -49,9 +49,9 @@ export class ArticlesController {
   @Post()
   @Permissions(PermissionsEnum.MANAGE_ARTICLES)
   @UseGuards(PermissionsGuard)
+  @UseGuards(EmployeeOnlyGuard)
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @UseGuards(EmployeeOnlyGuard)
   @UseInterceptors(TransactionInterceptor)
   @ApiCreatedResponse({
     type: Article,
@@ -101,9 +101,9 @@ export class ArticlesController {
   @Patch(':id')
   @Permissions(PermissionsEnum.MANAGE_ARTICLES)
   @UseGuards(PermissionsGuard)
+  @UseGuards(EmployeeOnlyGuard)
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -119,9 +119,9 @@ export class ArticlesController {
   @Delete(':id')
   @Permissions(PermissionsEnum.MANAGE_ARTICLES)
   @UseGuards(PermissionsGuard)
+  @UseGuards(EmployeeOnlyGuard)
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @UseGuards(EmployeeOnlyGuard)
   @ApiParam({
     name: 'id',
     type: String,
