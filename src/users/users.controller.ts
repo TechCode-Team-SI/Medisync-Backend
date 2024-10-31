@@ -52,6 +52,7 @@ import { AddOrRemoveSpecialtiesDto } from './dto/add-or-remove-specialties.dto';
 import { AddOrRemoveRolesDto } from './dto/add-or-remove-roles.dto';
 import { UpdateUserAgendaDto } from './dto/update-user-agenda.dto';
 import { UpdateUserScheduleDto } from './dto/update-user-schedule.dto';
+import { QueryUserPaginationOnlyDto } from './dto/query-user-pagination-only.dto';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -116,6 +117,23 @@ export class UsersController {
   })
   findOne(@Param('id') id: User['id']): Promise<NullableType<User>> {
     return this.usersService.findById(id);
+  }
+
+  @ApiOkResponse({
+    type: PaginationResponse(User),
+  })
+  @Get('specialties/:specialtyId')
+  @HttpCode(HttpStatus.OK)
+  async findAllActiveBySpecialty(
+    @Query() query: QueryUserPaginationOnlyDto,
+    @Param('specialtyId') specialtyId,
+  ): Promise<PaginationResponseDto<User>> {
+    const paginationOptions = getPagination(query);
+
+    return this.usersService.findManyUsersBySpecialtyActiveWithPagination({
+      paginationOptions,
+      specialtyId,
+    });
   }
 
   @ApiOkResponse({

@@ -35,6 +35,7 @@ import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { Permissions } from 'src/permissions/permissions.decorator';
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
+import { FindAllSpecialtiesPaginationOnlyDto } from './dto/find-all-specialties-pagination-only.dto';
 
 @ApiTags('Specialties')
 @ApiBearerAuth()
@@ -87,6 +88,20 @@ export class SpecialtiesController {
     return this.specialtiesService.findAllWithPagination({
       paginationOptions,
       filterOptions: { userId: userPayload.id, search },
+    });
+  }
+
+  @Get('active')
+  @ApiOkResponse({
+    type: PaginationResponse(Specialty),
+  })
+  async findAllActive(
+    @Query() query: FindAllSpecialtiesPaginationOnlyDto,
+  ): Promise<PaginationResponseDto<Specialty>> {
+    const paginationOptions = getPagination(query);
+
+    return this.specialtiesService.findAllActiveWithPagination({
+      paginationOptions,
     });
   }
 

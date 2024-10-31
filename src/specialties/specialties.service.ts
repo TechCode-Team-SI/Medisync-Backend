@@ -136,6 +136,19 @@ export class SpecialtiesService {
     });
   }
 
+  async findAllActiveWithPagination({
+    paginationOptions,
+  }: {
+    paginationOptions: IPaginationOptions;
+  }) {
+    return this.specialtyRepository.findAllActiveWithPagination({
+      paginationOptions: {
+        page: paginationOptions.page,
+        limit: paginationOptions.limit,
+      },
+    });
+  }
+
   findOne(id: Specialty['id'], options?: findOptions) {
     return this.specialtyRepository.findById(id, options);
   }

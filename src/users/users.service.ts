@@ -130,6 +130,19 @@ export class UsersService {
     });
   }
 
+  findManyUsersBySpecialtyActiveWithPagination({
+    specialtyId,
+    paginationOptions,
+  }: {
+    paginationOptions: IPaginationOptions;
+    specialtyId: string;
+  }): Promise<PaginationResponseDto<User>> {
+    return this.usersRepository.findAvailableMedicsWithPagination({
+      paginationOptions,
+      specialtyId,
+    });
+  }
+
   findById(
     id: User['id'],
     options?: findOptions & {

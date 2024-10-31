@@ -2,10 +2,15 @@ import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
+import {
+  FilterSpecialtyDto,
+  SortSpecialtyDto,
+} from 'src/specialties/dto/find-all-specialties.dto';
 import { exceptionResponses } from 'src/specialties/specialties.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { formatOrder } from 'src/utils/utils';
 import {
   DataSource,
   FindOneOptions,
@@ -21,11 +26,6 @@ import { Specialty } from '../../../../domain/specialty';
 import { SpecialtyRepository } from '../../specialty.repository';
 import { SpecialtyEntity } from '../entities/specialty.entity';
 import { SpecialtyMapper } from '../mappers/specialty.mapper';
-import {
-  FilterSpecialtyDto,
-  SortSpecialtyDto,
-} from 'src/specialties/dto/find-all-specialties.dto';
-import { formatOrder } from 'src/utils/utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class SpecialtyRelationalRepository
@@ -101,6 +101,38 @@ export class SpecialtyRelationalRepository
       order,
       relations,
     });
+    const items = entities.map((entity) => SpecialtyMapper.toDomain(entity));
+
+    return Pagination(
+      { items, count },
+      {
+        limit: paginationOptions.limit,
+        page: paginationOptions.page,
+        domain: 'specialties',
+      },
+    );
+  }
+
+  async findAllActiveWithPagination({
+    paginationOptions,
+  }: {
+    paginationOptions: IPaginationOptions;
+  }): Promise<PaginationResponseDto<Specialty>> {
+    const entityManager = this.getEntityManager();
+    const query = entityManager
+      .getRepository(SpecialtyEntity)
+      .createQueryBuilder('s')
+      .leftJoinAndSelect('s.image', 'i')
+      .innerJoin('s.employees', 'e')
+      .where('s.isPublic = :isPublic', { isPublic: true })
+      .andWhere('s.isDisabled = :isDisabled', { isDisabled: false })
+      .andWhere('s.requestTemplate IS NOT NULL')
+      .andWhere('e.status = :status', { status: true })
+      .orderBy('s.name', 'DESC');
+
+    const entities = await query.getMany();
+    const count = await query.getCount();
+
     const items = entities.map((entity) => SpecialtyMapper.toDomain(entity));
 
     return Pagination(

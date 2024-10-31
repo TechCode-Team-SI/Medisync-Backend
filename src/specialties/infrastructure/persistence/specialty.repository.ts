@@ -28,6 +28,12 @@ export abstract class SpecialtyRepository extends BaseRepository {
     sortOptions?: SortSpecialtyDto[] | null;
   }): Promise<PaginationResponseDto<Specialty>>;
 
+  abstract findAllActiveWithPagination({
+    paginationOptions,
+  }: {
+    paginationOptions: IPaginationOptions;
+  }): Promise<PaginationResponseDto<Specialty>>;
+
   abstract findAllWithNames(
     names: Specialty['name'][],
     options?: findOptions,

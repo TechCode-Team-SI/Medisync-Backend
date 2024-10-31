@@ -30,6 +30,14 @@ export abstract class UserRepository extends BaseRepository {
     };
   }): Promise<PaginationResponseDto<User>>;
 
+  abstract findAvailableMedicsWithPagination({
+    paginationOptions,
+    specialtyId,
+  }: {
+    specialtyId: string;
+    paginationOptions: IPaginationOptions;
+  }): Promise<PaginationResponseDto<User>>;
+
   abstract findAll({
     filterOptions,
     sortOptions,

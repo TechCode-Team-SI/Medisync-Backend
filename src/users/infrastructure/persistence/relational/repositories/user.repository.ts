@@ -143,6 +143,41 @@ export class UsersRelationalRepository
     );
   }
 
+  async findAvailableMedicsWithPagination({
+    paginationOptions,
+    specialtyId,
+  }: {
+    specialtyId: string;
+    paginationOptions: IPaginationOptions;
+  }): Promise<PaginationResponseDto<User>> {
+    const [entities, count] = await this.usersRepository.findAndCount({
+      skip: (paginationOptions.page - 1) * paginationOptions.limit,
+      take: paginationOptions.limit,
+      loadEagerRelations: true,
+      relations: {
+        photo: true,
+        employeeProfile: true,
+      },
+      where: {
+        employeeProfile: {
+          specialties: {
+            id: specialtyId,
+            isDisabled: false,
+          },
+          status: true,
+        },
+      },
+      order: { fullName: 'DESC' },
+    });
+
+    const items = entities.map((entity) => UserMapper.toDomain(entity));
+
+    return Pagination(
+      { items, count },
+      { ...paginationOptions, domain: 'users' },
+    );
+  }
+
   async findAll({
     filterOptions,
     sortOptions,
