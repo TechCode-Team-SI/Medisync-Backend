@@ -16,6 +16,7 @@ import {
 import { SpecialtiesService } from 'src/specialties/specialties.service';
 import { exceptionResponses } from './agendas.messages';
 import { EmployeeProfileRepository } from 'src/employee-profiles/infrastructure/persistence/employee-profile.repository';
+import { UserRepository } from 'src/users/infrastructure/persistence/user.repository';
 
 @Injectable()
 export class AgendasService {
@@ -23,6 +24,7 @@ export class AgendasService {
     private readonly agendaRepository: AgendaRepository,
     private readonly specialtiesService: SpecialtiesService,
     private readonly employeesRepository: EmployeeProfileRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
   create(createAgendaDto: CreateAgendaDto) {
@@ -49,6 +51,22 @@ export class AgendasService {
       sortOptions,
       filterOptions,
     });
+  }
+
+  async findOneByUser(userId: string) {
+    const user = await this.userRepository.findById(userId, {
+      withProfile: true,
+    });
+    if (!user) {
+      throw new NotFoundException(exceptionResponses.UserNotExists);
+    }
+    if (!user?.employeeProfile) {
+      throw new NotFoundException(exceptionResponses.EmployeeNotExists);
+    }
+    if (!user?.employeeProfile.agenda) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+    return this.agendaRepository.findById(user.employeeProfile.agenda.id);
   }
 
   findOne(id: Agenda['id'], options?: findOptions) {

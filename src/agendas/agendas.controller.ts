@@ -90,6 +90,25 @@ export class AgendasController {
     return entity;
   }
 
+  @Get('user/:userId')
+  @ApiParam({
+    name: 'userId',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({
+    type: Agenda,
+  })
+  async findOneByUser(@Param('userId') userId: string) {
+    const entity = await this.agendasService.findOneByUser(userId);
+
+    if (!entity) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+
+    return entity;
+  }
+
   @Patch(':id')
   @UseGuards(EmployeeOnlyGuard)
   @Permissions(PermissionsEnum.MANAGE_AGENDA)

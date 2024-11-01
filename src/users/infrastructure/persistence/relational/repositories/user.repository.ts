@@ -164,6 +164,8 @@ export class UsersRelationalRepository
             id: specialtyId,
             isDisabled: false,
           },
+          schedule: Not(IsNull()),
+          agenda: Not(IsNull()),
           status: true,
         },
       },
@@ -280,6 +282,7 @@ export class UsersRelationalRepository
     if (options?.withProfile) {
       relations.employeeProfile = {
         schedule: true,
+        agenda: true,
       };
     }
     if (options?.withSpecialty) {
