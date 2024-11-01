@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TicketCommentEntity } from 'src/ticket-comments/infrastructure/persistence/relational/entities/ticket-comment.entity';
-import { TicketStatusEnum, TicketTypeEnum } from 'src/tickets/tickets.enum';
+import { TicketStatusEnum } from 'src/tickets/tickets.enum';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import {
   Column,
@@ -13,6 +13,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
+import { TicketTypeEntity } from 'src/ticket-types/infrastructure/persistence/relational/entities/ticket-type.entity';
 
 @Entity({
   name: 'ticket',
@@ -31,11 +32,8 @@ export class TicketEntity extends EntityRelationalHelper {
   description: string;
 
   @ApiProperty()
-  @Column({
-    type: 'enum',
-    enum: TicketTypeEnum,
-  })
-  type: string;
+  @OneToMany(() => TicketTypeEntity, (type) => type.ticket)
+  type: TicketTypeEntity;
 
   @ApiProperty()
   @Column({

@@ -10,8 +10,8 @@ import { IPaginationOptions } from '../../../../../utils/types/pagination-option
 import { exceptionResponses } from 'src/tickets/tickets.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
-import { TicketTypeEnum } from 'src/tickets/tickets.enum';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { TicketTypeMapper } from 'src/ticket-types/infrastructure/persistence/relational/mappers/ticket-type.mapper';
 
 @Injectable()
 export class TicketRelationalRepository implements TicketRepository {
@@ -36,7 +36,7 @@ export class TicketRelationalRepository implements TicketRepository {
     options,
   }: {
     paginationOptions: IPaginationOptions;
-    type?: TicketTypeEnum;
+    type?: TicketTypeMapper;
     options?: findOptions;
   }): Promise<PaginationResponseDto<Ticket>> {
     let relations = this.relations;

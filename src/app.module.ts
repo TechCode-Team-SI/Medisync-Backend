@@ -52,8 +52,11 @@ import { InstructionsModule } from './instructions/instructions.module';
 
 import { PackagesModule } from './packages/packages.module';
 
+import { TicketTypesModule } from './ticket-types/ticket-types.module';
+
 @Module({
   imports: [
+    TicketTypesModule,
     PackagesModule,
     InstructionsModule,
     DiagnosticsModule,

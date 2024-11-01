@@ -1,9 +1,10 @@
 import { UserMapper } from 'src/users/infrastructure/persistence/relational/mappers/user.mapper';
 import { Ticket } from '../../../../domain/ticket';
 import { TicketEntity } from '../entities/ticket.entity';
-import { TicketStatusEnum, TicketTypeEnum } from 'src/tickets/tickets.enum';
+import { TicketStatusEnum } from 'src/tickets/tickets.enum';
 import { isValueInEnum } from 'src/utils/utils';
 import { TicketCommentMapper } from 'src/ticket-comments/infrastructure/persistence/relational/mappers/ticket-comment.mapper';
+import { TicketTypeMapper } from 'src/ticket-types/infrastructure/persistence/relational/mappers/ticket-type.mapper';
 
 export class TicketMapper {
   static toDomain(raw: TicketEntity): Ticket {
@@ -11,8 +12,8 @@ export class TicketMapper {
     domainEntity.id = raw.id;
     domainEntity.title = raw.title;
     domainEntity.description = raw.description;
-    if (isValueInEnum(TicketTypeEnum, raw.type)) {
-      domainEntity.type = raw.type as TicketTypeEnum;
+    if (raw.type) {
+      domainEntity.type = TicketTypeMapper.toDomain(raw.type);
     }
     if (isValueInEnum(TicketStatusEnum, raw.status)) {
       domainEntity.status = raw.status as TicketStatusEnum;
@@ -40,7 +41,11 @@ export class TicketMapper {
     }
     persistenceEntity.title = domainEntity.title;
     persistenceEntity.description = domainEntity.description;
-    persistenceEntity.type = domainEntity.type;
+    if (domainEntity.type) {
+      persistenceEntity.type = TicketTypeMapper.toPersistence(
+        domainEntity.type,
+      );
+    }
     persistenceEntity.status = domainEntity.status;
     if (domainEntity.createdBy) {
       persistenceEntity.createdBy = UserMapper.toPersistence(
