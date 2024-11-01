@@ -24,6 +24,7 @@ export class RequestMapper {
     domainEntity.patientAddress = raw.patientAddress;
     domainEntity.appointmentHour = raw.appointmentHour;
     domainEntity.status = raw.status;
+    domainEntity.appointmentDate = raw.appointmentDate;
     if (raw.requestedMedic) {
       domainEntity.requestedMedic = UserMapper.toDomain(raw.requestedMedic);
     }
@@ -72,6 +73,7 @@ export class RequestMapper {
     persistenceEntity.patientDNI = domainEntity.patientDNI;
     persistenceEntity.patientAddress = domainEntity.patientAddress;
     persistenceEntity.appointmentHour = domainEntity.appointmentHour;
+    persistenceEntity.appointmentDate = domainEntity.appointmentDate;
     if (isValueInEnum(RequestStatusEnum, domainEntity.status)) {
       persistenceEntity.status = domainEntity.status;
     }

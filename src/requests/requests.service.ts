@@ -25,6 +25,7 @@ import { RequestRepository } from './infrastructure/persistence/request.reposito
 import { RequestStatusEnum } from './requests.enum';
 import { exceptionResponses } from './requests.messages';
 import { UserPatient } from 'src/user-patients/domain/user-patient';
+import { UserPatientsService } from 'src/user-patients/user-patients.service';
 @Injectable()
 export class RequestsService {
   constructor(
@@ -32,6 +33,7 @@ export class RequestsService {
     private readonly requestTemplateService: RequestTemplatesService,
     private readonly specialtiesRepository: SpecialtiesService,
     private readonly usersService: UsersService,
+    private readonly userPatientsService: UserPatientsService,
     private readonly diagnosticsService: DiagnosticsService,
     private readonly instructionsService: InstructionsService,
   ) {}
@@ -61,22 +63,21 @@ export class RequestsService {
       );
     }
 
-    let foundUserPatient: UserPatient | undefined = undefined;
-    if (madeFor) {
-      const madeForPatient = new UserPatient();
-      madeForPatient.id = madeFor.id;
-      foundUserPatient = madeForPatient;
-      if (options.shouldBeSameAsUser) {
-        const userPatient = foundUser.userPatients?.find(
-          (patient) => patient.id === madeFor?.id,
-        );
+    const foundUserPatient = await this.userPatientsService.findOne(madeFor.id);
+    if (!foundUserPatient) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.PatientNotExists,
+      );
+    }
+    if (options.shouldBeSameAsUser) {
+      const userPatient = foundUser.userPatients?.find(
+        (patient) => patient.id === madeFor.id,
+      );
 
-        if (!userPatient) {
-          throw new UnprocessableEntityException(
-            exceptionResponses.PatientNotAllowed,
-          );
-        }
-        foundUserPatient = userPatient;
+      if (!userPatient) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.PatientNotAllowed,
+        );
       }
     }
 
@@ -186,6 +187,9 @@ export class RequestsService {
 
     const clonedPayload = {
       ...data,
+      patientFullName: foundUserPatient.fullName,
+      patientDNI: foundUserPatient.dni,
+      patientAddress: foundUserPatient.address || 'N/A',
       status: RequestStatusEnum.PENDING,
       requestTemplate: foundRequestTemplate,
       requestedSpecialty: foundSpecialty,

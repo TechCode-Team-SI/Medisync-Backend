@@ -56,6 +56,9 @@ export class Request {
   appointmentHour: string;
 
   @ApiProperty()
+  appointmentDate: Date;
+
+  @ApiProperty()
   status: RequestStatusEnum;
 
   @ApiProperty()

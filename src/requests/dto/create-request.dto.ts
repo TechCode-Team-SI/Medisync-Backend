@@ -1,31 +1,29 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, Validate } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsDate, IsNotEmpty, Validate } from 'class-validator';
 import { EmployeeProfileIdDto } from 'src/employee-profiles/dto/employee-profile-id.dto';
 import { RequestTemplateDto } from 'src/request-templates/dto/request-template.dto';
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
+import { UserPatientIdDto } from 'src/user-patients/dto/user-patient-id.dto';
 import { IsHourFormat } from 'src/utils/validators/is-hour-format';
 import { RequestValueDto } from './request-value.dto';
-import { UserPatientIdDto } from 'src/user-patients/dto/user-patient-id.dto';
-import { Type } from 'class-transformer';
 
 export class CreateRequestDto {
-  @ApiProperty()
+  @ApiProperty({ type: () => UserPatientIdDto })
   @IsNotEmpty()
-  patientFullName: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  patientDNI: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  patientAddress: string;
+  @Type(() => UserPatientIdDto)
+  madeFor: UserPatientIdDto;
 
   @ApiProperty()
   @IsNotEmpty()
   @Validate(IsHourFormat)
   appointmentHour: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Type(() => Date)
+  @IsDate()
+  appointmentDate: Date;
 
   @ApiProperty({ type: RequestTemplateDto })
   @IsNotEmpty()
@@ -45,9 +43,4 @@ export class CreateRequestDto {
   @ApiProperty({ type: () => RequestValueDto })
   @IsNotEmpty()
   requestValues: RequestValueDto[];
-
-  @ApiProperty({ type: () => UserPatientIdDto })
-  @IsNotEmpty()
-  @Type(() => UserPatientIdDto)
-  madeFor?: UserPatientIdDto | null;
 }

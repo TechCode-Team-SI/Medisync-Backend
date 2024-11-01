@@ -22,6 +22,9 @@ import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
 import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
 import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { CreateRatingDto } from 'src/ratings/dto/create-rating.dto';
 import { RatingsService } from 'src/ratings/ratings.service';
 import { exceptionResponses } from 'src/requests/requests.messages';
@@ -31,16 +34,12 @@ import {
   PaginationResponseDto,
 } from '../utils/dto/pagination-response.dto';
 import { Request } from './domain/request';
-import { CreateRequestPrivateDto } from './dto/create-request-private.dto';
+import { RequestFormatted } from './domain/request-formatted';
 import { CreateRequestWithReferenceDto } from './dto/create-request-with-reference.dto';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { FindAllRequestsDto } from './dto/find-all-requests.dto';
 import { FinishRequestDto } from './dto/finish-request.dto';
 import { RequestsService } from './requests.service';
-import { RequestFormatted } from './domain/request-formatted';
-import { PermissionsGuard } from 'src/permissions/permissions.guard';
-import { Permissions } from 'src/permissions/permissions.decorator';
-import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Requests')
 @ApiBearerAuth()
@@ -77,7 +76,7 @@ export class RequestsController {
     type: Request,
   })
   createPrivate(
-    @Body() createRequestDto: CreateRequestPrivateDto,
+    @Body() createRequestDto: CreateRequestDto,
     @Me() userPayload: JwtPayloadType,
   ) {
     return this.requestsService.create(createRequestDto, userPayload.id, {

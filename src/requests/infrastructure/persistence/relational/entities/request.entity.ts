@@ -69,6 +69,10 @@ export class RequestEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @Column()
+  appointmentDate: Date;
+
+  @ApiProperty()
+  @Column()
   status: RequestStatusEnum;
 
   @ApiProperty()

@@ -9,6 +9,7 @@ import { DiagnosticsModule } from 'src/diagnostics/diagnostics.module';
 import { InstructionsModule } from 'src/instructions/instructions.module';
 import { RatingsModule } from 'src/ratings/ratings.module';
 import { permissionsModule } from 'src/permissions/permissions.module';
+import { UserPatientsModule } from 'src/user-patients/user-patients.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { permissionsModule } from 'src/permissions/permissions.module';
     InstructionsModule,
     forwardRef(() => RatingsModule),
     permissionsModule,
+    UserPatientsModule,
   ],
   controllers: [RequestsController],
   providers: [RequestsService],
