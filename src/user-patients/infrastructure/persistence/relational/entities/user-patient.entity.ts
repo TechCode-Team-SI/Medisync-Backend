@@ -45,6 +45,10 @@ export class UserPatientEntity extends EntityRelationalHelper {
   birthday: Date;
 
   @ApiProperty()
+  @Column({ nullable: true })
+  address?: string;
+
+  @ApiProperty()
   @OneToMany(() => RequestEntity, (request) => request.savedTo)
   savedRequests?: RequestEntity[];
 

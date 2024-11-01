@@ -18,6 +18,9 @@ export class UserPatient {
   @ApiProperty()
   dni: string;
 
+  @ApiProperty()
+  address?: string | null;
+
   @ApiProperty({
     type: () => Request,
   })

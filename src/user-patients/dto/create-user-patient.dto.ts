@@ -1,6 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { genderEnum } from 'src/employee-profiles/employee-profiles.enum';
 import { UserPatientFamilyRelationship } from '../user-patients.enum';
 
@@ -13,6 +19,11 @@ export class CreateUserPatientDto {
   @IsNotEmpty()
   @IsString()
   fullName: string;
+
+  @ApiPropertyOptional({ example: 'Av. Venezuela', type: String })
+  @IsOptional()
+  @IsString()
+  address?: string | null;
 
   @ApiProperty({ example: 'F', type: String })
   @IsNotEmpty()
