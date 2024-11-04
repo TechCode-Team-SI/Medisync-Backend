@@ -13,6 +13,9 @@ export class RequestTemplate {
   name: string;
 
   @ApiProperty()
+  description?: string;
+
+  @ApiProperty()
   slug: string;
 
   @ApiProperty({ type: () => RequestTemplateField })

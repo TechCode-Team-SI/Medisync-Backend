@@ -28,6 +28,10 @@ export class RoleEntity extends EntityRelationalHelper {
   @Column({ unique: true })
   name: string;
 
+  @ApiProperty()
+  @Column({ nullable: true })
+  description?: string;
+
   @ApiProperty({
     type: () => PermissionEntity,
   })

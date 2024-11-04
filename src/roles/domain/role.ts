@@ -14,6 +14,9 @@ export class Role {
   name: string;
 
   @ApiProperty()
+  description?: string;
+
+  @ApiProperty()
   permissions?: Permission[];
 
   @ApiProperty()

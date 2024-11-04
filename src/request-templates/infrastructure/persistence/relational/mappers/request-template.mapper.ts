@@ -9,6 +9,7 @@ export class RequestTemplateMapper {
     domainEntity.id = raw.id;
     domainEntity.name = raw.name;
     domainEntity.slug = raw.slug;
+    domainEntity.description = raw.description;
     if (raw.fields) {
       domainEntity.fields = raw.fields.map((field) =>
         RequestTemplateFieldMapper.toDomain(field),
@@ -38,6 +39,7 @@ export class RequestTemplateMapper {
     }
     persistenceEntity.name = domainEntity.name;
     persistenceEntity.slug = domainEntity.slug;
+    persistenceEntity.description = domainEntity.description;
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
 

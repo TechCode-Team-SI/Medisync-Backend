@@ -24,6 +24,10 @@ export class RequestTemplateEntity extends EntityRelationalHelper {
   name: string;
 
   @ApiProperty()
+  @Column({ nullable: true })
+  description?: string;
+
+  @ApiProperty()
   @Column({ unique: true })
   slug: string;
 
