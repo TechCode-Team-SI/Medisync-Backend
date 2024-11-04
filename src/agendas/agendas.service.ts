@@ -91,7 +91,9 @@ export class AgendasService {
       weekdays: updateAgendaDto.weekdays?.split('_'),
       daysOffs: updateAgendaDto.daysOffs?.map((day) => {
         const dayOff = new DaysOff();
-        dayOff.id = day.id;
+        if (day.id) {
+          dayOff.id = day.id;
+        }
         dayOff.from = day.from;
         dayOff.to = day.to;
         return dayOff;
