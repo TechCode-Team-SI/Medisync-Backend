@@ -10,6 +10,7 @@ import {
   AvailableFieldQuestion,
   AvailableSpecialty,
   Tart,
+  Histogram,
 } from 'src/statistics-metadata/statistics-metadata.type';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
@@ -198,6 +199,44 @@ export class StatisticsMetadataRelationalRepository
         label: entity.value,
         probabilities:
           Number(((entity.count / totalCount) * 100).toFixed(2)) || 0,
+      })),
+    };
+
+    return result;
+  }
+
+  async genHistogramMetadata(metadata: StatisticsMetadata): Promise<Histogram> {
+    const entityManager = this.getEntityManager();
+    const query = entityManager
+      .getRepository(SelectionEntity)
+      .createQueryBuilder('s')
+      .innerJoin('s.requestValues', 'rv')
+      .innerJoin('rv.request', 'r')
+      .innerJoin('s.fieldQuestion', 'fq')
+      .where('r.status <> :status', { status: 'cancelled' })
+      .where('fq.id = :fqId', { fqId: metadata.fieldQuestion?.id })
+      .groupBy('s.id')
+      .select(['s.id AS selectionId', 's.value AS value']);
+
+    switch (metadata.filteredByType) {
+      case FilteredByType.SPECIALTY:
+        query
+          .addSelect('SUM(if(r.requestedSpecialtyId = :filter, 1, 0)) AS count')
+          .setParameter('filter', metadata.filter);
+        break;
+      case FilteredByType.NONE:
+        query.addSelect('COUNT(s.id) AS count');
+        break;
+    }
+
+    const entities = await query.getRawMany();
+
+    const result: Histogram = {
+      label: metadata.label,
+      description: metadata.fieldQuestion?.label || '',
+      data: entities.map((entity) => ({
+        label: entity.value,
+        frequency: Number(entity.count) || 0,
       })),
     };
 

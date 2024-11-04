@@ -5,4 +5,5 @@ export enum FilteredByType {
 
 export enum StatisticType {
   TART = 'tart',
+  HISTOGRAM = 'histogram',
 }

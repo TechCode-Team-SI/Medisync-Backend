@@ -9,6 +9,15 @@ export type Tart = {
   }[];
 };
 
+export type Histogram = {
+  label: string;
+  description: string;
+  data: {
+    label: string;
+    frequency: number;
+  }[];
+};
+
 export type AvailableSpecialty = {
   id: string;
   name: string;
