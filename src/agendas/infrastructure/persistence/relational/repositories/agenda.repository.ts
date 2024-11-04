@@ -43,7 +43,9 @@ export class AgendaRelationalRepository
     return this.getRepository(AgendaEntity);
   }
 
-  private relations: FindOptionsRelations<AgendaEntity> = {};
+  private relations: FindOptionsRelations<AgendaEntity> = {
+    daysOffs: true,
+  };
 
   async create(data: Agenda): Promise<Agenda> {
     const persistenceModel = AgendaMapper.toPersistence(data);
