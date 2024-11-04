@@ -3,20 +3,21 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { CreateAgendaDto } from './dto/create-agenda.dto';
-import { UpdateAgendaDto } from './dto/update-agenda.dto';
-import { AgendaRepository } from './infrastructure/persistence/agenda.repository';
-import { IPaginationOptions } from '../utils/types/pagination-options';
-import { Agenda } from './domain/agenda';
-import { findOptions } from 'src/utils/types/fine-options.type';
 import {
   FilterAgendaDto,
   SortAgendasDto,
 } from 'src/agendas/dto/find-all-agendas.dto';
-import { SpecialtiesService } from 'src/specialties/specialties.service';
-import { exceptionResponses } from './agendas.messages';
+import { DaysOff } from 'src/days-offs/domain/days-off';
 import { EmployeeProfileRepository } from 'src/employee-profiles/infrastructure/persistence/employee-profile.repository';
+import { SpecialtiesService } from 'src/specialties/specialties.service';
 import { UserRepository } from 'src/users/infrastructure/persistence/user.repository';
+import { findOptions } from 'src/utils/types/fine-options.type';
+import { IPaginationOptions } from '../utils/types/pagination-options';
+import { exceptionResponses } from './agendas.messages';
+import { Agenda } from './domain/agenda';
+import { CreateAgendaDto } from './dto/create-agenda.dto';
+import { UpdateAgendaDto } from './dto/update-agenda.dto';
+import { AgendaRepository } from './infrastructure/persistence/agenda.repository';
 
 @Injectable()
 export class AgendasService {
@@ -28,10 +29,18 @@ export class AgendasService {
   ) {}
 
   create(createAgendaDto: CreateAgendaDto) {
-    return this.agendaRepository.create({
+    const payload = {
       ...createAgendaDto,
       weekdays: createAgendaDto.weekdays.split('_'),
-    });
+      daysOffs: createAgendaDto.daysOffs?.map((day) => {
+        const dayOff = new DaysOff();
+        dayOff.from = day.from;
+        dayOff.to = day.to;
+        return dayOff;
+      }),
+    };
+
+    return this.agendaRepository.create(payload);
   }
 
   findAllWithPagination({
@@ -80,6 +89,13 @@ export class AgendasService {
     return this.agendaRepository.update(id, {
       ...updateAgendaDto,
       weekdays: updateAgendaDto.weekdays?.split('_'),
+      daysOffs: updateAgendaDto.daysOffs?.map((day) => {
+        const dayOff = new DaysOff();
+        dayOff.id = day.id;
+        dayOff.from = day.from;
+        dayOff.to = day.to;
+        return dayOff;
+      }),
     });
   }
 

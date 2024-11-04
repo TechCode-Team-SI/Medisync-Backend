@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { DaysOff } from 'src/days-offs/domain/days-off';
 
 export class Agenda {
   @ApiProperty({
@@ -11,6 +12,9 @@ export class Agenda {
 
   @ApiProperty()
   weekdays: string[];
+
+  @ApiProperty()
+  daysOffs?: DaysOff[] | null;
 
   @ApiProperty()
   createdAt: Date;

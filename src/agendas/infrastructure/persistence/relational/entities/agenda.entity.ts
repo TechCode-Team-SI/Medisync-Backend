@@ -19,7 +19,7 @@ export class AgendaEntity extends EntityRelationalHelper {
   id: string;
 
   @ApiProperty()
-  @Column({ unique: true })
+  @Column()
   name: string;
 
   @ApiProperty()
@@ -27,8 +27,10 @@ export class AgendaEntity extends EntityRelationalHelper {
   weekdays: string;
 
   @ApiProperty()
-  @OneToMany(() => DaysOffEntity, (daysOff) => daysOff.agenda)
-  daysOffs?: DaysOffEntity;
+  @OneToMany(() => DaysOffEntity, (daysOff) => daysOff.agenda, {
+    cascade: ['insert', 'update'],
+  })
+  daysOffs?: DaysOffEntity[];
 
   @ApiProperty()
   @CreateDateColumn()
