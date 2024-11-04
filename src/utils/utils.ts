@@ -36,6 +36,12 @@ export function isValueInEnum<T extends StandardEnum<unknown>>(
   return Object.values(enumLike).includes(value);
 }
 
+export function getEnumKeys<T extends StandardEnum<unknown>>(enumLike: T) {
+  return Object.values(enumLike).filter(
+    (value) => typeof value === 'string',
+  ) as string[];
+}
+
 export function formatOrder(sortOptions: { orderBy: string; order: string }[]) {
   return sortOptions?.reduce(
     (accumulator, sort) => ({

@@ -10,7 +10,7 @@ export class Agenda {
   name: string;
 
   @ApiProperty()
-  weekdays: string;
+  weekdays: string[];
 
   @ApiProperty()
   createdAt: Date;

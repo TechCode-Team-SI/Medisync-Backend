@@ -28,7 +28,10 @@ export class AgendasService {
   ) {}
 
   create(createAgendaDto: CreateAgendaDto) {
-    return this.agendaRepository.create(createAgendaDto);
+    return this.agendaRepository.create({
+      ...createAgendaDto,
+      weekdays: createAgendaDto.weekdays.split('_'),
+    });
   }
 
   findAllWithPagination({
@@ -74,7 +77,10 @@ export class AgendasService {
   }
 
   update(id: Agenda['id'], updateAgendaDto: UpdateAgendaDto) {
-    return this.agendaRepository.update(id, updateAgendaDto);
+    return this.agendaRepository.update(id, {
+      ...updateAgendaDto,
+      weekdays: updateAgendaDto.weekdays?.split('_'),
+    });
   }
 
   remove(id: Agenda['id']) {

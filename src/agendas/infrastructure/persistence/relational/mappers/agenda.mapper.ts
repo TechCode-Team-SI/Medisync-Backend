@@ -6,7 +6,7 @@ export class AgendaMapper {
     const domainEntity = new Agenda();
     domainEntity.id = raw.id;
     domainEntity.name = raw.name;
-    domainEntity.weekdays = raw.weekdays;
+    domainEntity.weekdays = raw.weekdays.split('_');
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
 
@@ -19,7 +19,7 @@ export class AgendaMapper {
       persistenceEntity.id = domainEntity.id;
     }
     persistenceEntity.name = domainEntity.name;
-    persistenceEntity.weekdays = domainEntity.weekdays;
+    persistenceEntity.weekdays = domainEntity.weekdays.join('_');
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
 
