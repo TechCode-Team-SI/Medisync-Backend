@@ -127,7 +127,12 @@ export class RequestRelationalRepository
       take: paginationOptions.limit,
       where,
       order,
-      relations: { rating: true },
+      relations: {
+        rating: true,
+        madeFor: true,
+        requestedSpecialty: true,
+        requestedMedic: true,
+      },
     });
     const items = entities.map((entity) => RequestMapper.toDomain(entity));
 
