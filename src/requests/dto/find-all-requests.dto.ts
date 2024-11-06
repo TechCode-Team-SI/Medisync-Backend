@@ -49,8 +49,8 @@ export class FilterRequestDto {
 
   @ApiFilterProperty({ type: String, enum: RequestStatusEnum })
   @IsOptional()
-  @IsEnum(RequestStatusEnum)
-  status?: RequestStatusEnum[] | null;
+  @IsEnum(RequestStatusEnum, { each: true })
+  status?: RequestStatusEnum[] | RequestStatusEnum | null;
 
   @ApiFilterProperty({ type: String })
   @IsOptional()

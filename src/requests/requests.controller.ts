@@ -128,7 +128,12 @@ export class RequestsController {
 
     return this.requestsService.findAllMinimalWithPagination({
       paginationOptions,
-      filterOptions: { requestedMedicIds: [userPayload.id], status },
+      filterOptions: {
+        requestedMedicIds: [userPayload.id],
+        status,
+        from: query.filters?.from,
+        to: query.filters?.to,
+      },
     });
   }
 

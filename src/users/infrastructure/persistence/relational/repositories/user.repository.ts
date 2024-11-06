@@ -26,6 +26,7 @@ import { UserRepository } from '../../user.repository';
 import { UserEntity } from '../entities/user.entity';
 import { UserMapper } from '../mappers/user.mapper';
 import { formatOrder } from 'src/utils/utils';
+import { isArray } from 'class-validator';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UsersRelationalRepository
@@ -90,13 +91,19 @@ export class UsersRelationalRepository
 
     let where: FindOptionsWhere<UserEntity> = {};
     if (filterOptions?.roleIds && filterOptions.roleIds.length > 0) {
-      where = { ...where, roles: { id: In(filterOptions.roleIds) } };
+      const roleIds = isArray(filterOptions.roleIds)
+        ? filterOptions.roleIds
+        : [filterOptions.roleIds];
+      where = { ...where, roles: { id: In(roleIds) } };
     }
     if (filterOptions?.specialtyIds && filterOptions.specialtyIds.length > 0) {
+      const specialtyIds = isArray(filterOptions.specialtyIds)
+        ? filterOptions.specialtyIds
+        : [filterOptions.specialtyIds];
       where = {
         ...where,
         employeeProfile: {
-          specialties: { id: In(filterOptions.specialtyIds) },
+          specialties: { id: In(specialtyIds) },
         },
       };
     }
@@ -205,7 +212,10 @@ export class UsersRelationalRepository
 
     let where: FindOptionsWhere<UserEntity> = {};
     if (filterOptions?.roleIds && filterOptions.roleIds.length > 0) {
-      where = { ...where, roles: { id: In(filterOptions.roleIds) } };
+      const roleIds = isArray(filterOptions.roleIds)
+        ? filterOptions.roleIds
+        : [filterOptions.roleIds];
+      where = { ...where, roles: { id: In(roleIds) } };
     }
     if (
       filterOptions?.permissionSlugs &&
@@ -215,19 +225,25 @@ export class UsersRelationalRepository
       if (where.roles) {
         rolesWhere = where.roles;
       }
+      const permissionSlugs = isArray(filterOptions.permissionSlugs)
+        ? filterOptions.permissionSlugs
+        : [filterOptions.permissionSlugs];
       where = {
         ...where,
         roles: {
           ...rolesWhere,
-          permissions: { slug: In(filterOptions.permissionSlugs) },
+          permissions: { slug: In(permissionSlugs) },
         },
       };
     }
     if (filterOptions?.specialtyIds && filterOptions.specialtyIds.length > 0) {
+      const specialtyIds = isArray(filterOptions.specialtyIds)
+        ? filterOptions.specialtyIds
+        : [filterOptions.specialtyIds];
       where = {
         ...where,
         employeeProfile: {
-          specialties: { id: In(filterOptions.specialtyIds) },
+          specialties: { id: In(specialtyIds) },
         },
       };
     }

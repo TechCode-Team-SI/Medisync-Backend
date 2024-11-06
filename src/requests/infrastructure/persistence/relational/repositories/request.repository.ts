@@ -123,7 +123,10 @@ export class RequestRelationalRepository
       };
     }
     if (filterOptions?.status) {
-      where = { ...where, status: In(filterOptions.status) };
+      const status = Array.isArray(filterOptions.status)
+        ? filterOptions.status
+        : [filterOptions.status];
+      where = { ...where, status: In(status) };
     }
     if (filterOptions?.search) {
       where = {
