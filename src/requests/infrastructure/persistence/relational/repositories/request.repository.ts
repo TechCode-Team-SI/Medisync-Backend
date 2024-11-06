@@ -13,11 +13,14 @@ import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { formatOrder } from 'src/utils/utils';
 import {
+  Between,
   DataSource,
   FindOneOptions,
   FindOptionsRelations,
   FindOptionsWhere,
   In,
+  LessThanOrEqual,
+  MoreThanOrEqual,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -119,7 +122,23 @@ export class RequestRelationalRepository
       };
     }
     if (filterOptions?.status) {
-      where = { ...where, status: filterOptions.status };
+      where = { ...where, status: In(filterOptions.status) };
+    }
+    if (filterOptions?.from && filterOptions?.to) {
+      where = {
+        ...where,
+        appointmentDate: Between(filterOptions.from, filterOptions.to),
+      };
+    } else if (filterOptions?.from) {
+      where = {
+        ...where,
+        appointmentDate: MoreThanOrEqual(filterOptions.from),
+      };
+    } else if (filterOptions?.to) {
+      where = {
+        ...where,
+        appointmentDate: LessThanOrEqual(filterOptions.to),
+      };
     }
 
     const [entities, count] = await this.requestRepository.findAndCount({

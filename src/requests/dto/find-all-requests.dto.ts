@@ -2,6 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsDate,
   IsEnum,
   IsNumber,
   IsObject,
@@ -49,7 +50,19 @@ export class FilterRequestDto {
   @ApiFilterProperty({ type: String, enum: RequestStatusEnum })
   @IsOptional()
   @IsEnum(RequestStatusEnum)
-  status?: RequestStatusEnum | null;
+  status?: RequestStatusEnum[] | null;
+
+  @ApiFilterProperty({ type: String })
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  from?: Date;
+
+  @ApiFilterProperty({ type: String })
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  to?: Date;
 }
 
 export class SortRequestDto {
