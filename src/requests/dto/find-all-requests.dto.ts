@@ -63,6 +63,12 @@ export class FilterRequestDto {
   @Type(() => Date)
   @IsDate()
   to?: Date;
+
+  //Search by name patient fullname
+  @ApiFilterProperty({ description: 'Search by Patient Fullname' })
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
 
 export class SortRequestDto {

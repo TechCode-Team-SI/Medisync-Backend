@@ -20,6 +20,7 @@ import {
   FindOptionsWhere,
   In,
   LessThanOrEqual,
+  Like,
   MoreThanOrEqual,
   Repository,
 } from 'typeorm';
@@ -123,6 +124,12 @@ export class RequestRelationalRepository
     }
     if (filterOptions?.status) {
       where = { ...where, status: In(filterOptions.status) };
+    }
+    if (filterOptions?.search) {
+      where = {
+        ...where,
+        patientFullName: Like(`%${filterOptions.search}%`),
+      };
     }
     if (filterOptions?.from && filterOptions?.to) {
       where = {
