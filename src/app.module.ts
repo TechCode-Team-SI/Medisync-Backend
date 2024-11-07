@@ -44,6 +44,7 @@ import { AgendasModule } from './agendas/agendas.module';
 import { DaysOffsModule } from './days-offs/days-offs.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { NotificationUsersModule } from './notification-users/notification-users.module';
+import { EventsGateway } from './websockets/events.gateway';
 
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
@@ -105,6 +106,7 @@ import { StatisticsMetadataModule } from './statistics-metadata/statistics-metad
     HomeModule,
   ],
   providers: [
+    EventsGateway,
     {
       provide: APP_GUARD,
       scope: Scope.REQUEST,
