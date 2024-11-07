@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsDate,
   IsEnum,
   IsNotEmpty,
@@ -14,6 +15,11 @@ export class EmployeeProfileDto {
   @ApiProperty({ example: '27317962', type: String })
   @IsNotEmpty()
   dni: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
+  isMedic?: boolean;
 
   @ApiProperty({ example: '12345', type: String })
   @IsOptional()

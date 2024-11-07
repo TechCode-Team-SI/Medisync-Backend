@@ -16,6 +16,7 @@ export class EmployeeProfileMapper {
     domainEntity.birthday = raw.birthday;
     domainEntity.dni = raw.dni;
     domainEntity.status = raw.status;
+    domainEntity.isMedic = raw.isMedic;
     if (raw.specialties) {
       domainEntity.specialties = raw.specialties.map((specialty) =>
         SpecialtyMapper.toDomain(specialty),
@@ -40,6 +41,7 @@ export class EmployeeProfileMapper {
     persistenceEntity.birthday = domainEntity.birthday;
     persistenceEntity.dni = domainEntity.dni;
     persistenceEntity.status = domainEntity.status;
+    persistenceEntity.isMedic = domainEntity.isMedic;
     if (domainEntity.specialties) {
       persistenceEntity.specialties = domainEntity.specialties.map(
         (specialty) => SpecialtyMapper.toPersistence(specialty),
@@ -58,6 +60,11 @@ export class EmployeeProfileMapper {
 
   static fromDtotoDomain(dto: EmployeeProfileDto): EmployeeProfile {
     const domainEntity = new EmployeeProfile();
+    domainEntity.MPPS = dto.MPPS;
+    domainEntity.CML = dto.CML;
+    if (dto.isMedic) {
+      domainEntity.isMedic = dto.isMedic;
+    }
     if (dto.address) {
       domainEntity.address = dto.address;
     }

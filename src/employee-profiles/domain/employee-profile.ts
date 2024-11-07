@@ -37,6 +37,9 @@ export class EmployeeProfile {
   status: boolean;
 
   @ApiProperty()
+  isMedic: boolean;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()

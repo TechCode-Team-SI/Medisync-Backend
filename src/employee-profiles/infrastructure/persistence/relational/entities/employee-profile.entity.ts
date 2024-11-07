@@ -72,4 +72,8 @@ export class EmployeeProfileEntity extends EntityRelationalHelper {
   @ApiProperty()
   @Column({ type: 'boolean', default: true })
   status: boolean;
+
+  @ApiProperty()
+  @Column({ default: true })
+  isMedic: boolean;
 }
