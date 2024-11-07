@@ -13,6 +13,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
+import { TicketTypeEntity } from 'src/ticket-types/infrastructure/persistence/relational/entities/ticket-type.entity';
 
 @Entity({
   name: 'ticket',
@@ -57,6 +58,10 @@ export class TicketEntity extends EntityRelationalHelper {
   @ApiProperty()
   @Column({ type: 'timestamp', nullable: true })
   closedAt?: Date | null;
+
+  @ApiProperty()
+  @ManyToOne(() => TicketTypeEntity)
+  tickettag?: TicketTypeEntity;
 
   @ApiProperty()
   @CreateDateColumn()
