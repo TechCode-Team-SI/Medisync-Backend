@@ -27,6 +27,18 @@ export class AgendaEntity extends EntityRelationalHelper {
   weekdays: string;
 
   @ApiProperty()
+  @Column({ nullable: false })
+  from: string;
+
+  @ApiProperty()
+  @Column({ nullable: false })
+  to: string;
+
+  @ApiProperty()
+  @Column({ nullable: false, default: 30 })
+  slotTime: number;
+
+  @ApiProperty()
   @OneToMany(() => DaysOffEntity, (daysOff) => daysOff.agenda, {
     cascade: ['insert', 'update'],
   })

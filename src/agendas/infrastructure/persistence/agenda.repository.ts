@@ -12,7 +12,8 @@ import {
 
 export abstract class AgendaRepository extends BaseRepository {
   abstract create(
-    data: Omit<Agenda, 'id' | 'createdAt' | 'updatedAt'>,
+    data: Omit<Agenda, 'id' | 'slotTime' | 'createdAt' | 'updatedAt'> &
+      Partial<Pick<Agenda, 'slotTime'>>,
   ): Promise<Agenda>;
 
   abstract findAllWithPagination({

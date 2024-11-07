@@ -9,7 +9,6 @@ import {
 } from 'class-validator';
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
 import { genderEnum } from '../employee-profiles.enum';
-import { ScheduleDto } from 'src/schedules/dto/schedule.dto';
 
 export class EmployeeProfileDto {
   @ApiProperty({ example: '27317962', type: String })
@@ -45,9 +44,4 @@ export class EmployeeProfileDto {
   @IsOptional()
   @Type(() => SpecialtyDto)
   specialties?: SpecialtyDto[] | null;
-
-  @ApiPropertyOptional({ type: ScheduleDto })
-  @IsOptional()
-  @Type(() => ScheduleDto)
-  schedule?: ScheduleDto;
 }

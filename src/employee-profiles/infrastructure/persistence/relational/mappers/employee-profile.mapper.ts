@@ -4,7 +4,6 @@ import { EmployeeProfileEntity } from '../entities/employee-profile.entity';
 import { EmployeeProfile } from 'src/employee-profiles/domain/employee-profile';
 import { EmployeeProfileDto } from 'src/employee-profiles/dto/employee-profile.dto';
 import { Specialty } from 'src/specialties/domain/specialty';
-import { ScheduleMapper } from 'src/schedules/infrastructure/persistence/relational/mappers/schedule.mapper';
 
 export class EmployeeProfileMapper {
   static toDomain(raw: EmployeeProfileEntity): EmployeeProfile {
@@ -24,9 +23,6 @@ export class EmployeeProfileMapper {
     }
     if (raw.agenda) {
       domainEntity.agenda = AgendaMapper.toDomain(raw.agenda);
-    }
-    if (raw.schedule) {
-      domainEntity.schedule = ScheduleMapper.toDomain(raw.schedule);
     }
 
     return domainEntity;
@@ -55,13 +51,6 @@ export class EmployeeProfileMapper {
       );
     } else if (domainEntity.agenda === null) {
       persistenceEntity.agenda = null;
-    }
-    if (domainEntity.schedule) {
-      persistenceEntity.schedule = ScheduleMapper.toPersistence(
-        domainEntity.schedule,
-      );
-    } else if (domainEntity.schedule === null) {
-      persistenceEntity.schedule = null;
     }
 
     return persistenceEntity;

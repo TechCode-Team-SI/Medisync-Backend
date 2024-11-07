@@ -48,7 +48,6 @@ export class UsersRelationalRepository
   private relations: FindOptionsRelations<UserEntity> = {
     roles: true,
     employeeProfile: {
-      schedule: true,
       specialties: true,
     },
   };
@@ -171,7 +170,6 @@ export class UsersRelationalRepository
             id: specialtyId,
             isDisabled: false,
           },
-          schedule: Not(IsNull()),
           agenda: Not(IsNull()),
           status: true,
         },
@@ -297,7 +295,6 @@ export class UsersRelationalRepository
     if (options) relations = {};
     if (options?.withProfile) {
       relations.employeeProfile = {
-        schedule: true,
         agenda: true,
       };
     }
@@ -323,7 +320,6 @@ export class UsersRelationalRepository
       where: { id },
       relations: {
         employeeProfile: {
-          schedule: true,
           agenda: true,
         },
       },

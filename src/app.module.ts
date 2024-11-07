@@ -52,8 +52,6 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   },
 });
 
-import { SchedulesModule } from './schedules/schedules.module';
-
 import { UserPatientsModule } from './user-patients/user-patients.module';
 
 import { StatisticsMetadataModule } from './statistics-metadata/statistics-metadata.module';
@@ -62,7 +60,6 @@ import { StatisticsMetadataModule } from './statistics-metadata/statistics-metad
   imports: [
     StatisticsMetadataModule,
     UserPatientsModule,
-    SchedulesModule,
     NotificationUsersModule,
     NotificationsModule,
     DaysOffsModule,

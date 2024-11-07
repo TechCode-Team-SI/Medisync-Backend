@@ -11,6 +11,15 @@ export class Agenda {
   name: string;
 
   @ApiProperty()
+  from: string;
+
+  @ApiProperty()
+  to: string;
+
+  @ApiProperty()
+  slotTime: number;
+
+  @ApiProperty()
   weekdays: string[];
 
   @ApiProperty()

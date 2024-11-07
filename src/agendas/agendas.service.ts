@@ -18,6 +18,7 @@ import { Agenda } from './domain/agenda';
 import { CreateAgendaDto } from './dto/create-agenda.dto';
 import { UpdateAgendaDto } from './dto/update-agenda.dto';
 import { AgendaRepository } from './infrastructure/persistence/agenda.repository';
+import { AgendaMapper } from './infrastructure/persistence/relational/mappers/agenda.mapper';
 
 @Injectable()
 export class AgendasService {
@@ -83,6 +84,25 @@ export class AgendasService {
 
   findOne(id: Agenda['id'], options?: findOptions) {
     return this.agendaRepository.findById(id, options);
+  }
+
+  async findSlottedTimes(id: string) {
+    const user = await this.userRepository.findById(id, { withProfile: true });
+    if (!user) {
+      throw new NotFoundException(exceptionResponses.UserNotExist);
+    }
+    if (!user.employeeProfile?.agenda) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+    const agenda = await this.agendaRepository.findById(
+      user.employeeProfile.agenda.id,
+    );
+
+    if (!agenda) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+
+    return AgendaMapper.toDomainSlotted(agenda);
   }
 
   update(id: Agenda['id'], updateAgendaDto: UpdateAgendaDto) {

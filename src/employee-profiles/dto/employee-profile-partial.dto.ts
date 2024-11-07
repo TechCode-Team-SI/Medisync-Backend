@@ -9,7 +9,6 @@ import {
 } from 'class-validator';
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
 import { genderEnum } from '../employee-profiles.enum';
-import { ScheduleDto } from 'src/schedules/dto/schedule.dto';
 import { EmployeeProfileDto } from './employee-profile.dto';
 
 export class EmployeeProfilePartialDto extends PartialType(EmployeeProfileDto) {
@@ -50,9 +49,4 @@ export class EmployeeProfilePartialDto extends PartialType(EmployeeProfileDto) {
   @IsOptional()
   @Type(() => SpecialtyDto)
   specialties?: SpecialtyDto[] | null;
-
-  @ApiPropertyOptional({ type: ScheduleDto })
-  @IsOptional()
-  @Type(() => ScheduleDto)
-  schedule?: ScheduleDto;
 }

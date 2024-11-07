@@ -175,4 +175,16 @@ export class AgendasController {
   ) {
     return this.agendasService.updateEmployeeAgenda(id, employeeId);
   }
+
+  @Get('slot/user/:userId')
+  @ApiParam({
+    name: 'userId',
+    type: String,
+    required: true,
+  })
+  async findSlottedTimes(@Param('userId') userId: string) {
+    const entity = await this.agendasService.findSlottedTimes(userId);
+
+    return entity;
+  }
 }
