@@ -41,6 +41,6 @@ export class RoomEntity extends EntityRelationalHelper {
   employeeProfile?: EmployeeProfileEntity | null;
 
   @ApiProperty()
-  @Column()
+  @Column({ default: false })
   isDisabled: boolean;
 }
