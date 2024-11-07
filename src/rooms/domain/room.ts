@@ -19,6 +19,9 @@ export class Room {
   })
   specialty?: Specialty | null;
 
+  @ApiProperty()
+  isDisabled: boolean;
+
   @ApiProperty({
     type: () => EmployeeProfile,
   })

@@ -23,4 +23,8 @@ export class UpdateRoomDto extends PartialType(CreateRoomDto) {
   @IsOptional()
   @Type(() => EmployeeProfileIdDto)
   employeeProfile?: EmployeeProfileIdDto | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  isDisabled: boolean;
 }

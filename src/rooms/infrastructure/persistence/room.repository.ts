@@ -9,7 +9,7 @@ import { FilterRoomsDto } from 'src/rooms/dto/find-all-rooms.dto';
 
 export abstract class RoomRepository extends BaseRepository {
   abstract create(
-    data: Omit<Room, 'id' | 'specialty' | 'employeeProfile'>,
+    data: Omit<Room, 'id' | 'specialty' | 'employeeProfile' | 'isDisabled'>,
   ): Promise<Room>;
 
   abstract findAllWithPagination({

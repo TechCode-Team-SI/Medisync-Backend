@@ -23,6 +23,7 @@ export class RoomMapper {
     } else {
       domainEntity.employeeProfile = null;
     }
+    domainEntity.isDisabled = raw.isDisabled;
     return domainEntity;
   }
 
@@ -47,7 +48,7 @@ export class RoomMapper {
     persistenceEntity.address = domainEntity.address;
     persistenceEntity.specialty = specialty;
     persistenceEntity.employeeProfile = employeeProfile;
-
+    persistenceEntity.isDisabled = domainEntity.isDisabled;
     return persistenceEntity;
   }
 }
