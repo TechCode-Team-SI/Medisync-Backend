@@ -12,11 +12,15 @@ import { AppModule } from './app.module';
 import validationOptions from './utils/validation-options';
 import { AllConfigType } from './config/config.type';
 import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
+import { WsAdapter } from '@nestjs/platform-ws'; // Import WsAdapter
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const configService = app.get(ConfigService<AllConfigType>);
+
+  //  adapter WebSocket
+  app.useWebSocketAdapter(new WsAdapter(app));
 
   app.enableShutdownHooks();
   app.setGlobalPrefix(
@@ -48,4 +52,5 @@ async function bootstrap() {
 
   await app.listen(configService.getOrThrow('app.port', { infer: true }));
 }
+
 void bootstrap();
