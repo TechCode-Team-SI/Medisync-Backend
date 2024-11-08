@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Ticket } from 'src/tickets/domain/ticket';
 
 export class TicketType {
   @ApiProperty()
@@ -13,9 +12,6 @@ export class TicketType {
 
   @ApiProperty()
   description: string;
-
-  @ApiProperty()
-  tickets: Ticket[];
 
   @ApiProperty()
   createdAt: Date;
