@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/users/domain/user';
 import { TicketStatusEnum, TicketTypeEnum } from '../tickets.enum';
 import { TicketComment } from 'src/ticket-comments/domain/ticket-comment';
+import { TicketType } from 'src/ticket-types/domain/ticket-type';
 
 export class Ticket {
   @ApiProperty({
@@ -29,6 +30,9 @@ export class Ticket {
 
   @ApiProperty()
   closedAt?: Date | null;
+
+  @ApiProperty()
+  ticketTag?: TicketType;
 
   @ApiProperty()
   createdAt: Date;

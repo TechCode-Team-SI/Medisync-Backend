@@ -57,8 +57,11 @@ import { UserPatientsModule } from './user-patients/user-patients.module';
 
 import { StatisticsMetadataModule } from './statistics-metadata/statistics-metadata.module';
 
+import { TicketTypesModule } from './ticket-types/ticket-types.module';
+
 @Module({
   imports: [
+    TicketTypesModule,
     StatisticsMetadataModule,
     UserPatientsModule,
     NotificationUsersModule,
