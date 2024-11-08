@@ -9,7 +9,7 @@ export abstract class TicketTypeRepository {
   abstract create(
     data: Omit<
       TicketType,
-      'id' | 'name' | 'description' | 'tickets' | 'createdAt' | 'updatedAt'
+      'id' | 'name' | 'description' | 'createdAt' | 'updatedAt'
     >,
   ): Promise<TicketType>;
 
