@@ -61,7 +61,7 @@ export class TicketEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @ManyToOne(() => TicketTypeEntity)
-  tickettag?: TicketTypeEntity;
+  ticketTag?: TicketTypeEntity;
 
   @ApiProperty()
   @CreateDateColumn()

@@ -13,12 +13,13 @@ import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { TicketRepository } from './infrastructure/persistence/ticket.repository';
 import { TicketStatusEnum } from './tickets.enum';
 import { exceptionResponses } from './tickets.messages';
-
+import { TicketTypeRepository } from 'src/ticket-types/infrastructure/persistence/ticket-type.repository';
 @Injectable()
 export class TicketsService {
   constructor(
     private readonly ticketRepository: TicketRepository,
     private readonly usersService: UsersService,
+    private readonly ticketTypeRepository: TicketTypeRepository,
   ) {}
 
   async create(createTicketDto: CreateTicketDto, createdBy: string) {
@@ -28,9 +29,18 @@ export class TicketsService {
       throw new NotFoundException(exceptionResponses.TicketOwnerNotFound);
     }
 
+    const ticketTag = await this.ticketTypeRepository.findById(
+      createTicketDto.ticketTag.id,
+    );
+
+    if (!ticketTag) {
+      throw new NotFoundException(exceptionResponses.TicketTypeNotFound);
+    }
+
     const clonedPayload = {
       ...createTicketDto,
       createdBy: user,
+      ticketTag: ticketTag,
     };
 
     return this.ticketRepository.create(clonedPayload);

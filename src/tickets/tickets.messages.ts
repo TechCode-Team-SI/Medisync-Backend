@@ -17,4 +17,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'ticket_owner_not_found',
     message: 'Owner of the ticket not found',
   },
+  TicketTypeNotFound: {
+    status: HttpStatus.NOT_FOUND,
+    error: 'ticket_type_not_found',
+    message: 'Type of the ticket not found',
+  },
 } as const;

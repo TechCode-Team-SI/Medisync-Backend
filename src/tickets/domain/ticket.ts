@@ -32,7 +32,7 @@ export class Ticket {
   closedAt?: Date | null;
 
   @ApiProperty()
-  tickettag?: TicketType;
+  ticketTag?: TicketType;
 
   @ApiProperty()
   createdAt: Date;

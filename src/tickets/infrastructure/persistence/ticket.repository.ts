@@ -12,13 +12,7 @@ import { Ticket } from '../../domain/ticket';
 
 type CreateTicketType = Omit<
   Ticket,
-  | 'id'
-  | 'createdAt'
-  | 'updatedAt'
-  | 'status'
-  | 'type'
-  | 'comments'
-  | 'tickettag'
+  'id' | 'createdAt' | 'updatedAt' | 'status' | 'type' | 'comments'
 > &
   Partial<Pick<Ticket, 'status' | 'type'>>;
 
