@@ -5,13 +5,18 @@ import { TicketTypeRepository } from './infrastructure/persistence/ticket-type.r
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { TicketType } from './domain/ticket-type';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { slugify } from 'src/utils/utils';
 
 @Injectable()
 export class TicketTypesService {
   constructor(private readonly ticketTypeRepository: TicketTypeRepository) {}
 
   create(createTicketTypeDto: CreateTicketTypeDto) {
-    return this.ticketTypeRepository.create(createTicketTypeDto);
+    const slug = slugify(createTicketTypeDto.name);
+    return this.ticketTypeRepository.create({
+      ...createTicketTypeDto,
+      slug,
+    });
   }
 
   findAllWithPagination({
@@ -35,7 +40,13 @@ export class TicketTypesService {
   }
 
   update(id: TicketType['id'], updateTicketTypeDto: UpdateTicketTypeDto) {
-    return this.ticketTypeRepository.update(id, updateTicketTypeDto);
+    const slug = updateTicketTypeDto.name
+      ? { slug: slugify(updateTicketTypeDto.name) }
+      : {};
+    return this.ticketTypeRepository.update(id, {
+      ...updateTicketTypeDto,
+      ...slug,
+    });
   }
 
   remove(id: TicketType['id']) {

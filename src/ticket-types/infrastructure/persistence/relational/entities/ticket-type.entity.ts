@@ -19,7 +19,7 @@ export class TicketTypeEntity extends EntityRelationalHelper {
   id: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ unique: true })
   slug: string;
 
   @ApiProperty()

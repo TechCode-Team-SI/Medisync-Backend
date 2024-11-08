@@ -8,9 +8,5 @@ export class CreateTicketTypeDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  slug: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
   description: string;
 }
