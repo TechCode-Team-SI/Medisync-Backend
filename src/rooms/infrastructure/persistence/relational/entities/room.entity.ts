@@ -39,4 +39,8 @@ export class RoomEntity extends EntityRelationalHelper {
   @OneToOne(() => EmployeeProfileEntity)
   @JoinColumn()
   employeeProfile?: EmployeeProfileEntity | null;
+
+  @ApiProperty()
+  @Column({ default: false })
+  isDisabled: boolean;
 }
