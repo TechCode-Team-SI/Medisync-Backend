@@ -116,7 +116,7 @@ export class UsersController {
     required: true,
   })
   findOne(@Param('id') id: User['id']): Promise<NullableType<User>> {
-    return this.usersService.findById(id, { withProfile: true });
+    return this.usersService.findById(id);
   }
 
   @ApiOkResponse({

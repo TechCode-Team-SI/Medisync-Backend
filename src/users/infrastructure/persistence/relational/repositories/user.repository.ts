@@ -49,6 +49,8 @@ export class UsersRelationalRepository
     roles: true,
     employeeProfile: {
       specialties: true,
+      agenda: true,
+      room: true,
     },
   };
 
