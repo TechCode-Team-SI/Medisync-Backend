@@ -16,6 +16,7 @@ import {
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { DaysOffEntity } from 'src/days-offs/infrastructure/persistence/relational/entities/days-off.entity';
+import { RoomEntity } from 'src/rooms/infrastructure/persistence/relational/entities/room.entity';
 
 @Entity({
   name: 'employee_profile',
@@ -52,6 +53,12 @@ export class EmployeeProfileEntity extends EntityRelationalHelper {
   @ManyToMany(() => SpecialtyEntity)
   @JoinTable({ name: 'employee_specialty' })
   specialties: SpecialtyEntity[];
+
+  @ApiProperty({
+    type: () => RoomEntity,
+  })
+  @ManyToOne(() => RoomEntity)
+  room?: RoomEntity | null;
 
   @ApiProperty()
   @ManyToOne(() => AgendaEntity)

@@ -4,6 +4,7 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
@@ -36,8 +37,10 @@ export class RoomEntity extends EntityRelationalHelper {
   @ApiProperty({
     type: () => EmployeeProfileEntity,
   })
-  @OneToOne(() => EmployeeProfileEntity)
-  @JoinColumn()
+  @OneToMany(
+    () => EmployeeProfileEntity,
+    (employeeProfile) => employeeProfile.room,
+  )
   employeeProfile?: EmployeeProfileEntity | null;
 
   @ApiProperty()

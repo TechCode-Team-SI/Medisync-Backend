@@ -4,6 +4,7 @@ import { EmployeeProfileEntity } from '../entities/employee-profile.entity';
 import { EmployeeProfile } from 'src/employee-profiles/domain/employee-profile';
 import { EmployeeProfileDto } from 'src/employee-profiles/dto/employee-profile.dto';
 import { Specialty } from 'src/specialties/domain/specialty';
+import { RoomMapper } from 'src/rooms/infrastructure/persistence/relational/mappers/room.mapper';
 
 export class EmployeeProfileMapper {
   static toDomain(raw: EmployeeProfileEntity): EmployeeProfile {
@@ -21,6 +22,9 @@ export class EmployeeProfileMapper {
       domainEntity.specialties = raw.specialties.map((specialty) =>
         SpecialtyMapper.toDomain(specialty),
       );
+    }
+    if (raw.room) {
+      domainEntity.room = RoomMapper.toDomain(raw.room);
     }
     if (raw.agenda) {
       domainEntity.agenda = AgendaMapper.toDomain(raw.agenda);
@@ -46,6 +50,9 @@ export class EmployeeProfileMapper {
       persistenceEntity.specialties = domainEntity.specialties.map(
         (specialty) => SpecialtyMapper.toPersistence(specialty),
       );
+    }
+    if (domainEntity.room) {
+      persistenceEntity.room = RoomMapper.toPersistence(domainEntity.room);
     }
     if (domainEntity.agenda) {
       persistenceEntity.agenda = AgendaMapper.toPersistence(

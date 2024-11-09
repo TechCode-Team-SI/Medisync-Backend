@@ -82,4 +82,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'schedule_not_exist',
     message: 'El horario no existe',
   },
+  RoomNotExist: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'room_not_exist',
+    message: 'La sala no existe',
+  },
 } as const;

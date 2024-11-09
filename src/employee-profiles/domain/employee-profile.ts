@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Agenda } from 'src/agendas/domain/agenda';
 import { Specialty } from 'src/specialties/domain/specialty';
 import { genderEnum } from '../employee-profiles.enum';
+import { Room } from 'src/rooms/domain/room';
 
 export class EmployeeProfile {
   @ApiProperty()
@@ -29,6 +30,9 @@ export class EmployeeProfile {
 
   @ApiProperty()
   specialties?: Specialty[] | null;
+
+  @ApiProperty()
+  room?: Room | null;
 
   @ApiProperty()
   agenda?: Agenda | null;

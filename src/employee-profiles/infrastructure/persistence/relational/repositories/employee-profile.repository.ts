@@ -30,6 +30,7 @@ export class EmployeeProfileRelationalRepository
 
   private relations: FindOptionsRelations<EmployeeProfileEntity> = {
     agenda: true,
+    room: true,
   };
 
   async findById(

@@ -52,6 +52,7 @@ import { AddOrRemoveSpecialtiesDto } from './dto/add-or-remove-specialties.dto';
 import { AddOrRemoveRolesDto } from './dto/add-or-remove-roles.dto';
 import { UpdateUserAgendaDto } from './dto/update-user-agenda.dto';
 import { QueryUserPaginationOnlyDto } from './dto/query-user-pagination-only.dto';
+import { UpdateUserRoomDto } from './dto/update-user-room.dto';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -294,6 +295,19 @@ export class UsersController {
     await this.usersService.updateUserAgenda(
       updateUserAgenda.id,
       updateUserAgenda.agendaId,
+    );
+    return { success: true };
+  }
+
+  //TODO: update user agenda pending permissions
+  @Put('/room')
+  @HttpCode(HttpStatus.OK)
+  async updateRoom(
+    @Body() updateUserRoom: UpdateUserRoomDto,
+  ): Promise<SuccessResponseDto> {
+    await this.usersService.updateUserRoom(
+      updateUserRoom.id,
+      updateUserRoom.roomId,
     );
     return { success: true };
   }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SpecialtiesModule } from 'src/specialties/specialties.module';
 import { EmployeeProfilesModule } from 'src/employee-profiles/employee-profiles.module';
 import { RoomsService } from './rooms.service';
@@ -13,7 +13,7 @@ import { UsersModule } from 'src/users/users.module';
     SpecialtiesModule,
     EmployeeProfilesModule,
     permissionsModule,
-    UsersModule,
+    forwardRef(() => UsersModule),
   ],
   controllers: [RoomsController],
   providers: [RoomsService],

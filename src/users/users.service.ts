@@ -25,6 +25,7 @@ import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { exceptionResponses } from './users.messages';
 import { AgendaRepository } from 'src/agendas/infrastructure/persistence/agenda.repository';
+import { RoomRepository } from 'src/rooms/infrastructure/persistence/room.repository';
 
 @Injectable()
 export class UsersService {
@@ -36,6 +37,7 @@ export class UsersService {
     private readonly userPatientsRepository: UserPatientRepository,
     private readonly specialtiesRepository: SpecialtyRepository,
     private readonly agendasRepository: AgendaRepository,
+    private readonly roomsRepository: RoomRepository,
   ) {}
 
   async create(createProfileDto: CreateUserDto): Promise<User> {
@@ -399,5 +401,25 @@ export class UsersService {
         agenda: null,
       });
     }
+  }
+
+  async updateUserRoom(userId: string, roomId: string) {
+    const user = await this.usersRepository.findById(userId, {
+      withSpecialty: true,
+    });
+    if (!user) {
+      throw new UnprocessableEntityException(exceptionResponses.UserNotFound);
+    }
+    if (!user.employeeProfile) {
+      throw new UnprocessableEntityException(exceptionResponses.NotEmployee);
+    }
+    const room = await this.roomsRepository.findById(roomId);
+    if (!room) {
+      throw new UnprocessableEntityException(exceptionResponses.RoomNotExist);
+    }
+
+    return this.employeeProfilesRepository.update(user.employeeProfile.id, {
+      room,
+    });
   }
 }
