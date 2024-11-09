@@ -26,7 +26,7 @@ export class ArticleEntity extends EntityRelationalHelper {
   title: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ type: 'text' })
   description: string;
 
   @ApiProperty({
