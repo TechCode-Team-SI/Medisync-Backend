@@ -15,14 +15,16 @@ export class EventsGateway
 
   afterInit(server: Server) {
     console.log('WebSocket server initialized');
-    console.log('Number of connected customers ', server.clients.size);
+    console.log('Number of connected customers on init', server.clients.size);
   }
 
   handleConnection(client: WebSocket) {
-    console.log('Client connected:', client.readyState);
+    console.log('Client state:', client.readyState);
+    console.log('Client connected:', this.server.clients.size);
   }
   handleDisconnect(client: WebSocket) {
-    console.log('Client disconnected:', client.readyState);
+    console.log('Client state:', client.readyState);
+    console.log('Client disconnected:', this.server.clients.size);
   }
 
   broadcastMessage(message: string) {
