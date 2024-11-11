@@ -11,9 +11,10 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { FilterTicketDto, SortTicketDto } from './dto/find-all-tickets.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { TicketRepository } from './infrastructure/persistence/ticket.repository';
-import { TicketStatusEnum } from './tickets.enum';
+import { TicketStatusEnum, TicketTypeEnum } from './tickets.enum';
 import { exceptionResponses } from './tickets.messages';
 import { TicketTypeRepository } from 'src/ticket-types/infrastructure/persistence/ticket-type.repository';
+import { TicketType } from 'src/ticket-types/domain/ticket-type';
 
 @Injectable()
 export class TicketsService {
@@ -30,12 +31,21 @@ export class TicketsService {
       throw new NotFoundException(exceptionResponses.TicketOwnerNotFound);
     }
 
-    const ticketTag = await this.ticketTypeRepository.findById(
-      createTicketDto.ticketTag.id,
-    );
+    let ticketTag: TicketType | undefined;
 
-    if (!ticketTag) {
-      throw new NotFoundException(exceptionResponses.TicketTypeNotFound);
+    if (createTicketDto.type === TicketTypeEnum.COMPLAINT) {
+      if (!createTicketDto.ticketTag) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.TicketTagNotProvided,
+        );
+      }
+      const ticketTag = await this.ticketTypeRepository.findById(
+        createTicketDto.ticketTag.id,
+      );
+
+      if (!ticketTag) {
+        throw new NotFoundException(exceptionResponses.TicketTypeNotFound);
+      }
     }
 
     const clonedPayload = {

@@ -20,6 +20,11 @@ export const exceptionResponses: HTTPErrorMessage = {
   TicketTypeNotFound: {
     status: HttpStatus.NOT_FOUND,
     error: 'ticket_type_not_found',
-    message: 'Type of the ticket not found',
+    message: 'Ticket Tag no encontrado',
+  },
+  TicketTagNotProvided: {
+    status: HttpStatus.BAD_REQUEST,
+    error: 'ticket_type_not_provided',
+    message: 'Ticket Tag necesita ser proporcionado',
   },
 } as const;

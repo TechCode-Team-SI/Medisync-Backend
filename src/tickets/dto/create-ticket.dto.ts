@@ -22,7 +22,7 @@ export class CreateTicketDto {
   type: TicketTypeEnum;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @Type(() => TicketTypeIdDto)
-  ticketTag: TicketTypeIdDto;
+  ticketTag?: TicketTypeIdDto;
 }
