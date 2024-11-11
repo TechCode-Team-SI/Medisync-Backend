@@ -67,4 +67,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'request_status_not_attending',
     message: 'The request status needs to be attending to perform this action',
   },
+  MedicNotRequested: {
+    status: HttpStatus.BAD_REQUEST,
+    error: 'medic_not_requested',
+    message: 'Medic should be requested if specialty is not group',
+  },
 } as const;

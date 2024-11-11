@@ -133,6 +133,7 @@ export class RequestsController {
         status,
         from: query.filters?.from,
         to: query.filters?.to,
+        includeGroup: true,
       },
     });
   }

@@ -164,4 +164,8 @@ export class SpecialtiesService {
   remove(id: Specialty['id']) {
     return this.specialtyRepository.remove(id);
   }
+
+  isUserInSpecialty(id: string): Promise<boolean> {
+    return this.specialtyRepository.isUserInSpecialty(id);
+  }
 }

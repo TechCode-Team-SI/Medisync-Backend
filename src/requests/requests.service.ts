@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -26,6 +27,7 @@ import { RequestStatusEnum } from './requests.enum';
 import { exceptionResponses } from './requests.messages';
 import { UserPatient } from 'src/user-patients/domain/user-patient';
 import { UserPatientsService } from 'src/user-patients/user-patients.service';
+import { User } from 'src/users/domain/user';
 @Injectable()
 export class RequestsService {
   constructor(
@@ -90,6 +92,8 @@ export class RequestsService {
       );
     }
 
+    let medic: User | undefined;
+
     const foundSpecialty = await this.specialtiesRepository.findOne(
       requestedSpecialty.id,
       { minimal: true },
@@ -99,28 +103,34 @@ export class RequestsService {
         exceptionResponses.SpecialtyNotExists,
       );
     }
-
-    const foundMedic = await this.usersService.findById(requestedMedic.id, {
-      withProfile: true,
-      withSpecialty: true,
-    });
-    if (!foundMedic) {
-      throw new UnprocessableEntityException(exceptionResponses.MedicNotExists);
-    }
-    if (!foundMedic.employeeProfile) {
-      throw new UnprocessableEntityException(
-        exceptionResponses.SelectedMedicNotAllowed,
-      );
-    }
-
-    const isMedicInRequestedSpecialty =
-      foundMedic.employeeProfile.specialties?.some(
-        (specialty) => specialty.id === requestedSpecialty.id,
-      );
-    if (!isMedicInRequestedSpecialty) {
-      throw new UnprocessableEntityException(
-        exceptionResponses.SelectedMedicNotAllowed,
-      );
+    if (!foundSpecialty.isGroup) {
+      if (!requestedMedic) {
+        throw new BadRequestException(exceptionResponses.MedicNotRequested);
+      }
+      const foundMedic = await this.usersService.findById(requestedMedic.id, {
+        withProfile: true,
+        withSpecialty: true,
+      });
+      if (!foundMedic) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.MedicNotExists,
+        );
+      }
+      if (!foundMedic.employeeProfile) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.SelectedMedicNotAllowed,
+        );
+      }
+      const isMedicInRequestedSpecialty =
+        foundMedic.employeeProfile.specialties?.some(
+          (specialty) => specialty.id === requestedSpecialty.id,
+        );
+      if (!isMedicInRequestedSpecialty) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.SelectedMedicNotAllowed,
+        );
+      }
+      medic = foundMedic;
     }
 
     const requestValuesUpdated = foundRequestTemplate.fields.reduce<
@@ -193,10 +203,10 @@ export class RequestsService {
       status: RequestStatusEnum.PENDING,
       requestTemplate: foundRequestTemplate,
       requestedSpecialty: foundSpecialty,
-      requestedMedic: foundMedic,
+      requestedMedic: medic,
       requestValues: requestValuesUpdated,
       referredContent: referredContent,
-      referredBy: referredContent ? foundMedic : undefined,
+      referredBy: referredContent ? foundUser : undefined,
       madeFor: foundUserPatient,
       madeBy: foundUser,
     };
@@ -210,7 +220,7 @@ export class RequestsService {
     sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
-    filterOptions?: FilterRequestDto | null;
+    filterOptions?: (FilterRequestDto & { includeGroup?: boolean }) | null;
     sortOptions?: SortRequestDto[] | null;
   }) {
     return this.requestRepository.findAllMinimalWithPagination({
@@ -278,9 +288,18 @@ export class RequestsService {
     if (!request) {
       throw new NotFoundException(exceptionResponses.NotFound);
     }
-    if (request.requestedMedic.id !== medicId) {
-      throw new ForbiddenException(exceptionResponses.CurrentMedicNotAllowed);
+    if (request.requestedSpecialty.isGroup) {
+      const isValidMedic =
+        await this.specialtiesRepository.isUserInSpecialty(medicId);
+      if (!isValidMedic) {
+        throw new ForbiddenException(exceptionResponses.CurrentMedicNotAllowed);
+      }
+    } else {
+      if (request.requestedMedic?.id !== medicId) {
+        throw new ForbiddenException(exceptionResponses.CurrentMedicNotAllowed);
+      }
     }
+
     if (request.status !== RequestStatusEnum.PENDING) {
       throw new UnprocessableEntityException(
         exceptionResponses.StatusNotPending,
@@ -302,9 +321,18 @@ export class RequestsService {
     if (!request) {
       throw new NotFoundException(exceptionResponses.NotFound);
     }
-    if (request.requestedMedic.id !== medicId) {
-      throw new ForbiddenException(exceptionResponses.CurrentMedicNotAllowed);
+    if (request.requestedSpecialty.isGroup) {
+      const isValidMedic =
+        await this.specialtiesRepository.isUserInSpecialty(medicId);
+      if (!isValidMedic) {
+        throw new ForbiddenException(exceptionResponses.CurrentMedicNotAllowed);
+      }
+    } else {
+      if (request.requestedMedic?.id !== medicId) {
+        throw new ForbiddenException(exceptionResponses.CurrentMedicNotAllowed);
+      }
     }
+
     if (request.status !== RequestStatusEnum.ATTENDING) {
       throw new UnprocessableEntityException(
         exceptionResponses.StatusNotAttending,

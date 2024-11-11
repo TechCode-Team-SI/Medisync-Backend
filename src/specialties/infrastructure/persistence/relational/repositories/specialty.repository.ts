@@ -113,6 +113,19 @@ export class SpecialtyRelationalRepository
     );
   }
 
+  async isUserInSpecialty(id: string): Promise<boolean> {
+    const entityManager = this.getEntityManager();
+    const query = entityManager
+      .getRepository(SpecialtyEntity)
+      .createQueryBuilder('s')
+      .innerJoin('s.employees', 'e')
+      .where('e.id = :id', { id });
+
+    const entity = await query.getOne();
+
+    return !!entity;
+  }
+
   async findAllActiveWithPagination({
     paginationOptions,
   }: {

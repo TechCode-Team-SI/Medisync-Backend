@@ -19,7 +19,7 @@ export abstract class RequestRepository extends BaseRepository {
   abstract findAllMinimalWithPagination(options: {
     paginationOptions: IPaginationOptions;
     sortOptions?: SortRequestDto[] | null;
-    filterOptions?: FilterRequestDto | null;
+    filterOptions?: (FilterRequestDto & { includeGroup?: boolean }) | null;
   }): Promise<PaginationResponseDto<Request>>;
 
   abstract findById(

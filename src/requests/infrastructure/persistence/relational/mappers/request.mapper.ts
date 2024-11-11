@@ -56,7 +56,7 @@ export class RequestMapper {
       domainEntity.savedTo = UserPatientMapper.toDomain(raw.savedTo);
     }
     if (raw.referredBy) {
-      domainEntity.requestedMedic = UserMapper.toDomain(raw.requestedMedic);
+      domainEntity.referredBy = UserMapper.toDomain(raw.referredBy);
     }
     domainEntity.referredContent = raw.referredContent;
     domainEntity.createdAt = raw.createdAt;
@@ -129,9 +129,11 @@ export class RequestMapper {
       dni: raw.patientDNI,
       address: raw.patientAddress,
     };
-    formattedEntity.requestedMedic = {
-      fullName: raw.requestedMedic.fullName,
-    };
+    formattedEntity.requestedMedic = raw.requestedMedic
+      ? {
+          fullName: raw.requestedMedic.fullName,
+        }
+      : undefined;
     if (raw.referredBy) {
       formattedEntity.referredBy = {
         fullName: raw.referredBy?.fullName,

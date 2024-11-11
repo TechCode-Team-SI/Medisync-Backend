@@ -44,6 +44,8 @@ export abstract class SpecialtyRepository extends BaseRepository {
     options?: findOptions,
   ): Promise<NullableType<Specialty>>;
 
+  abstract isUserInSpecialty(id: string): Promise<boolean>;
+
   abstract update(
     id: Specialty['id'],
     payload: DeepPartial<Specialty>,

@@ -32,7 +32,7 @@ export class Request {
   madeBy: User;
 
   @ApiProperty({ type: () => User })
-  requestedMedic: User;
+  requestedMedic?: User;
 
   @ApiProperty({ type: () => Specialty })
   requestedSpecialty: Specialty;

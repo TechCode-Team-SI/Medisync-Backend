@@ -12,7 +12,7 @@ export class RequestFormatted {
   patient: Patient;
 
   @ApiProperty()
-  requestedMedic: Medic;
+  requestedMedic?: Medic;
 
   @ApiProperty()
   referredBy: ReferredByMedic;

@@ -47,7 +47,7 @@ export class RequestEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @ManyToOne(() => UserEntity)
-  requestedMedic: UserEntity;
+  requestedMedic?: UserEntity;
 
   @ApiProperty()
   @ManyToOne(() => SpecialtyEntity)

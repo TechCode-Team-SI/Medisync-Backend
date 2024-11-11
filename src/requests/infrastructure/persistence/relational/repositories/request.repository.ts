@@ -8,20 +8,14 @@ import {
   SortRequestDto,
 } from 'src/requests/dto/find-all-requests.dto';
 import { exceptionResponses } from 'src/requests/requests.messages';
+import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { formatOrder } from 'src/utils/utils';
 import {
-  Between,
+  Brackets,
   DataSource,
-  FindOneOptions,
   FindOptionsRelations,
-  FindOptionsWhere,
-  In,
-  LessThanOrEqual,
-  Like,
-  MoreThanOrEqual,
   Repository,
 } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -84,85 +78,108 @@ export class RequestRelationalRepository
   }: {
     paginationOptions: IPaginationOptions;
     sortOptions?: SortRequestDto[] | null;
-    filterOptions?: FilterRequestDto | null;
+    filterOptions?: (FilterRequestDto & { includeGroup?: boolean }) | null;
   }): Promise<PaginationResponseDto<Request>> {
-    let order: FindOneOptions<RequestEntity>['order'] = { createdAt: 'DESC' };
-    if (sortOptions) order = formatOrder(sortOptions);
+    const entityManager = this.getEntityManager();
+    const query = entityManager
+      .getRepository(RequestEntity)
+      .createQueryBuilder('r')
+      .leftJoinAndSelect('r.requestedMedic', 'requestedMedic')
+      .leftJoinAndSelect('r.requestedSpecialty', 'requestedSpecialty')
+      .leftJoinAndSelect('r.madeFor', 'madeFor')
+      .leftJoinAndSelect('r.requestTemplate', 'requestTemplate')
+      .leftJoinAndSelect('r.savedTo', 'savedTo')
+      .leftJoinAndSelect('r.rating', 'rating')
+      .where('1 = 1');
 
-    let where: FindOptionsWhere<RequestEntity> = {};
     if (filterOptions?.madeByIds) {
-      where = {
-        ...where,
-        madeBy: { id: In(filterOptions.madeByIds) },
-      };
+      query.andWhere('r.madeById IN (:...madeByIds)', {
+        madeByIds: filterOptions.madeByIds,
+      });
     }
     if (filterOptions?.madeForIds) {
-      where = {
-        ...where,
-        madeFor: { id: In(filterOptions.madeForIds) },
-      };
+      query.andWhere('r.madeForId IN (:...madeForIds)', {
+        madeForIds: filterOptions.madeForIds,
+      });
     }
     if (filterOptions?.savedToIds) {
-      where = {
-        ...where,
-        savedTo: { id: In(filterOptions.savedToIds) },
-      };
+      query.andWhere('r.savedToId IN (:...savedToIds)', {
+        savedToIds: filterOptions.savedToIds,
+      });
     }
     if (filterOptions?.requestTemplateIds) {
-      where = {
-        ...where,
-        requestTemplate: { id: In(filterOptions.requestTemplateIds) },
-      };
-    }
-    if (filterOptions?.requestedMedicIds) {
-      where = {
-        ...where,
-        requestedMedic: {
-          id: In(filterOptions.requestedMedicIds),
-        },
-      };
+      query.andWhere('r.requestTemplateId IN (:...requestTemplateIds)', {
+        requestTemplateIds: filterOptions.requestTemplateIds,
+      });
     }
     if (filterOptions?.status) {
       const status = Array.isArray(filterOptions.status)
         ? filterOptions.status
         : [filterOptions.status];
-      where = { ...where, status: In(status) };
+      query.andWhere('r.status IN (:...status)', {
+        status: status,
+      });
     }
     if (filterOptions?.search) {
-      where = {
-        ...where,
-        patientFullName: Like(`%${filterOptions.search}%`),
-      };
+      query.andWhere("r.patientFullName LIKE '%:search%'", {
+        search: filterOptions.search,
+      });
     }
     if (filterOptions?.from && filterOptions?.to) {
-      where = {
-        ...where,
-        appointmentDate: Between(filterOptions.from, filterOptions.to),
-      };
+      query.andWhere('r.appointmentDate BETWEEN :from AND :to', {
+        from: filterOptions.from,
+        to: filterOptions.to,
+      });
     } else if (filterOptions?.from) {
-      where = {
-        ...where,
-        appointmentDate: MoreThanOrEqual(filterOptions.from),
-      };
+      query.andWhere('r.appointmentDate >= :from', {
+        from: filterOptions.from,
+      });
     } else if (filterOptions?.to) {
-      where = {
-        ...where,
-        appointmentDate: LessThanOrEqual(filterOptions.to),
-      };
+      query.andWhere('r.appointmentDate <= :to', {
+        to: filterOptions.to,
+      });
+    }
+    if (filterOptions?.requestedMedicIds) {
+      if (filterOptions.includeGroup) {
+        const specialties = await entityManager
+          .getRepository(UserEntity)
+          .createQueryBuilder('u')
+          .innerJoin('u.employeeProfile', 'e')
+          .innerJoin('e.specialties', 'specialties')
+          .where('u.id IN (:...requestedMedicIds)', {
+            requestedMedicIds: filterOptions.requestedMedicIds,
+          })
+          .andWhere('specialties.isGroup IS TRUE')
+          .select('specialties.id', 'id')
+          .getRawMany();
+
+        query.andWhere(
+          new Brackets((qb) => {
+            qb.where('r.requestedMedicId IN (:...requestedMedicIds)', {
+              requestedMedicIds: filterOptions.requestedMedicIds,
+            }).orWhere('r.requestedSpecialty IN (:...specialties)', {
+              specialties: specialties.map((s) => s.id),
+            });
+          }),
+        );
+      } else {
+        query.andWhere('r.requestedMedicId IN (:...requestedMedicIds)', {
+          requestedMedicIds: filterOptions.requestedMedicIds,
+        });
+      }
+    }
+    if (sortOptions && sortOptions.length > 0) {
+      const { order, orderBy } = sortOptions[0];
+      query.orderBy(`r.${orderBy}`, order as 'ASC' | 'DESC');
+    } else {
+      query.orderBy('r.createdAt', 'DESC');
     }
 
-    const [entities, count] = await this.requestRepository.findAndCount({
-      skip: (paginationOptions.page - 1) * paginationOptions.limit,
-      take: paginationOptions.limit,
-      where,
-      order,
-      relations: {
-        rating: true,
-        madeFor: true,
-        requestedSpecialty: true,
-        requestedMedic: true,
-      },
-    });
+    query
+      .limit(paginationOptions.limit)
+      .offset((paginationOptions.page - 1) * paginationOptions.limit);
+
+    const [entities, count] = await query.getManyAndCount();
     const items = entities.map((entity) => RequestMapper.toDomain(entity));
 
     return Pagination(

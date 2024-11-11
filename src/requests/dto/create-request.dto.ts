@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, Validate } from 'class-validator';
+import { IsDate, IsNotEmpty, IsOptional, Validate } from 'class-validator';
 import { EmployeeProfileIdDto } from 'src/employee-profiles/dto/employee-profile-id.dto';
 import { RequestTemplateDto } from 'src/request-templates/dto/request-template.dto';
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
@@ -31,9 +31,9 @@ export class CreateRequestDto {
   requestTemplate: RequestTemplateDto;
 
   @ApiProperty({ type: EmployeeProfileIdDto })
-  @IsNotEmpty()
+  @IsOptional()
   @Type(() => EmployeeProfileIdDto)
-  requestedMedic: EmployeeProfileIdDto;
+  requestedMedic?: EmployeeProfileIdDto;
 
   @ApiProperty({ type: SpecialtyDto })
   @IsNotEmpty()
