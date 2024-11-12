@@ -69,6 +69,9 @@ export class EmployeeProfileMapper {
     const domainEntity = new EmployeeProfile();
     domainEntity.MPPS = dto.MPPS;
     domainEntity.CML = dto.CML;
+    if (dto.isMedic !== undefined) {
+      domainEntity.isMedic = dto.isMedic;
+    }
     if (dto.isMedic) {
       domainEntity.isMedic = dto.isMedic;
     }
