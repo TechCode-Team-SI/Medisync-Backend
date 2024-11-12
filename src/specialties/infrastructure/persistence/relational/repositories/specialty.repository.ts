@@ -46,6 +46,7 @@ export class SpecialtyRelationalRepository
 
   private relations: FindOptionsRelations<SpecialtyEntity> = {
     image: true,
+    requestTemplate: true,
   };
 
   async create(data: Specialty): Promise<Specialty> {
