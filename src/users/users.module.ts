@@ -24,7 +24,7 @@ const infrastructurePersistenceModule = RelationalUserPersistenceModule;
     EmployeeProfilesModule,
     UserPatientsModule,
     forwardRef(() => SpecialtiesModule),
-    AgendasModule,
+    forwardRef(() => AgendasModule),
     forwardRef(() => RoomsModule),
   ],
   controllers: [UsersController],

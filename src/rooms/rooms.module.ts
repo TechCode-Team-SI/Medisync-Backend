@@ -10,7 +10,7 @@ import { UsersModule } from 'src/users/users.module';
 @Module({
   imports: [
     RelationalRoomPersistenceModule,
-    SpecialtiesModule,
+    forwardRef(() => SpecialtiesModule),
     EmployeeProfilesModule,
     permissionsModule,
     forwardRef(() => UsersModule),
