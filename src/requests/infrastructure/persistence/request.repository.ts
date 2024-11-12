@@ -10,6 +10,7 @@ import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Request } from '../../domain/request';
+import { RequestStatusEnum } from 'src/requests/requests.enum';
 
 export abstract class RequestRepository extends BaseRepository {
   abstract create(
@@ -41,6 +42,11 @@ export abstract class RequestRepository extends BaseRepository {
     id: Request['id'],
     payload: DeepPartial<Request>,
   ): Promise<Request | null>;
+
+  abstract updateStatusBySpecialty(
+    specialtyId: string,
+    status: RequestStatusEnum,
+  ): Promise<void>;
 
   abstract remove(id: Request['id']): Promise<void>;
 }

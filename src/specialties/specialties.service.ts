@@ -15,6 +15,8 @@ import {
 import { UpdateSpecialtyDto } from './dto/update-specialty.dto';
 import { SpecialtyRepository } from './infrastructure/persistence/specialty.repository';
 import { exceptionResponses } from './specialties.messages';
+import { RequestsService } from 'src/requests/requests.service';
+import { RequestStatusEnum } from 'src/requests/requests.enum';
 
 @Injectable()
 export class SpecialtiesService {
@@ -23,6 +25,7 @@ export class SpecialtiesService {
     private readonly filesService: FilesService,
     private readonly usersService: UsersService,
     private readonly requestTemplateService: RequestTemplatesService,
+    private readonly requestsService: RequestsService,
   ) {}
 
   async create(createSpecialtyDto: CreateSpecialtyDto) {
@@ -167,5 +170,33 @@ export class SpecialtiesService {
 
   isUserInSpecialty(id: string): Promise<boolean> {
     return this.specialtyRepository.isUserInSpecialty(id);
+  }
+
+  async updateSpecialtyTemplate(
+    specialtyId: string,
+    requestTemplateId: string,
+  ) {
+    const specialty = await this.specialtyRepository.findById(specialtyId);
+    if (!specialty) {
+      throw new UnprocessableEntityException(exceptionResponses.NotFound);
+    }
+    const requestTemplate =
+      await this.requestTemplateService.findOne(requestTemplateId);
+    if (!requestTemplate) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.RequestTemplateNotExists,
+      );
+    }
+
+    await this.requestsService.updateStatusBySpecialty(
+      specialtyId,
+      RequestStatusEnum.CANCELLED,
+    );
+
+    return this.specialtyRepository.update(specialtyId, {
+      requestTemplate: {
+        id: requestTemplateId,
+      },
+    });
   }
 }

@@ -24,6 +24,7 @@ import { Request } from '../../../../domain/request';
 import { RequestRepository } from '../../request.repository';
 import { RequestEntity } from '../entities/request.entity';
 import { RequestMapper } from '../mappers/request.mapper';
+import { RequestStatusEnum } from 'src/requests/requests.enum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class RequestRelationalRepository
@@ -275,5 +276,17 @@ export class RequestRelationalRepository
 
   async remove(id: Request['id']): Promise<void> {
     await this.requestRepository.delete(id);
+  }
+
+  async updateStatusBySpecialty(
+    specialtyId: string,
+    status: RequestStatusEnum,
+  ): Promise<void> {
+    await this.requestRepository
+      .createQueryBuilder()
+      .update()
+      .set({ status })
+      .where('requestedSpecialtyId = :specialtyId', { specialtyId })
+      .execute();
   }
 }

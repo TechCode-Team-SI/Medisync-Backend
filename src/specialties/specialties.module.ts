@@ -6,6 +6,7 @@ import { FilesModule } from 'src/files/files.module';
 import { UsersModule } from 'src/users/users.module';
 import { RequestTemplatesModule } from 'src/request-templates/request-templates.module';
 import { permissionsModule } from 'src/permissions/permissions.module';
+import { RequestsModule } from 'src/requests/requests.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { permissionsModule } from 'src/permissions/permissions.module';
     forwardRef(() => UsersModule),
     RequestTemplatesModule,
     permissionsModule,
+    forwardRef(() => RequestsModule),
   ],
   controllers: [SpecialtiesController],
   providers: [SpecialtiesService],

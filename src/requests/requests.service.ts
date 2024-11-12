@@ -12,7 +12,10 @@ import { FieldQuestionTypeEnum } from 'src/field-questions/field-questions.enum'
 import { CreateInstructionsDto } from 'src/instructions/dto/create-instructions.dto';
 import { InstructionsService } from 'src/instructions/instructions.service';
 import { RequestTemplatesService } from 'src/request-templates/request-templates.service';
-import { SpecialtiesService } from 'src/specialties/specialties.service';
+import { SpecialtyRepository } from 'src/specialties/infrastructure/persistence/specialty.repository';
+import { UserPatient } from 'src/user-patients/domain/user-patient';
+import { UserPatientsService } from 'src/user-patients/user-patients.service';
+import { User } from 'src/users/domain/user';
 import { UsersService } from 'src/users/users.service';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
@@ -25,15 +28,12 @@ import { FinishRequestDto } from './dto/finish-request.dto';
 import { RequestRepository } from './infrastructure/persistence/request.repository';
 import { RequestStatusEnum } from './requests.enum';
 import { exceptionResponses } from './requests.messages';
-import { UserPatient } from 'src/user-patients/domain/user-patient';
-import { UserPatientsService } from 'src/user-patients/user-patients.service';
-import { User } from 'src/users/domain/user';
 @Injectable()
 export class RequestsService {
   constructor(
     private readonly requestRepository: RequestRepository,
     private readonly requestTemplateService: RequestTemplatesService,
-    private readonly specialtiesRepository: SpecialtiesService,
+    private readonly specialtiesRepository: SpecialtyRepository,
     private readonly usersService: UsersService,
     private readonly userPatientsService: UserPatientsService,
     private readonly diagnosticsService: DiagnosticsService,
@@ -94,7 +94,7 @@ export class RequestsService {
 
     let medic: User | undefined;
 
-    const foundSpecialty = await this.specialtiesRepository.findOne(
+    const foundSpecialty = await this.specialtiesRepository.findById(
       requestedSpecialty.id,
       { minimal: true },
     );
@@ -256,6 +256,10 @@ export class RequestsService {
     return this.requestRepository.update(id, { status });
   }
 
+  updateStatusBySpecialty(specialtyId: string, status: RequestStatusEnum) {
+    return this.requestRepository.updateStatusBySpecialty(specialtyId, status);
+  }
+
   async updateSaveData(id: Request['id'], userId: string, savedToId: string) {
     const foundUser = await this.usersService.findById(userId, {
       withUserPatients: true,
@@ -338,7 +342,7 @@ export class RequestsService {
         exceptionResponses.StatusNotAttending,
       );
     }
-    const specialty = await this.specialtiesRepository.findOne(
+    const specialty = await this.specialtiesRepository.findById(
       request.requestedSpecialty.id,
       {
         minimal: true,

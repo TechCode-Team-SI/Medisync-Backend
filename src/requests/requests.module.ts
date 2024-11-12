@@ -15,11 +15,11 @@ import { UserPatientsModule } from 'src/user-patients/user-patients.module';
   imports: [
     RelationalRequestPersistenceModule,
     RequestTemplatesModule,
-    SpecialtiesModule,
     UsersModule,
     DiagnosticsModule,
     InstructionsModule,
     forwardRef(() => RatingsModule),
+    forwardRef(() => SpecialtiesModule),
     permissionsModule,
     UserPatientsModule,
   ],

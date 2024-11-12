@@ -9,6 +9,10 @@ import {
   UseGuards,
   Query,
   NotFoundException,
+  HttpStatus,
+  HttpCode,
+  Put,
+  UseInterceptors,
 } from '@nestjs/common';
 import { SpecialtiesService } from './specialties.service';
 import { CreateSpecialtyDto } from './dto/create-specialty.dto';
@@ -36,6 +40,9 @@ import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { Permissions } from 'src/permissions/permissions.decorator';
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
 import { FindAllSpecialtiesPaginationOnlyDto } from './dto/find-all-specialties-pagination-only.dto';
+import { UpdateSpecialtyRequestTemplateDto } from './dto/update-specialty-request-template.dto';
+import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
+import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 
 @ApiTags('Specialties')
 @ApiBearerAuth()
@@ -154,5 +161,19 @@ export class SpecialtiesController {
   })
   remove(@Param('id') id: string) {
     return this.specialtiesService.remove(id);
+  }
+
+  //TODO: update specialty pending permissions
+  @Put('/request-template')
+  @UseInterceptors(TransactionInterceptor)
+  @HttpCode(HttpStatus.OK)
+  async updateRoom(
+    @Body() updateUserRoom: UpdateSpecialtyRequestTemplateDto,
+  ): Promise<SuccessResponseDto> {
+    await this.specialtiesService.updateSpecialtyTemplate(
+      updateUserRoom.id,
+      updateUserRoom.requestTemplateId,
+    );
+    return { success: true };
   }
 }
