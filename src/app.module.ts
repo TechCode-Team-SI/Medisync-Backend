@@ -56,7 +56,8 @@ import { UserPatientsModule } from './user-patients/user-patients.module';
 
 import { StatisticsMetadataModule } from './statistics-metadata/statistics-metadata.module';
 
-import { EventsModule } from './events/events.module';
+//import { EventsModule } from './events/events.module';
+import { SocketModule } from './socket/socket.module';
 import { TicketTypesModule } from './ticket-types/ticket-types.module';
 
 @Module({
@@ -104,7 +105,8 @@ import { TicketTypesModule } from './ticket-types/ticket-types.module';
     MailModule,
     MailerModule,
     HomeModule,
-    EventsModule,
+    //EventsModule,
+    SocketModule,
   ],
   providers: [
     {

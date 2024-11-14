@@ -52,7 +52,7 @@
     "@nestjs/jwt": "10.2.0",
     "@nestjs/passport": "10.0.3",
     "@nestjs/platform-express": "10.3.10",
-    "@nestjs/platform-ws": "^10.4.7",
+    "@nestjs/platform-socket.io": "^10.4.7",
     "@nestjs/swagger": "7.4.0",
     "@nestjs/typeorm": "10.0.2",
     "@nestjs/websockets": "^10.4.7",
@@ -79,10 +79,10 @@
     "rimraf": "6.0.1",
     "rxjs": "7.8.1",
     "sharp": "^0.33.5",
+    "socket.io": "^4.8.1",
     "source-map-support": "0.5.21",
     "swagger-ui-express": "5.0.1",
-    "typeorm": "0.3.20",
-    "ws": "^8.18.0"
+    "typeorm": "0.3.20"
   },
   "devDependencies": {
     "@commitlint/cli": "19.3.0",
