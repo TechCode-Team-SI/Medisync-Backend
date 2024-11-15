@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { FileDto } from 'src/files/dto/file.dto';
 
 export class CreateArticleDto {
@@ -12,6 +12,12 @@ export class CreateArticleDto {
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @IsArray()
+  categories: string[];
 
   @ApiPropertyOptional({ type: () => FileDto })
   @IsOptional()

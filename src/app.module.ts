@@ -60,8 +60,11 @@ import { StatisticsMetadataModule } from './statistics-metadata/statistics-metad
 import { SocketModule } from './socket/socket.module';
 import { TicketTypesModule } from './ticket-types/ticket-types.module';
 
+import { ArticleCategoriesModule } from './article-categories/article-categories.module';
+
 @Module({
   imports: [
+    ArticleCategoriesModule,
     TicketTypesModule,
     StatisticsMetadataModule,
     UserPatientsModule,

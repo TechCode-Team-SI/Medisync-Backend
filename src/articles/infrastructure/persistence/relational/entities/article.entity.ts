@@ -3,6 +3,8 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -12,6 +14,7 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 import { ApiProperty } from '@nestjs/swagger';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
 import { FileEntity } from 'src/files/infrastructure/persistence/relational/entities/file.entity';
+import { ArticleCategoryEntity } from 'src/article-categories/infrastructure/persistence/relational/entities/article-category.entity';
 
 @Entity({
   name: 'article',
@@ -37,6 +40,11 @@ export class ArticleEntity extends EntityRelationalHelper {
   })
   @JoinColumn()
   image?: FileEntity | null;
+
+  @ApiProperty()
+  @ManyToMany(() => ArticleCategoryEntity)
+  @JoinTable({ name: 'article_category' })
+  categories: ArticleCategoryEntity[];
 
   @ApiProperty()
   @ManyToOne(() => UserEntity, (user) => user.articles)
