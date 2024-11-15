@@ -45,7 +45,9 @@ export class TicketRelationalRepository
   }
 
   private relations: FindOptionsRelations<TicketEntity> = {
-    createdBy: true,
+    createdBy: {
+      roles: false,
+    },
     ticketTag: true,
   };
 

@@ -39,13 +39,14 @@ export class TicketsService {
           exceptionResponses.TicketTagNotProvided,
         );
       }
-      const ticketTag = await this.ticketTypeRepository.findById(
+      const ticketType = await this.ticketTypeRepository.findById(
         createTicketDto.ticketTag.id,
       );
 
-      if (!ticketTag) {
+      if (!ticketType) {
         throw new NotFoundException(exceptionResponses.TicketTypeNotFound);
       }
+      ticketTag = ticketType;
     }
 
     const clonedPayload = {
