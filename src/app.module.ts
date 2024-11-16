@@ -1,6 +1,6 @@
 import { Module, Scope } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { AgendasModule } from './agendas/agendas.module';
@@ -61,6 +61,7 @@ import { SocketModule } from './socket/socket.module';
 import { TicketTypesModule } from './ticket-types/ticket-types.module';
 
 import { ArticleCategoriesModule } from './article-categories/article-categories.module';
+import { QueryExceptionsFilter } from './common/query-failed.exception';
 
 @Module({
   imports: [
@@ -116,6 +117,11 @@ import { ArticleCategoriesModule } from './article-categories/article-categories
       provide: APP_GUARD,
       scope: Scope.REQUEST,
       useClass: SystemGuard,
+    },
+    {
+      provide: APP_FILTER,
+      scope: Scope.DEFAULT,
+      useClass: QueryExceptionsFilter,
     },
   ],
 })

@@ -29,10 +29,12 @@ import {
 import { FindAllArticleCategoriesDto } from './dto/find-all-article-categories.dto';
 import { exceptionResponses } from 'src/article-categories/article-categories.messages';
 import { getPagination } from 'src/utils/get-pagination';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Articlecategories')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
 @Controller({
   path: 'article-categories',
   version: '1',
@@ -43,6 +45,10 @@ export class ArticleCategoriesController {
   ) {}
 
   @Post()
+  @Permissions(PermissionsEnum.MANAGE_ARTICLES)
+  @UseGuards(PermissionsGuard)
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @ApiCreatedResponse({
     type: ArticleCategory,
   })
@@ -85,6 +91,10 @@ export class ArticleCategoriesController {
   }
 
   @Patch(':id')
+  @Permissions(PermissionsEnum.MANAGE_ARTICLES)
+  @UseGuards(PermissionsGuard)
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @ApiParam({
     name: 'id',
     type: String,
@@ -101,6 +111,10 @@ export class ArticleCategoriesController {
   }
 
   @Delete(':id')
+  @Permissions(PermissionsEnum.MANAGE_ARTICLES)
+  @UseGuards(PermissionsGuard)
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @ApiParam({
     name: 'id',
     type: String,
