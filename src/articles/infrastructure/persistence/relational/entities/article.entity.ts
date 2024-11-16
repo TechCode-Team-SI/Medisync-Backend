@@ -43,7 +43,7 @@ export class ArticleEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @ManyToMany(() => ArticleCategoryEntity)
-  @JoinTable({ name: 'article_category' })
+  @JoinTable({ name: 'article_article_category' })
   categories: ArticleCategoryEntity[];
 
   @ApiProperty()
