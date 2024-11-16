@@ -6,6 +6,7 @@ import { RelationalArticlePersistenceModule } from './infrastructure/persistence
 import { NotificationsModule } from 'src/notifications/notifications.module';
 import { permissionsModule } from 'src/permissions/permissions.module';
 import { FilesModule } from 'src/files/files.module';
+import { ArticleCategoriesModule } from 'src/article-categories/article-categories.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { FilesModule } from 'src/files/files.module';
     NotificationsModule,
     permissionsModule,
     FilesModule,
+    ArticleCategoriesModule,
   ],
   controllers: [ArticlesController],
   providers: [ArticlesService],

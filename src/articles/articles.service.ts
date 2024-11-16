@@ -10,6 +10,8 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { FilterArticleDto, SortArticleDto } from './dto/find-all-articles.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticleRepository } from './infrastructure/persistence/article.repository';
+import { ArticleCategoriesService } from '../article-categories/article-categories.service';
+import { ArticleCategory } from 'src/article-categories/domain/article-category';
 
 @Injectable()
 export class ArticlesService {
@@ -18,6 +20,7 @@ export class ArticlesService {
     private usersService: UsersService,
     private notificationsService: NotificationsService,
     private readonly filesService: FilesService,
+    private readonly articleCategoriesService: ArticleCategoriesService,
   ) {}
 
   async create(createArticleDto: CreateArticleDto, userId: string) {
@@ -25,10 +28,14 @@ export class ArticlesService {
     if (!user) {
       throw new UnprocessableEntityException(exceptionResponses);
     }
+    const categories = await this.articleCategoriesService.findMany(
+      createArticleDto.categories,
+    );
 
     const clonedPayload: Omit<Article, 'id' | 'createdAt' | 'updatedAt'> = {
       ...createArticleDto,
       updatedBy: user,
+      categories: categories,
     };
 
     if (createArticleDto.photo?.id) {
@@ -82,6 +89,11 @@ export class ArticlesService {
   async update(id: Article['id'], updateArticleDto: UpdateArticleDto) {
     const clonedPayload: Partial<Article> = {
       ...updateArticleDto,
+      categories: updateArticleDto.categories?.map((catId) => {
+        const obj = new ArticleCategory();
+        obj.id = catId;
+        return obj;
+      }),
     };
 
     if (updateArticleDto.photo?.id) {
