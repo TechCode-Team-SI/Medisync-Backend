@@ -7,14 +7,12 @@ export class WebsocketExceptionsFilter extends BaseWsExceptionFilter {
   catch(exception: WsException, host: ArgumentsHost) {
     const ctx = host.switchToWs();
     const client = ctx.getClient() as Socket;
-    const data = ctx.getData();
     client.emit(
       'error',
       JSON.stringify({
         event: 'error',
         ok: false,
         error: exception.getError(),
-        data: data, // Or whatever you want to add
       }),
     );
   }

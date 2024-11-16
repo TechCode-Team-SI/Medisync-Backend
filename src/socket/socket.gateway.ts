@@ -1,4 +1,4 @@
-import { Injectable, UseFilters, UsePipes } from '@nestjs/common';
+import { Injectable, UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -10,15 +10,19 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { Me } from 'src/auth/auth.decorator';
+import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
 import { JoinSocketRoomDto } from './dto/join-room.dto';
+import { SendTicketMessageDto } from './dto/send-ticket-message.dto';
+import { WsAuthGuard } from './socket-auth.guard';
+import { SocketEnum } from './socket-enum';
 import { WebsocketExceptionsFilter } from './socket-exception';
 import { WsValidationPipe } from './socket-validation-pipe';
 import { SocketService } from './socket.service';
-import { SendTicketMessageDto } from './dto/send-ticket-message.dto';
-import { SocketEnum } from './socket-enum';
 
 @UseFilters(WebsocketExceptionsFilter)
 @UsePipes(WsValidationPipe)
+@UseGuards(WsAuthGuard)
 @WebSocketGateway()
 @Injectable()
 export class SocketGateway
@@ -39,6 +43,14 @@ export class SocketGateway
 
   handleDisconnect() {
     console.log(`Clientes conectados: ${this.server.sockets.sockets.size}`);
+  }
+
+  @SubscribeMessage(SocketEnum.JOIN_USER_ROOM)
+  async handleJoinUserRoom(
+    @ConnectedSocket() socket: Socket,
+    @Me('ws') userPayload: JwtPayloadType,
+  ) {
+    await socket.join(userPayload.id);
   }
 
   @SubscribeMessage(SocketEnum.JOIN_ROOM)
