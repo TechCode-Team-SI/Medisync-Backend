@@ -48,6 +48,7 @@ export class ArticleRelationalRepository
       roles: false,
     },
     image: true,
+    categories: true,
   };
 
   async create(data: Article): Promise<Article> {

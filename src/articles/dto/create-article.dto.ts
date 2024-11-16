@@ -14,7 +14,7 @@ export class CreateArticleDto {
   description: string;
 
   @ApiProperty()
-  @IsString()
+  @IsString({ each: true })
   @IsOptional()
   @IsArray()
   categories: string[];
