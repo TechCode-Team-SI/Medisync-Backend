@@ -24,7 +24,7 @@ export class StatisticsController {
     type: PaginationResponse(TopMedics),
   })
   async findTopMedics(@Query() query: FindTopGeneralDto): Promise<TopMedics[]> {
-    return this.statisticsService.findTopMedics(query.time);
+    return this.statisticsService.findTopMedics(query);
   }
 
   @Get('top-specialties')
@@ -34,7 +34,8 @@ export class StatisticsController {
   async findTopSpecialties(
     @Query() query: FindTopGeneralDto,
   ): Promise<TopSpecialties[]> {
-    return this.statisticsService.findtopSpecialties(query.time);
+    console.log(query);
+    return this.statisticsService.findtopSpecialties(query);
   }
 
   @Get('top-weekdays')
@@ -44,7 +45,7 @@ export class StatisticsController {
   async findTopWeekdays(
     @Query() query: FindTopGeneralDto,
   ): Promise<TopWeekdays[]> {
-    return this.statisticsService.findtopWeekdays(query.time);
+    return this.statisticsService.findtopWeekdays(query);
   }
 
   @Get()

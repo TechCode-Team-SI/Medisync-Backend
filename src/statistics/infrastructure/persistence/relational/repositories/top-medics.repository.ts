@@ -3,7 +3,7 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
-import { StatisticsTimeEnum } from 'src/statistics/statistics-time.enum';
+import { FindTopGeneralDto } from 'src/statistics/dto/find-top-general.dto';
 import { DataSource } from 'typeorm';
 import { TopMedics } from '../../../../domain/top-medics';
 import { TopMedicsRepository } from '../../top-medics.repository';
@@ -22,20 +22,24 @@ export class TopMedicsRelationalRepository
     super(datasource, request);
   }
 
-  private renderTimeQuery(time?: StatisticsTimeEnum): string {
-    switch (time) {
-      case StatisticsTimeEnum.THIS_YEAR:
-        return '(year(request.createdAt) = year(now()))';
-      case StatisticsTimeEnum.THIS_MONTH:
-        return '(year(request.createdAt) = year(now())) && (month(request.createdAt) = month(now()))';
-      case StatisticsTimeEnum.TODAY:
-        return 'Date(request.createdAt)=Curdate()';
-      default:
-        return '';
+  private renderTimeQuery(time?: FindTopGeneralDto): string {
+    console.log(time);
+    if (time?.from && time?.to) {
+      return `DATE(request.createdAt) BETWEEN DATE(${time.from}) AND DATE(
+        ${time.to}
+        )`;
+    } else if (time?.from) {
+      return `DATE(request.createdAt) BETWEEN DATE(${time.from}) AND CURRENT_DATE()`;
+    } else if (time?.to) {
+      return `DATE(request.createdAt) BETWEEN DATE(2000-01-01) AND DATE(
+        ${time.to}
+        )`;
+    } else {
+      return '';
     }
   }
 
-  async findAll(time?: StatisticsTimeEnum): Promise<TopMedics[]> {
+  async findAll(time?: FindTopGeneralDto): Promise<TopMedics[]> {
     const entityManager = this.getEntityManager();
     let entities: any[] = [];
     const query = entityManager
@@ -58,7 +62,7 @@ export class TopMedicsRelationalRepository
       ])
       .limit(10);
 
-    if (time && time !== StatisticsTimeEnum.ALL_TIME) {
+    if (time?.from || time?.to) {
       entities = await query.andWhere(this.renderTimeQuery(time)).getRawMany();
     } else {
       entities = await query.getRawMany();

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { TopMedicsRepository } from './infrastructure/persistence/top-medics.repository';
-import { StatisticsTimeEnum } from 'src/statistics/statistics-time.enum';
 import { TopSpecialtiesRepository } from './infrastructure/persistence/top-specialties.repository';
 import { TopWeekdaysRepository } from './infrastructure/persistence/top-weekdays.repository';
 import { StatisticsMetadataRepository } from 'src/statistics-metadata/infrastructure/persistence/statistics-metadata.repository';
+import { FindTopGeneralDto } from './dto/find-top-general.dto';
 
 @Injectable()
 export class StatisticsService {
@@ -14,15 +14,15 @@ export class StatisticsService {
     private readonly statisticMetadataRepository: StatisticsMetadataRepository,
   ) {}
 
-  findTopMedics(time?: StatisticsTimeEnum) {
+  findTopMedics(time?: FindTopGeneralDto) {
     return this.topMedicsRepository.findAll(time);
   }
 
-  findtopSpecialties(time?: StatisticsTimeEnum) {
+  findtopSpecialties(time?: FindTopGeneralDto) {
     return this.topSpecialtiesRepository.findAll(time);
   }
 
-  findtopWeekdays(time?: StatisticsTimeEnum) {
+  findtopWeekdays(time?: FindTopGeneralDto) {
     return this.topWeekdaysRepository.findAll(time);
   }
 

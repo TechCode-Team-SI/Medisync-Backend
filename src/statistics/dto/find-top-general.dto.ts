@@ -1,10 +1,14 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
-import { StatisticsTimeEnum } from 'src/statistics/statistics-time.enum';
+import { IsOptional, IsString } from 'class-validator';
 
 export class FindTopGeneralDto {
   @ApiPropertyOptional()
-  @IsEnum(StatisticsTimeEnum)
+  @IsString()
   @IsOptional()
-  time?: StatisticsTimeEnum;
+  from?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  to?: string;
 }
