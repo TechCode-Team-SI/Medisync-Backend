@@ -44,7 +44,12 @@ export class TicketRelationalRepository
     return this.getRepository(TicketEntity);
   }
 
-  private relations: FindOptionsRelations<TicketEntity> = { createdBy: true };
+  private relations: FindOptionsRelations<TicketEntity> = {
+    createdBy: {
+      roles: false,
+    },
+    ticketTag: true,
+  };
 
   async create(data: Ticket): Promise<Ticket> {
     const persistenceModel = TicketMapper.toPersistence(data);

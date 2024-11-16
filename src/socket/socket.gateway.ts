@@ -1,59 +1,75 @@
+import { Injectable, UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import {
-  WebSocketGateway,
-  WebSocketServer,
+  ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
-  MessageBody,
-  ConnectedSocket,
+  WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { Me } from 'src/auth/auth.decorator';
+import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { JoinSocketRoomDto } from './dto/join-room.dto';
+import { SendTicketMessageDto } from './dto/send-ticket-message.dto';
+import { WsAuthGuard } from './socket-auth.guard';
+import { SocketEnum } from './socket-enum';
+import { WebsocketExceptionsFilter } from './socket-exception';
+import { WsValidationPipe } from './socket-validation-pipe';
 import { SocketService } from './socket.service';
 
+@UseFilters(WebsocketExceptionsFilter)
+@UsePipes(WsValidationPipe)
+@UseGuards(WsAuthGuard)
 @WebSocketGateway()
-export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
+@Injectable()
+export class SocketGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
   constructor(private readonly socketService: SocketService) {}
 
-  async handleConnection(socket: Socket) {
-    console.log('Cliente conectado: ${ socket.id }');
-
-    await this.socketService.addClient(socket);
+  afterInit() {
+    console.log('Websocket Working');
   }
 
-  handleDisconnect(socket: Socket) {
-    console.log('Cliente desconectado: ${ socket.id }');
-
-    this.socketService.removeClient(socket);
+  handleConnection() {
+    console.log(`Clientes conectados: ${this.server.sockets.sockets.size}`);
   }
 
-  @SubscribeMessage('joinRoom')
+  handleDisconnect() {
+    console.log(`Clientes conectados: ${this.server.sockets.sockets.size}`);
+  }
+
+  @SubscribeMessage(SocketEnum.JOIN_USER_ROOM)
+  async handleJoinUserRoom(
+    @ConnectedSocket() socket: Socket,
+    @Me('ws') userPayload: JwtPayloadType,
+  ) {
+    await socket.join(userPayload.id);
+  }
+
+  @SubscribeMessage(SocketEnum.JOIN_ROOM)
   async handleJoinRoom(
-    @MessageBody() roomId: string,
+    @MessageBody() body: JoinSocketRoomDto,
     @ConnectedSocket() socket: Socket,
   ) {
-    console.log(
-      'Solicitud para unirse a la sala ${ roomId } recibida de ${ socket.id }',
-    );
-
-    await this.socketService.addToRoom(socket, roomId);
+    await socket.join(body.roomId);
   }
 
-  @SubscribeMessage('leaveRoom')
+  @SubscribeMessage(SocketEnum.LEAVE_ROOM)
   async handleLeaveRoom(
-    @MessageBody() roomId: string,
+    @MessageBody() body: JoinSocketRoomDto,
     @ConnectedSocket() socket: Socket,
   ) {
-    console.log(
-      'Solicitud para salir de la sala ${ roomId } recibida de ${ socket.id }',
-    );
-
-    await this.socketService.RemoveFromRoom(socket, roomId);
+    return socket.leave(body.roomId);
   }
 
-  @SubscribeMessage('sendMessage')
+  @SubscribeMessage(SocketEnum.SEND_MESSAGE)
   handleSendMessage(
     @MessageBody() data: { event: string; message: unknown },
     @ConnectedSocket() socket: Socket,
@@ -61,5 +77,15 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { event, message } = data;
 
     this.socketService.sendMessageToUser(socket, event, message);
+  }
+
+  //COMPLAINTS AND SUGGESTIONS
+  @SubscribeMessage(SocketEnum.TICKET_CHANNEL)
+  handleTicketMessage(
+    @MessageBody() data: SendTicketMessageDto,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const { roomId, ...rest } = data;
+    socket.to(roomId).emit(SocketEnum.TICKET_CHANNEL, rest);
   }
 }
