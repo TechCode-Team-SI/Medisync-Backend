@@ -29,6 +29,14 @@ export class FilterArticleDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiFilterProperty({
+    isArray: true,
+    type: String,
+  })
+  @IsOptional()
+  @IsString({ each: true })
+  categoryIds?: string[] | string | null;
 }
 
 export class FindAllArticlesDto {

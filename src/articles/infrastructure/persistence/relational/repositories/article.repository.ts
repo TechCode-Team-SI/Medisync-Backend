@@ -11,6 +11,7 @@ import {
   FindOneOptions,
   FindOptionsRelations,
   FindOptionsWhere,
+  In,
   Like,
   Repository,
 } from 'typeorm';
@@ -25,6 +26,7 @@ import {
   SortArticleDto,
 } from 'src/articles/dto/find-all-articles.dto';
 import { formatOrder } from 'src/utils/utils';
+import { isArray } from 'class-validator';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ArticleRelationalRepository
@@ -76,6 +78,12 @@ export class ArticleRelationalRepository
         ...where,
         title: Like(`%${filterOptions.search}%`),
       };
+    }
+    if (filterOptions?.categoryIds && filterOptions.categoryIds.length > 0) {
+      const categoryIds = isArray(filterOptions.categoryIds)
+        ? filterOptions.categoryIds
+        : [filterOptions.categoryIds];
+      where = { ...where, categories: { id: In(categoryIds) } };
     }
     let order: FindOneOptions<ArticleEntity>['order'] = { createdAt: 'DESC' };
     if (sortOptions) order = formatOrder(sortOptions);
