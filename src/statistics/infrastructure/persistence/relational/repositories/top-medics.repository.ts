@@ -23,7 +23,6 @@ export class TopMedicsRelationalRepository
   }
 
   private renderTimeQuery(time?: FindTopGeneralDto): string {
-    console.log(time);
     if (time?.from && time?.to) {
       return `DATE(request.createdAt) BETWEEN DATE(${time.from}) AND DATE(
         ${time.to}

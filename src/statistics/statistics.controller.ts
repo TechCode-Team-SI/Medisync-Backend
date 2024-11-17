@@ -35,7 +35,6 @@ export class StatisticsController {
   async findTopSpecialties(
     @Query() query: FindTopGeneralDto,
   ): Promise<TopSpecialties[]> {
-    console.log(query);
     return this.statisticsService.findtopSpecialties(query);
   }
 
