@@ -4,6 +4,7 @@ import { TopSpecialtiesRepository } from './infrastructure/persistence/top-speci
 import { TopWeekdaysRepository } from './infrastructure/persistence/top-weekdays.repository';
 import { StatisticsMetadataRepository } from 'src/statistics-metadata/infrastructure/persistence/statistics-metadata.repository';
 import { FindTopGeneralDto } from './dto/find-top-general.dto';
+import { StatisticsTimeDto } from 'src/statistics-metadata/dto/statistics-time.dto';
 
 @Injectable()
 export class StatisticsService {
@@ -26,12 +27,15 @@ export class StatisticsService {
     return this.topWeekdaysRepository.findAll(time);
   }
 
-  async findStatisticsGraphMetadata() {
+  async findStatisticsGraphMetadata(filter: StatisticsTimeDto) {
     const metadatas = await this.statisticMetadataRepository.findAll({});
     return Promise.all(
       metadatas.map(async (metadata) => {
         //TODO: add control flow for different type of metadata (tart only rn)
-        return this.statisticMetadataRepository.genTartMetadata(metadata);
+        return this.statisticMetadataRepository.genTartMetadata(
+          metadata,
+          filter,
+        );
       }),
     );
   }

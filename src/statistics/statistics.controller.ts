@@ -8,6 +8,7 @@ import { StatisticsService } from './statistics.service';
 import { TopSpecialties } from './domain/top-specialties';
 import { TopWeekdays } from './domain/top-weekdays';
 import { Tart } from 'src/statistics-metadata/statistics-metadata.type';
+import { StatisticsTimeDto } from 'src/statistics-metadata/dto/statistics-time.dto';
 
 @ApiTags('Statistics')
 @ApiBearerAuth()
@@ -52,7 +53,9 @@ export class StatisticsController {
   @ApiOkResponse({
     type: PaginationResponse(TopMedics),
   })
-  async findAllStatisticGraphsMetadata(): Promise<Tart[]> {
-    return this.statisticsService.findStatisticsGraphMetadata();
+  async findAllStatisticGraphsMetadata(
+    @Query() query: StatisticsTimeDto,
+  ): Promise<Tart[]> {
+    return this.statisticsService.findStatisticsGraphMetadata(query);
   }
 }

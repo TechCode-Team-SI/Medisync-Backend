@@ -31,6 +31,8 @@ import { StatisticsMetadataMapper } from '../mappers/statistics-metadata.mapper'
 import { RequestValueEntity } from 'src/requests/infrastructure/persistence/relational/entities/request-value.entity';
 import { FilterAvailableFieldQuestions } from 'src/statistics-metadata/dto/get-avalable-field-questions.dto';
 import { FilterAvailableSpecialties } from 'src/statistics-metadata/dto/get-available-specialties.dto';
+import { StatisticsTimeDto } from 'src/statistics-metadata/dto/statistics-time.dto';
+import { StatisticsTimeEnum } from 'src/statistics/statistics-time.enum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class StatisticsMetadataRelationalRepository
@@ -164,7 +166,39 @@ export class StatisticsMetadataRelationalRepository
     return items;
   }
 
-  async genTartMetadata(metadata: StatisticsMetadata): Promise<Tart> {
+  private renderTimeQuery(time?: StatisticsTimeDto): string {
+    if (time?.from && time?.to) {
+      return `DATE(request.createdAt) BETWEEN DATE(${time.from}) AND DATE(
+        ${time.to}
+        )`;
+    } else if (time?.from) {
+      return `DATE(request.createdAt) BETWEEN DATE(${time.from}) AND CURRENT_DATE()`;
+    } else if (time?.to) {
+      return `DATE(request.createdAt) BETWEEN DATE(2000-01-01) AND DATE(
+        ${time.to}
+        )`;
+    } else {
+      return '';
+    }
+  }
+
+  private renderInterval(time?: StatisticsTimeEnum): string {
+    switch (time) {
+      case StatisticsTimeEnum.YEAR:
+        return 'year(request.createdAt)';
+      case StatisticsTimeEnum.MONTH:
+        return 'month(request.createdAt)';
+      case StatisticsTimeEnum.DAY:
+        return 'day(request.createdAt)';
+      default:
+        return '';
+    }
+  }
+
+  async genTartMetadata(
+    metadata: StatisticsMetadata,
+    filter: StatisticsTimeDto,
+  ): Promise<Tart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(SelectionEntity)
@@ -188,6 +222,10 @@ export class StatisticsMetadataRelationalRepository
         break;
     }
 
+    if (filter?.from || filter?.to) {
+      query.andWhere(this.renderTimeQuery(filter));
+    }
+
     const entities = await query.getRawMany();
 
     const totalCount = entities.reduce((acc, entity) => acc + +entity.count, 0);
@@ -205,7 +243,10 @@ export class StatisticsMetadataRelationalRepository
     return result;
   }
 
-  async genHistogramMetadata(metadata: StatisticsMetadata): Promise<Histogram> {
+  async genHistogramMetadata(
+    metadata: StatisticsMetadata,
+    filter: StatisticsTimeDto,
+  ): Promise<Histogram> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(SelectionEntity)
@@ -227,6 +268,14 @@ export class StatisticsMetadataRelationalRepository
       case FilteredByType.NONE:
         query.addSelect('COUNT(s.id) AS count');
         break;
+    }
+
+    if (filter?.from || filter?.to) {
+      query.andWhere(this.renderTimeQuery(filter));
+    }
+
+    if (filter?.time) {
+      query.groupBy(this.renderInterval(filter.time));
     }
 
     const entities = await query.getRawMany();

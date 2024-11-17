@@ -14,6 +14,7 @@ import {
 } from 'src/statistics-metadata/statistics-metadata.type';
 import { FilterAvailableFieldQuestions } from 'src/statistics-metadata/dto/get-avalable-field-questions.dto';
 import { FilterAvailableSpecialties } from 'src/statistics-metadata/dto/get-available-specialties.dto';
+import { StatisticsTimeDto } from 'src/statistics-metadata/dto/statistics-time.dto';
 
 export abstract class StatisticsMetadataRepository extends BaseRepository {
   abstract create(
@@ -48,10 +49,14 @@ export abstract class StatisticsMetadataRepository extends BaseRepository {
 
   abstract remove(id: StatisticsMetadata['id']): Promise<void>;
 
-  abstract genTartMetadata(metadata: StatisticsMetadata): Promise<Tart>;
+  abstract genTartMetadata(
+    metadata: StatisticsMetadata,
+    filter: StatisticsTimeDto,
+  ): Promise<Tart>;
 
   abstract genHistogramMetadata(
     metadata: StatisticsMetadata,
+    filter: StatisticsTimeDto,
   ): Promise<Histogram>;
 
   abstract getAvailableSpecialtiesForGraph(
