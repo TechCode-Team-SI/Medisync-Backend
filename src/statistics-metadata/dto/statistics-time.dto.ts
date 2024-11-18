@@ -1,17 +1,20 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsOptional, IsDate, IsEnum } from 'class-validator';
 import { StatisticsTimeEnum } from 'src/statistics/statistics-time.enum';
 
 export class StatisticsTimeDto {
   @ApiPropertyOptional()
-  @IsString()
+  @Type(() => Date)
+  @IsDate()
   @IsOptional()
-  from?: string;
+  from?: Date;
 
   @ApiPropertyOptional()
-  @IsString()
+  @Type(() => Date)
+  @IsDate()
   @IsOptional()
-  to?: string;
+  to?: Date;
 
   @ApiPropertyOptional()
   @IsEnum(StatisticsTimeEnum)

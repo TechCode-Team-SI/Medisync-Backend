@@ -1,14 +1,17 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsOptional, IsDate } from 'class-validator';
 
 export class FindTopGeneralDto {
   @ApiPropertyOptional()
-  @IsString()
+  @Type(() => Date)
+  @IsDate()
   @IsOptional()
-  from?: string;
+  from?: Date;
 
   @ApiPropertyOptional()
-  @IsString()
+  @Type(() => Date)
+  @IsDate()
   @IsOptional()
-  to?: string;
+  to?: Date;
 }

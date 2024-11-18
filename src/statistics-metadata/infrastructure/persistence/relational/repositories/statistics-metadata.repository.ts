@@ -168,14 +168,18 @@ export class StatisticsMetadataRelationalRepository
 
   private renderTimeQuery(time?: StatisticsTimeDto): string {
     if (time?.from && time?.to) {
-      return `DATE(request.createdAt) BETWEEN DATE(${time.from}) AND DATE(
-        ${time.to}
+      const fromString = time.from.toISOString().split('T')[0];
+      const toString = time.to.toISOString().split('T')[0];
+      return `DATE(request.createdAt) BETWEEN DATE(${fromString}) AND DATE(
+        ${toString}
         )`;
     } else if (time?.from) {
-      return `DATE(request.createdAt) BETWEEN DATE(${time.from}) AND CURRENT_DATE()`;
+      const fromString = time.from.toISOString().split('T')[0];
+      return `DATE(request.createdAt) BETWEEN DATE(${fromString}) AND CURRENT_DATE()`;
     } else if (time?.to) {
+      const toString = time.to.toISOString().split('T')[0];
       return `DATE(request.createdAt) BETWEEN DATE(2000-01-01) AND DATE(
-        ${time.to}
+        ${toString}
         )`;
     } else {
       return '';
