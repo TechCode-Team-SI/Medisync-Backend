@@ -5,7 +5,10 @@ import { ArticleCategoryRepository } from './infrastructure/persistence/article-
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { ArticleCategory } from './domain/article-category';
 import { findOptions } from 'src/utils/types/fine-options.type';
-import { SortArticleCategoriesDto } from 'src/article-categories/dto/find-all-article-categories.dto';
+import {
+  FilterArticleCategoryDto,
+  SortArticleCategoriesDto,
+} from 'src/article-categories/dto/find-all-article-categories.dto';
 
 @Injectable()
 export class ArticleCategoriesService {
@@ -21,10 +24,12 @@ export class ArticleCategoriesService {
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortArticleCategoriesDto[] | null;
+    filterOptions?: FilterArticleCategoryDto | null;
   }) {
     return this.articleCategoryRepository.findAllWithPagination({
       paginationOptions: {
@@ -33,6 +38,7 @@ export class ArticleCategoriesService {
       },
       options,
       sortOptions,
+      filterOptions,
     });
   }
 

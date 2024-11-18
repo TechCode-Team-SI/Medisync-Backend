@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   ValidateNested,
@@ -8,6 +9,7 @@ import {
 import { Transform, Type } from 'class-transformer';
 import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
 import { ArticleCategory } from '../domain/article-category';
+import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
 
 export class SortArticleCategoriesDto {
   @ApiProperty()
@@ -18,6 +20,14 @@ export class SortArticleCategoriesDto {
   @ApiProperty()
   @IsString()
   order: string;
+}
+
+export class FilterArticleCategoryDto {
+  //Search by name
+  @ApiFilterProperty({ description: 'Search by name' })
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
 
 export class FindAllArticleCategoriesDto {
@@ -39,4 +49,12 @@ export class FindAllArticleCategoriesDto {
   @ValidateNested({ each: true })
   @Type(() => SortArticleCategoriesDto)
   sort?: SortArticleCategoriesDto[] | null;
+
+  @ApiPropertyOptional({ type: () => FilterArticleCategoryDto })
+  @IsOptional()
+  @IsObject()
+  @Transform(ObjectTransformer(FilterArticleCategoryDto))
+  @ValidateNested()
+  @Type(() => FilterArticleCategoryDto)
+  filters?: FilterArticleCategoryDto | null;
 }

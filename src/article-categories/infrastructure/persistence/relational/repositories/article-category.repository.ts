@@ -5,6 +5,8 @@ import {
   DataSource,
   FindOneOptions,
   In,
+  FindOptionsWhere,
+  Like,
 } from 'typeorm';
 import { ArticleCategoryEntity } from '../entities/article-category.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -20,7 +22,10 @@ import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { REQUEST } from '@nestjs/core';
 import { formatOrder } from 'src/utils/utils';
-import { SortArticleCategoriesDto } from 'src/article-categories/dto/find-all-article-categories.dto';
+import {
+  FilterArticleCategoryDto,
+  SortArticleCategoriesDto,
+} from 'src/article-categories/dto/find-all-article-categories.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ArticleCategoryRelationalRepository
@@ -53,10 +58,12 @@ export class ArticleCategoryRelationalRepository
     paginationOptions,
     options,
     sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
     sortOptions?: SortArticleCategoriesDto[] | null;
+    filterOptions?: FilterArticleCategoryDto | null;
   }): Promise<PaginationResponseDto<ArticleCategory>> {
     let order: FindOneOptions<ArticleCategoryEntity>['order'] = {};
     if (sortOptions) order = formatOrder(sortOptions);
@@ -64,10 +71,16 @@ export class ArticleCategoryRelationalRepository
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
+    let where: FindOptionsWhere<ArticleCategoryEntity> = {};
+    if (filterOptions?.search) {
+      where = { name: Like(`%${filterOptions.search}%`) };
+    }
+
     const [entities, count] = await this.articleCategoryRepository.findAndCount(
       {
         skip: (paginationOptions.page - 1) * paginationOptions.limit,
         take: paginationOptions.limit,
+        where,
         relations,
         order,
       },

@@ -68,6 +68,7 @@ export class ArticleCategoriesController {
     return this.articleCategoriesService.findAllWithPagination({
       paginationOptions,
       sortOptions: query.sort,
+      filterOptions: query.filters,
     });
   }
 
