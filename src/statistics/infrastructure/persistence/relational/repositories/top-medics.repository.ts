@@ -41,7 +41,7 @@ export class TopMedicsRelationalRepository
     const query = entityManager
       .getRepository(RequestEntity)
       .createQueryBuilder('request')
-      .leftJoin(
+      .innerJoin(
         'request.requestedMedic',
         'user',
         'request.requestedMedicId = user.id',
