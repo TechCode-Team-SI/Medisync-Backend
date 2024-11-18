@@ -35,7 +35,7 @@ export class RatingsService {
       );
     }
 
-    if (foundRequest.madeFor?.id !== foundUser.id) {
+    if (foundRequest.madeBy?.id !== foundUser.id) {
       throw new UnprocessableEntityException(
         exceptionResponses.UserNotCreateRequest,
       );
