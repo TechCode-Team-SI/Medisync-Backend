@@ -54,6 +54,7 @@ export class TopMedicsRelationalRepository
         'request.requestedMedicId AS medicId',
         'user.fullName AS fullName',
         'file.path AS avatar',
+        'file.id AS avatarId',
         'count(request.id) AS requests',
       ])
       .limit(10);

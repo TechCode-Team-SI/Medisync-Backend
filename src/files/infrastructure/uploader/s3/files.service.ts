@@ -34,7 +34,7 @@ export class FilesS3Service {
     }
     const file = fs.readFileSync(path.resolve(filePath));
     const ext = path.extname(path.resolve(filePath));
-    const fileName = `${randomStringGenerator()}.${ext}`;
+    const fileName = `${randomStringGenerator()}${ext}`;
     const mimeType = 'image/jpg';
 
     const s3 = new S3Client({

@@ -50,6 +50,7 @@ export class TopSpecialtiesRelationalRepository
         'request.requestedSpecialtyId AS specialtyId',
         'specialty.name AS name',
         'file.path AS avatar',
+        'file.id AS avatarId',
         'count(request.id) AS requests',
       ])
       .limit(10);

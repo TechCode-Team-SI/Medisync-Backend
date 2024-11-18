@@ -17,5 +17,9 @@ export class TopSpecialtiesEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @ViewColumn()
+  avatarId?: string;
+
+  @ApiProperty()
+  @ViewColumn()
   requests: number;
 }

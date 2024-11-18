@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { FileType } from 'src/files/domain/file';
 
 export class TopSpecialties {
   @ApiProperty({
@@ -10,7 +11,7 @@ export class TopSpecialties {
   name: string;
 
   @ApiProperty()
-  avatar?: string;
+  avatar?: FileType;
 
   @ApiProperty()
   requests: number;
