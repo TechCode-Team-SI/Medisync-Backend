@@ -313,6 +313,50 @@ export class RequestsService {
     return this.updateStatus(requestId, RequestStatusEnum.ATTENDING);
   }
 
+  async cancel(
+    requestId: string,
+    userId: string,
+    options: { cancelledBy: 'user' | 'medic' } = { cancelledBy: 'user' },
+  ) {
+    const request = await this.requestRepository.findById(requestId, {
+      withMedic: true,
+      withSpecialty: true,
+    });
+    if (!request) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+
+    if (options.cancelledBy === 'medic') {
+      if (request.requestedSpecialty.isGroup) {
+        const isValidMedic =
+          await this.specialtiesRepository.isUserInSpecialty(userId);
+        if (!isValidMedic) {
+          throw new ForbiddenException(
+            exceptionResponses.CurrentMedicNotAllowed,
+          );
+        }
+      } else {
+        if (request.requestedMedic?.id !== userId) {
+          throw new ForbiddenException(
+            exceptionResponses.CurrentMedicNotAllowed,
+          );
+        }
+      }
+    } else if (options.cancelledBy === 'user') {
+      if (request.madeBy.id !== userId) {
+        throw new ForbiddenException(exceptionResponses.CurrentUserNotAllowed);
+      }
+    }
+
+    if (request.status !== RequestStatusEnum.PENDING) {
+      throw new UnprocessableEntityException(
+        exceptionResponses.StatusNotPending,
+      );
+    }
+
+    return this.updateStatus(requestId, RequestStatusEnum.CANCELLED);
+  }
+
   async finish(
     requestId: string,
     medicId: string,

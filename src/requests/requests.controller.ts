@@ -193,6 +193,15 @@ export class RequestsController {
     return this.requestsService.attend(id, userPayload.id);
   }
 
+  @Post('cancel/:id')
+  @UseInterceptors(TransactionInterceptor)
+  @ApiOkResponse({
+    type: Request,
+  })
+  async cancel(@Me() userPayload: JwtPayloadType, @Param('id') id: string) {
+    return this.requestsService.cancel(id, userPayload.id);
+  }
+
   @Post('rate/:id')
   @ApiCreatedResponse({
     type: SuccessResponseDto,

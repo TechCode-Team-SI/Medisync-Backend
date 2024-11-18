@@ -52,6 +52,11 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'current_medic_not_allowed',
     message: 'The current medic is not allowed to perform this action',
   },
+  CurrentUserNotAllowed: {
+    status: HttpStatus.FORBIDDEN,
+    error: 'current_user_not_allowed',
+    message: 'The current user is not allowed to perform this action',
+  },
   InvalidReferenceOneSelf: {
     status: HttpStatus.FORBIDDEN,
     error: 'invalid_reference_to_oneself',
