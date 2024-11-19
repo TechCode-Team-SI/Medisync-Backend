@@ -126,7 +126,10 @@ export class SpecialtiesService {
     }
     if (filterOptions?.search)
       filterOpts = { ...filterOpts, search: filterOptions.search };
-    if (filterOptions?.isDisabled) {
+    if (
+      filterOptions?.isDisabled !== null &&
+      filterOptions?.isDisabled !== undefined
+    ) {
       filterOpts = { ...filterOpts, isDisabled: filterOptions.isDisabled };
     }
 
