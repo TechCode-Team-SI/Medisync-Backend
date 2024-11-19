@@ -43,6 +43,7 @@ import { FindAllSpecialtiesPaginationOnlyDto } from './dto/find-all-specialties-
 import { UpdateSpecialtyRequestTemplateDto } from './dto/update-specialty-request-template.dto';
 import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
 import { TransactionInterceptor } from 'src/common/transaction.interceptor';
+import { UpdateSpecialtyAgendaDto } from './dto/update-specialty-agenda.dto';
 
 @ApiTags('Specialties')
 @ApiBearerAuth()
@@ -173,6 +174,19 @@ export class SpecialtiesController {
     await this.specialtiesService.updateSpecialtyTemplate(
       updateUserRoom.id,
       updateUserRoom.requestTemplateId,
+    );
+    return { success: true };
+  }
+
+  //TODO: update specialty agenda pending permissions
+  @Put('/agenda')
+  @HttpCode(HttpStatus.OK)
+  async updateAgenda(
+    @Body() updateSpecialtyAgenda: UpdateSpecialtyAgendaDto,
+  ): Promise<SuccessResponseDto> {
+    await this.specialtiesService.updateSpecialtyAgenda(
+      updateSpecialtyAgenda.id,
+      updateSpecialtyAgenda.agendaId,
     );
     return { success: true };
   }

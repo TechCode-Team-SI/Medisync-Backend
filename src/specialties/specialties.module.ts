@@ -7,6 +7,7 @@ import { UsersModule } from 'src/users/users.module';
 import { RequestTemplatesModule } from 'src/request-templates/request-templates.module';
 import { permissionsModule } from 'src/permissions/permissions.module';
 import { RequestsModule } from 'src/requests/requests.module';
+import { AgendasModule } from 'src/agendas/agendas.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { RequestsModule } from 'src/requests/requests.module';
     RequestTemplatesModule,
     permissionsModule,
     forwardRef(() => RequestsModule),
+    forwardRef(() => AgendasModule),
   ],
   controllers: [SpecialtiesController],
   providers: [SpecialtiesService],

@@ -17,6 +17,7 @@ import { SpecialtyRepository } from './infrastructure/persistence/specialty.repo
 import { exceptionResponses } from './specialties.messages';
 import { RequestsService } from 'src/requests/requests.service';
 import { RequestStatusEnum } from 'src/requests/requests.enum';
+import { AgendaRepository } from 'src/agendas/infrastructure/persistence/agenda.repository';
 
 @Injectable()
 export class SpecialtiesService {
@@ -26,6 +27,7 @@ export class SpecialtiesService {
     private readonly usersService: UsersService,
     private readonly requestTemplateService: RequestTemplatesService,
     private readonly requestsService: RequestsService,
+    private readonly agendasRepository: AgendaRepository,
   ) {}
 
   async create(createSpecialtyDto: CreateSpecialtyDto) {
@@ -198,5 +200,27 @@ export class SpecialtiesService {
         id: requestTemplateId,
       },
     });
+  }
+
+  async updateSpecialtyAgenda(specialtyId: string, agendaId?: string | null) {
+    const specialty = await this.specialtyRepository.findById(specialtyId);
+    if (!specialty) {
+      throw new UnprocessableEntityException(exceptionResponses.NotFound);
+    }
+    if (agendaId) {
+      const agenda = await this.agendasRepository.findById(agendaId);
+      if (!agenda) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.AgendaNotExist,
+        );
+      }
+      return this.specialtyRepository.update(specialty.id, {
+        agenda,
+      });
+    } else {
+      return this.specialtyRepository.update(specialty.id, {
+        agenda: null,
+      });
+    }
   }
 }

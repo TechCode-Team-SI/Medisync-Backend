@@ -11,7 +11,7 @@ import { UsersModule } from 'src/users/users.module';
   imports: [
     RelationalAgendaPersistenceModule,
     EmployeeProfilesModule,
-    SpecialtiesModule,
+    forwardRef(() => SpecialtiesModule),
     permissionsModule,
     forwardRef(() => UsersModule),
   ],
