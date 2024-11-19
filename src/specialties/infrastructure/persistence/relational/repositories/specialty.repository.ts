@@ -90,7 +90,10 @@ export class SpecialtyRelationalRepository
         ...where,
         employees: { id: In([filterOptions.employeeProfileIds]) },
       };
-    if (filterOptions?.isDisabled) {
+    if (
+      filterOptions?.isDisabled !== null &&
+      filterOptions?.isDisabled !== undefined
+    ) {
       where = { ...where, isDisabled: filterOptions.isDisabled };
     }
     let relations = this.relations;
