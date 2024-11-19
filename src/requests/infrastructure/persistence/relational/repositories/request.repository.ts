@@ -158,9 +158,12 @@ export class RequestRelationalRepository
           new Brackets((qb) => {
             qb.where('r.requestedMedicId IN (:...requestedMedicIds)', {
               requestedMedicIds: filterOptions.requestedMedicIds,
-            }).orWhere('r.requestedSpecialty IN (:...specialties)', {
-              specialties: specialties.map((s) => s.id),
             });
+            if (specialties.length > 0) {
+              qb.orWhere('r.requestedSpecialtyId IN (:...specialties)', {
+                specialties: specialties.map((s) => s.id),
+              });
+            }
           }),
         );
       } else {

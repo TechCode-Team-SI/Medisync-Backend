@@ -66,43 +66,48 @@ export class AgendasService {
     });
   }
 
-  async findOneByUser(userId: string) {
-    const user = await this.userRepository.findById(userId, {
-      withProfile: true,
-    });
-    if (!user) {
-      throw new NotFoundException(exceptionResponses.UserNotExists);
-    }
-    if (!user?.employeeProfile) {
-      throw new NotFoundException(exceptionResponses.EmployeeNotExists);
-    }
-    if (!user?.employeeProfile.agenda) {
-      throw new NotFoundException(exceptionResponses.NotFound);
-    }
-    return this.agendaRepository.findById(user.employeeProfile.agenda.id);
+  async findOneByEntity(id: string, type: 'user' | 'specialty') {
+    const agendaId = await this.getEntityAgendaId(id, type);
+    return this.agendaRepository.findById(agendaId);
   }
 
   findOne(id: Agenda['id'], options?: findOptions) {
     return this.agendaRepository.findById(id, options);
   }
 
-  async findSlottedTimes(id: string) {
-    const user = await this.userRepository.findById(id, { withProfile: true });
-    if (!user) {
-      throw new NotFoundException(exceptionResponses.UserNotExist);
-    }
-    if (!user.employeeProfile?.agenda) {
-      throw new NotFoundException(exceptionResponses.NotFound);
-    }
-    const agenda = await this.agendaRepository.findById(
-      user.employeeProfile.agenda.id,
-    );
+  async findSlottedTimes(id: string, type: 'user' | 'specialty') {
+    const agenda = await this.findOneByEntity(id, type);
 
     if (!agenda) {
       throw new NotFoundException(exceptionResponses.NotFound);
     }
 
     return AgendaMapper.toDomainSlotted(agenda);
+  }
+
+  async getEntityAgendaId(id: string, type: 'user' | 'specialty') {
+    switch (type) {
+      case 'user':
+        const user = await this.userRepository.findById(id, {
+          withProfile: true,
+        });
+        if (!user) {
+          throw new NotFoundException(exceptionResponses.UserNotExist);
+        }
+        if (!user.employeeProfile?.agenda) {
+          throw new NotFoundException(exceptionResponses.NotFound);
+        }
+        return user.employeeProfile.agenda.id;
+      default:
+        const specialty = await this.specialtiesService.findOne(id);
+        if (!specialty) {
+          throw new NotFoundException(exceptionResponses.SpecialtyNotExists);
+        }
+        if (!specialty.agenda) {
+          throw new NotFoundException(exceptionResponses.NotFound);
+        }
+        return specialty.agenda.id;
+    }
   }
 
   update(id: Agenda['id'], updateAgendaDto: UpdateAgendaDto) {

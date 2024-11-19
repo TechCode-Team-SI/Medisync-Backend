@@ -100,7 +100,29 @@ export class AgendasController {
     type: Agenda,
   })
   async findOneByUser(@Param('userId') userId: string) {
-    const entity = await this.agendasService.findOneByUser(userId);
+    const entity = await this.agendasService.findOneByEntity(userId, 'user');
+
+    if (!entity) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+
+    return entity;
+  }
+
+  @Get('specialty/:specialtyId')
+  @ApiParam({
+    name: 'specialtyId',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({
+    type: Agenda,
+  })
+  async findOneBySpecialty(@Param('specialtyId') specialtyId: string) {
+    const entity = await this.agendasService.findOneByEntity(
+      specialtyId,
+      'specialty',
+    );
 
     if (!entity) {
       throw new NotFoundException(exceptionResponses.NotFound);
@@ -182,8 +204,23 @@ export class AgendasController {
     type: String,
     required: true,
   })
-  async findSlottedTimes(@Param('userId') userId: string) {
-    const entity = await this.agendasService.findSlottedTimes(userId);
+  async findSlottedTimesByUser(@Param('userId') userId: string) {
+    const entity = await this.agendasService.findSlottedTimes(userId, 'user');
+
+    return entity;
+  }
+
+  @Get('slot/specialty/:specialtyId')
+  @ApiParam({
+    name: 'specialtyId',
+    type: String,
+    required: true,
+  })
+  async findSlottedTimesBySpecialty(@Param('specialtyId') specialtyId: string) {
+    const entity = await this.agendasService.findSlottedTimes(
+      specialtyId,
+      'specialty',
+    );
 
     return entity;
   }
