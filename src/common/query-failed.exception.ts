@@ -35,6 +35,7 @@ export class QueryExceptionsFilter implements ExceptionFilter {
       error: 'duplicate-entry',
       message: `Duplicate entry: ${duplicateEntry} is already being used`,
     };
+    console.log(exception.message);
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
   }
@@ -52,6 +53,8 @@ export class QueryExceptionsFilter implements ExceptionFilter {
       error: 'query-failed',
       message: 'Query failed',
     };
+    console.log(exception.message);
+    console.log(exception.stack);
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
   }
