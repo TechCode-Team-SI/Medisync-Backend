@@ -12,6 +12,11 @@ export class SendTicketMessageDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  id: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
   message: string;
 
   @ApiProperty()
