@@ -43,10 +43,11 @@ export class TopSpecialtiesRelationalRepository
       .limit(10);
 
     if (date) {
-      entities = await query.andWhere(dateRangeQuery(date)).getRawMany();
-    } else {
-      entities = await query.getRawMany();
+      const dateRange = dateRangeQuery(date);
+      query.where(`DATE(request.createdAt) ${dateRange}`);
     }
+
+    entities = await query.getRawMany();
 
     return entities.map((entity) => TopSpecialtiesMapper.toDomain(entity));
   }

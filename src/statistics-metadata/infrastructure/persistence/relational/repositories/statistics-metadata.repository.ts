@@ -194,8 +194,8 @@ export class StatisticsMetadataRelationalRepository
     }
 
     if (date?.from || date?.to) {
-      query.where('DATE(s.createdAt) :dateRange');
-      query.setParameter('dateRange', dateRangeQuery(date));
+      const dateRange = dateRangeQuery(date);
+      query.where(`DATE(s.createdAt) ${dateRange}`);
     }
 
     const entities = await query.getRawMany();
@@ -243,15 +243,15 @@ export class StatisticsMetadataRelationalRepository
     }
 
     if (date?.from || date?.to) {
-      query.where('DATE(s.createdAt) :dateRange');
-      query.setParameter('dateRange', dateRangeQuery(date));
+      const dateRange = dateRangeQuery(date);
+      query.where(`DATE(s.createdAt) ${dateRange}`);
     }
 
     if (date?.grouping) {
+      const dateGrouping = dateGroupingQuery(date.grouping);
       query.addSelect(
-        'DATE_FORMAT(s.createdAt, :dateGrouping) AS dateFormatted',
+        `DATE_FORMAT(s.createdAt, ${dateGrouping}) AS dateFormatted`,
       );
-      query.setParameter('dateGrouping', dateGroupingQuery(date.grouping));
       query.groupBy('dateFormatted');
       query.orderBy('dateFormatted');
     }
