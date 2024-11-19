@@ -3,11 +3,12 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
-import { StatisticsTimeEnum } from 'src/statistics/statistics-time.enum';
+import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
 import { DataSource } from 'typeorm';
 import { TopMedics } from '../../../../domain/top-medics';
 import { TopMedicsRepository } from '../../top-medics.repository';
 import { TopMedicsMapper } from '../mappers/top-medics.mapper';
+import { dateRangeQuery } from 'src/utils/statistics-utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class TopMedicsRelationalRepository
@@ -22,20 +23,7 @@ export class TopMedicsRelationalRepository
     super(datasource, request);
   }
 
-  private renderTimeQuery(time?: StatisticsTimeEnum): string {
-    switch (time) {
-      case StatisticsTimeEnum.THIS_YEAR:
-        return '(year(request.createdAt) = year(now()))';
-      case StatisticsTimeEnum.THIS_MONTH:
-        return '(year(request.createdAt) = year(now())) && (month(request.createdAt) = month(now()))';
-      case StatisticsTimeEnum.TODAY:
-        return 'Date(request.createdAt)=Curdate()';
-      default:
-        return '';
-    }
-  }
-
-  async findAll(time?: StatisticsTimeEnum): Promise<TopMedics[]> {
+  async findAll(date?: StatisticsDateDto): Promise<TopMedics[]> {
     const entityManager = this.getEntityManager();
     let entities: any[] = [];
     const query = entityManager
@@ -59,11 +47,12 @@ export class TopMedicsRelationalRepository
       ])
       .limit(10);
 
-    if (time && time !== StatisticsTimeEnum.ALL_TIME) {
-      entities = await query.andWhere(this.renderTimeQuery(time)).getRawMany();
-    } else {
-      entities = await query.getRawMany();
+    if (date) {
+      const dateRange = dateRangeQuery(date);
+      query.where(`DATE(request.createdAt) ${dateRange}`);
     }
+
+    entities = await query.getRawMany();
 
     return entities.map((entity) => TopMedicsMapper.toDomain(entity));
   }

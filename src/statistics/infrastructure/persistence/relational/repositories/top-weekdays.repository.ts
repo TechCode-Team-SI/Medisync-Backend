@@ -3,11 +3,12 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
-import { StatisticsTimeEnum } from 'src/statistics/statistics-time.enum';
+import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
 import { DataSource } from 'typeorm';
 import { TopWeekdays } from '../../../../domain/top-weekdays';
 import { TopWeekdaysRepository } from '../../top-weekdays.repository';
 import { TopWeekdaysMapper } from '../mappers/top-weekdays.mapper';
+import { dateRangeQuery } from 'src/utils/statistics-utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class TopWeekdaysRelationalRepository
@@ -22,20 +23,7 @@ export class TopWeekdaysRelationalRepository
     super(datasource, request);
   }
 
-  private renderTimeQuery(time?: StatisticsTimeEnum): string {
-    switch (time) {
-      case StatisticsTimeEnum.THIS_YEAR:
-        return '(year(request.createdAt) = year(now()))';
-      case StatisticsTimeEnum.THIS_MONTH:
-        return '(year(request.createdAt) = year(now())) && (month(request.createdAt) = month(now()))';
-      case StatisticsTimeEnum.TODAY:
-        return 'Date(request.createdAt)=Curdate()';
-      default:
-        return '';
-    }
-  }
-
-  async findAll(time?: StatisticsTimeEnum): Promise<TopWeekdays[]> {
+  async findAll(date?: StatisticsDateDto): Promise<TopWeekdays[]> {
     const entityManager = this.getEntityManager();
     let entities: any[] = [];
     const query = entityManager
@@ -50,11 +38,12 @@ export class TopWeekdaysRelationalRepository
       ])
       .limit(10);
 
-    if (time && time !== StatisticsTimeEnum.ALL_TIME) {
-      entities = await query.andWhere(this.renderTimeQuery(time)).getRawMany();
-    } else {
-      entities = await query.getRawMany();
+    if (date) {
+      const dateRange = dateRangeQuery(date);
+      query.where(`DATE(request.createdAt) ${dateRange}`);
     }
+
+    entities = await query.getRawMany();
 
     return entities.map((entity) => TopWeekdaysMapper.toDomain(entity));
   }

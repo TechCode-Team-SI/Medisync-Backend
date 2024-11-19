@@ -10,6 +10,7 @@ import {
   AvailableFieldQuestion,
   AvailableSpecialty,
   Tart,
+  Histogram,
 } from 'src/statistics-metadata/statistics-metadata.type';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
@@ -30,6 +31,8 @@ import { StatisticsMetadataMapper } from '../mappers/statistics-metadata.mapper'
 import { RequestValueEntity } from 'src/requests/infrastructure/persistence/relational/entities/request-value.entity';
 import { FilterAvailableFieldQuestions } from 'src/statistics-metadata/dto/get-avalable-field-questions.dto';
 import { FilterAvailableSpecialties } from 'src/statistics-metadata/dto/get-available-specialties.dto';
+import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
+import { dateGroupingQuery, dateRangeQuery } from 'src/utils/statistics-utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class StatisticsMetadataRelationalRepository
@@ -163,7 +166,10 @@ export class StatisticsMetadataRelationalRepository
     return items;
   }
 
-  async genTartMetadata(metadata: StatisticsMetadata): Promise<Tart> {
+  async genTartMetadata(
+    metadata: StatisticsMetadata,
+    date: StatisticsDateDto,
+  ): Promise<Tart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(SelectionEntity)
@@ -187,6 +193,11 @@ export class StatisticsMetadataRelationalRepository
         break;
     }
 
+    if (date?.from || date?.to) {
+      const dateRange = dateRangeQuery(date);
+      query.where(`DATE(s.createdAt) ${dateRange}`);
+    }
+
     const entities = await query.getRawMany();
 
     const totalCount = entities.reduce((acc, entity) => acc + +entity.count, 0);
@@ -198,6 +209,61 @@ export class StatisticsMetadataRelationalRepository
         label: entity.value,
         probabilities:
           Number(((entity.count / totalCount) * 100).toFixed(2)) || 0,
+      })),
+    };
+
+    return result;
+  }
+
+  async genHistogramMetadata(
+    metadata: StatisticsMetadata,
+    date: StatisticsDateDto,
+  ): Promise<Histogram> {
+    const entityManager = this.getEntityManager();
+    const query = entityManager
+      .getRepository(SelectionEntity)
+      .createQueryBuilder('s')
+      .innerJoin('s.requestValues', 'rv')
+      .innerJoin('rv.request', 'r')
+      .innerJoin('s.fieldQuestion', 'fq')
+      .where('r.status <> :status', { status: 'cancelled' })
+      .where('fq.id = :fqId', { fqId: metadata.fieldQuestion?.id })
+      .groupBy('s.id')
+      .select(['s.id AS selectionId', 's.value AS value']);
+
+    switch (metadata.filteredByType) {
+      case FilteredByType.SPECIALTY:
+        query
+          .addSelect('SUM(if(r.requestedSpecialtyId = :filter, 1, 0)) AS count')
+          .setParameter('filter', metadata.filter);
+        break;
+      case FilteredByType.NONE:
+        query.addSelect('COUNT(s.id) AS count');
+        break;
+    }
+
+    if (date?.from || date?.to) {
+      const dateRange = dateRangeQuery(date);
+      query.where(`DATE(s.createdAt) ${dateRange}`);
+    }
+
+    if (date?.grouping) {
+      const dateGrouping = dateGroupingQuery(date.grouping);
+      query.addSelect(
+        `DATE_FORMAT(s.createdAt, ${dateGrouping}) AS dateFormatted`,
+      );
+      query.groupBy('dateFormatted');
+      query.orderBy('dateFormatted');
+    }
+
+    const entities = await query.getRawMany();
+
+    const result: Histogram = {
+      label: metadata.label,
+      description: metadata.fieldQuestion?.label || '',
+      data: entities.map((entity) => ({
+        label: date.grouping ? entity.dateFormatted : entity.value,
+        frequency: Number(entity.count) || 0,
       })),
     };
 

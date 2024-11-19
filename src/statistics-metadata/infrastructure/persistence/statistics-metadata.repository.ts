@@ -10,9 +10,11 @@ import {
   AvailableFieldQuestion,
   AvailableSpecialty,
   Tart,
+  Histogram,
 } from 'src/statistics-metadata/statistics-metadata.type';
 import { FilterAvailableFieldQuestions } from 'src/statistics-metadata/dto/get-avalable-field-questions.dto';
 import { FilterAvailableSpecialties } from 'src/statistics-metadata/dto/get-available-specialties.dto';
+import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
 
 export abstract class StatisticsMetadataRepository extends BaseRepository {
   abstract create(
@@ -47,7 +49,15 @@ export abstract class StatisticsMetadataRepository extends BaseRepository {
 
   abstract remove(id: StatisticsMetadata['id']): Promise<void>;
 
-  abstract genTartMetadata(metadata: StatisticsMetadata): Promise<Tart>;
+  abstract genTartMetadata(
+    metadata: StatisticsMetadata,
+    date: StatisticsDateDto,
+  ): Promise<Tart>;
+
+  abstract genHistogramMetadata(
+    metadata: StatisticsMetadata,
+    date: StatisticsDateDto,
+  ): Promise<Histogram>;
 
   abstract getAvailableSpecialtiesForGraph(
     fieldQuestionId: string,
