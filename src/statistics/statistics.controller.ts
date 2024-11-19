@@ -3,12 +3,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationResponse } from '../utils/dto/pagination-response.dto';
 import { TopMedics } from './domain/top-medics';
-import { FindTopGeneralDto } from './dto/find-top-general.dto';
 import { StatisticsService } from './statistics.service';
 import { TopSpecialties } from './domain/top-specialties';
 import { TopWeekdays } from './domain/top-weekdays';
 import { Tart } from 'src/statistics-metadata/statistics-metadata.type';
-import { StatisticsTimeDto } from 'src/statistics-metadata/dto/statistics-time.dto';
+import { StatisticsDateDto } from './dto/statistics-date.dto';
 
 @ApiTags('Statistics')
 @ApiBearerAuth()
@@ -24,7 +23,7 @@ export class StatisticsController {
   @ApiOkResponse({
     type: PaginationResponse(TopMedics),
   })
-  async findTopMedics(@Query() query: FindTopGeneralDto): Promise<TopMedics[]> {
+  async findTopMedics(@Query() query: StatisticsDateDto): Promise<TopMedics[]> {
     return this.statisticsService.findTopMedics(query);
   }
 
@@ -33,7 +32,7 @@ export class StatisticsController {
     type: PaginationResponse(TopMedics),
   })
   async findTopSpecialties(
-    @Query() query: FindTopGeneralDto,
+    @Query() query: StatisticsDateDto,
   ): Promise<TopSpecialties[]> {
     return this.statisticsService.findtopSpecialties(query);
   }
@@ -43,7 +42,7 @@ export class StatisticsController {
     type: PaginationResponse(TopMedics),
   })
   async findTopWeekdays(
-    @Query() query: FindTopGeneralDto,
+    @Query() query: StatisticsDateDto,
   ): Promise<TopWeekdays[]> {
     return this.statisticsService.findtopWeekdays(query);
   }
@@ -53,7 +52,7 @@ export class StatisticsController {
     type: PaginationResponse(TopMedics),
   })
   async findAllStatisticGraphsMetadata(
-    @Query() query: StatisticsTimeDto,
+    @Query() query: StatisticsDateDto,
   ): Promise<Tart[]> {
     return this.statisticsService.findStatisticsGraphMetadata(query);
   }

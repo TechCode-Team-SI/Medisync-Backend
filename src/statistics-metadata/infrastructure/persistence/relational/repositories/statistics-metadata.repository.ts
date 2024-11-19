@@ -31,8 +31,8 @@ import { StatisticsMetadataMapper } from '../mappers/statistics-metadata.mapper'
 import { RequestValueEntity } from 'src/requests/infrastructure/persistence/relational/entities/request-value.entity';
 import { FilterAvailableFieldQuestions } from 'src/statistics-metadata/dto/get-avalable-field-questions.dto';
 import { FilterAvailableSpecialties } from 'src/statistics-metadata/dto/get-available-specialties.dto';
-import { StatisticsTimeDto } from 'src/statistics-metadata/dto/statistics-time.dto';
-import { StatisticsTimeEnum } from 'src/statistics/statistics-time.enum';
+import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
+import { dateGroupingQuery, dateRangeQuery } from 'src/utils/statistics-utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class StatisticsMetadataRelationalRepository
@@ -166,42 +166,9 @@ export class StatisticsMetadataRelationalRepository
     return items;
   }
 
-  private renderTimeQuery(time?: StatisticsTimeDto): string {
-    if (time?.from && time?.to) {
-      const fromString = time.from.toISOString().split('T')[0];
-      const toString = time.to.toISOString().split('T')[0];
-      return `DATE(request.createdAt) BETWEEN DATE(${fromString}) AND DATE(
-        ${toString}
-        )`;
-    } else if (time?.from) {
-      const fromString = time.from.toISOString().split('T')[0];
-      return `DATE(request.createdAt) BETWEEN DATE(${fromString}) AND CURRENT_DATE()`;
-    } else if (time?.to) {
-      const toString = time.to.toISOString().split('T')[0];
-      return `DATE(request.createdAt) BETWEEN DATE(2000-01-01) AND DATE(
-        ${toString}
-        )`;
-    } else {
-      return '';
-    }
-  }
-
-  private renderInterval(time?: StatisticsTimeEnum): string {
-    switch (time) {
-      case StatisticsTimeEnum.YEAR:
-        return 'year(request.createdAt)';
-      case StatisticsTimeEnum.MONTH:
-        return 'month(request.createdAt)';
-      case StatisticsTimeEnum.DAY:
-        return 'day(request.createdAt)';
-      default:
-        return '';
-    }
-  }
-
   async genTartMetadata(
     metadata: StatisticsMetadata,
-    filter: StatisticsTimeDto,
+    date: StatisticsDateDto,
   ): Promise<Tart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
@@ -226,8 +193,9 @@ export class StatisticsMetadataRelationalRepository
         break;
     }
 
-    if (filter?.from || filter?.to) {
-      query.andWhere(this.renderTimeQuery(filter));
+    if (date?.from || date?.to) {
+      query.where('DATE(s.createdAt) :dateRange');
+      query.setParameter('dateRange', dateRangeQuery(date));
     }
 
     const entities = await query.getRawMany();
@@ -249,7 +217,7 @@ export class StatisticsMetadataRelationalRepository
 
   async genHistogramMetadata(
     metadata: StatisticsMetadata,
-    filter: StatisticsTimeDto,
+    date: StatisticsDateDto,
   ): Promise<Histogram> {
     const entityManager = this.getEntityManager();
     const query = entityManager
@@ -274,12 +242,18 @@ export class StatisticsMetadataRelationalRepository
         break;
     }
 
-    if (filter?.from || filter?.to) {
-      query.andWhere(this.renderTimeQuery(filter));
+    if (date?.from || date?.to) {
+      query.where('DATE(s.createdAt) :dateRange');
+      query.setParameter('dateRange', dateRangeQuery(date));
     }
 
-    if (filter?.time) {
-      query.groupBy(this.renderInterval(filter.time));
+    if (date?.grouping) {
+      query.addSelect(
+        'DATE_FORMAT(s.createdAt, :dateGrouping) AS dateFormatted',
+      );
+      query.setParameter('dateGrouping', dateGroupingQuery(date.grouping));
+      query.groupBy('dateFormatted');
+      query.orderBy('dateFormatted');
     }
 
     const entities = await query.getRawMany();
@@ -288,7 +262,7 @@ export class StatisticsMetadataRelationalRepository
       label: metadata.label,
       description: metadata.fieldQuestion?.label || '',
       data: entities.map((entity) => ({
-        label: entity.value,
+        label: date.grouping ? entity.dateFormatted : entity.value,
         frequency: Number(entity.count) || 0,
       })),
     };

@@ -3,11 +3,12 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
-import { FindTopGeneralDto } from 'src/statistics/dto/find-top-general.dto';
+import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
 import { DataSource } from 'typeorm';
 import { TopSpecialties } from '../../../../domain/top-specialties';
 import { TopSpecialtiesRepository } from '../../top-specialties.repository';
 import { TopSpecialtiesMapper } from '../mappers/top-specialties.mapper';
+import { dateRangeQuery } from 'src/utils/statistics-utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class TopSpecialtiesRelationalRepository
@@ -22,27 +23,7 @@ export class TopSpecialtiesRelationalRepository
     super(datasource, request);
   }
 
-  private renderTimeQuery(time?: FindTopGeneralDto): string {
-    if (time?.from && time?.to) {
-      const fromString = time.from.toISOString().split('T')[0];
-      const toString = time.to.toISOString().split('T')[0];
-      return `DATE(request.createdAt) BETWEEN DATE(${fromString}) AND DATE(
-        ${toString}
-        )`;
-    } else if (time?.from) {
-      const fromString = time.from.toISOString().split('T')[0];
-      return `DATE(request.createdAt) BETWEEN DATE(${fromString}) AND CURRENT_DATE()`;
-    } else if (time?.to) {
-      const toString = time.to.toISOString().split('T')[0];
-      return `DATE(request.createdAt) BETWEEN DATE(2000-01-01) AND DATE(
-        ${toString}
-        )`;
-    } else {
-      return '';
-    }
-  }
-
-  async findAll(time?: FindTopGeneralDto): Promise<TopSpecialties[]> {
+  async findAll(date?: StatisticsDateDto): Promise<TopSpecialties[]> {
     const entityManager = this.getEntityManager();
     let entities: any[] = [];
     const query = entityManager
@@ -61,8 +42,8 @@ export class TopSpecialtiesRelationalRepository
       ])
       .limit(10);
 
-    if (time?.from || time?.to) {
-      entities = await query.andWhere(this.renderTimeQuery(time)).getRawMany();
+    if (date) {
+      entities = await query.andWhere(dateRangeQuery(date)).getRawMany();
     } else {
       entities = await query.getRawMany();
     }
