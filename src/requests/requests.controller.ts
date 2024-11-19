@@ -199,7 +199,23 @@ export class RequestsController {
     type: Request,
   })
   async cancel(@Me() userPayload: JwtPayloadType, @Param('id') id: string) {
-    return this.requestsService.cancel(id, userPayload.id);
+    return this.requestsService.cancel(id, userPayload.id, {
+      cancelledBy: 'user',
+    });
+  }
+
+  @Post('medic/cancel/:id')
+  @UseInterceptors(TransactionInterceptor)
+  @ApiOkResponse({
+    type: Request,
+  })
+  async cancelByMedic(
+    @Me() userPayload: JwtPayloadType,
+    @Param('id') id: string,
+  ) {
+    return this.requestsService.cancel(id, userPayload.id, {
+      cancelledBy: 'medic',
+    });
   }
 
   @Post('rate/:id')

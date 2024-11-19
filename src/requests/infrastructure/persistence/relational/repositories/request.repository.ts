@@ -219,7 +219,7 @@ export class RequestRelationalRepository
       };
     }
     if (options?.withMadeBy) {
-      relations = { ...relations, madeFor: true };
+      relations = { ...relations, madeBy: true };
     }
     if (options?.minimal) relations = {};
 
