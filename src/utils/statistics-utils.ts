@@ -12,16 +12,16 @@ export function dateRangeQuery(date?: StatisticsDateDto): string {
   const dateTo = date.to ? formatDate(date.to) : null;
 
   if (dateFrom && dateTo) {
-    return `BETWEEN DATE(${dateFrom}) AND DATE(${dateTo})`;
+    return `BETWEEN DATE(\'${dateFrom}\') AND DATE(\'${dateTo}\')`;
   }
 
   if (dateFrom) {
-    return `BETWEEN DATE(${dateFrom}) AND CURRENT_DATE()`;
+    return `BETWEEN DATE(\'${dateFrom}\') AND CURRENT_DATE()`;
   }
 
   if (dateTo) {
     const minimumDate = '2000-01-01';
-    return `BETWEEN DATE(${minimumDate}) AND DATE(${dateTo})`;
+    return `BETWEEN DATE(\'${minimumDate}\') AND DATE(\'${dateTo}\')`;
   }
 
   return '';
