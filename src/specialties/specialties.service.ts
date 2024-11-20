@@ -146,14 +146,17 @@ export class SpecialtiesService {
 
   async findAllActiveWithPagination({
     paginationOptions,
+    isPublic,
   }: {
     paginationOptions: IPaginationOptions;
+    isPublic?: boolean;
   }) {
     return this.specialtyRepository.findAllActiveWithPagination({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
+      isPublic,
     });
   }
 

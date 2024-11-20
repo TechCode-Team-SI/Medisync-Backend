@@ -133,8 +133,10 @@ export class SpecialtyRelationalRepository
 
   async findAllActiveWithPagination({
     paginationOptions,
+    isPublic,
   }: {
     paginationOptions: IPaginationOptions;
+    isPublic?: boolean;
   }): Promise<PaginationResponseDto<Specialty>> {
     const entityManager = this.getEntityManager();
     const query = entityManager
@@ -142,11 +144,14 @@ export class SpecialtyRelationalRepository
       .createQueryBuilder('s')
       .leftJoinAndSelect('s.image', 'i')
       .innerJoin('s.employees', 'e')
-      .where('s.isPublic = :isPublic', { isPublic: true })
-      .andWhere('s.isDisabled = :isDisabled', { isDisabled: false })
+      .where('s.isDisabled = :isDisabled', { isDisabled: false })
       .andWhere('s.requestTemplate IS NOT NULL')
       .andWhere('e.status = :status', { status: true })
       .orderBy('s.name', 'DESC');
+
+    if (isPublic) {
+      query.andWhere('s.isPublic = :isPublic', { isPublic });
+    }
 
     const entities = await query.getMany();
     const count = await query.getCount();

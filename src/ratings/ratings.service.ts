@@ -35,12 +35,6 @@ export class RatingsService {
       );
     }
 
-    if (foundRequest.madeBy?.id !== foundUser.id) {
-      throw new UnprocessableEntityException(
-        exceptionResponses.UserNotCreateRequest,
-      );
-    }
-
     const foundRating = await this.requestsService.findRating(requestId);
     if (foundRating) {
       throw new UnprocessableEntityException(
