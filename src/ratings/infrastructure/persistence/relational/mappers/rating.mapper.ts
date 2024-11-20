@@ -6,6 +6,7 @@ import { UserMapper } from 'src/users/infrastructure/persistence/relational/mapp
 export class RatingMapper {
   static toDomain(raw: RatingEntity): Rating {
     const domainEntity = new Rating();
+    domainEntity.review = raw.review;
 
     domainEntity.id = raw.id;
     domainEntity.stars = raw.stars;
@@ -21,6 +22,7 @@ export class RatingMapper {
 
   static toPersistence(domainEntity: Rating): RatingEntity {
     const persistenceEntity = new RatingEntity();
+    persistenceEntity.review = domainEntity.review;
 
     if (domainEntity.id) {
       persistenceEntity.id = domainEntity.id;

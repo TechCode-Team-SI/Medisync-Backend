@@ -6,6 +6,11 @@ export class CreateMedicalCenterDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
+  description: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
   instagramName: string;
 
   @ApiProperty()

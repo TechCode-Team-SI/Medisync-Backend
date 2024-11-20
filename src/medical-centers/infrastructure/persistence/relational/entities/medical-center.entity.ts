@@ -7,6 +7,10 @@ import { ApiProperty } from '@nestjs/swagger';
 })
 export class MedicalCenterEntity extends EntityRelationalHelper {
   @ApiProperty()
+  @Column({ type: 'text' })
+  description: string;
+
+  @ApiProperty()
   @Column({ nullable: true })
   instagramName: string;
 

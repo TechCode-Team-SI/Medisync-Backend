@@ -228,7 +228,10 @@ export class RequestsController {
     @Body() createRatingDto: CreateRatingDto,
   ) {
     const rating = await this.ratingsService.create(
-      createRatingDto.stars,
+      {
+        stars: createRatingDto.stars,
+        review: createRatingDto.review,
+      },
       id,
       userPayload,
     );

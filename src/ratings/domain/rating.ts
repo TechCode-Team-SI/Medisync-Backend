@@ -3,6 +3,9 @@ import { User } from 'src/users/domain/user';
 import { Request } from 'src/requests/domain/request';
 
 export class Rating {
+  @ApiProperty()
+  review: string;
+
   @ApiProperty({
     type: String,
   })
