@@ -7,6 +7,7 @@ import { TicketComment } from './domain/ticket-comment';
 import { UpdateTicketCommentDto } from './dto/update-ticket-comment.dto';
 import { TicketCommentRepository } from './infrastructure/persistence/ticket-comment.repository';
 import { exceptionResponses } from './ticket-comments.messages';
+import { SortTicketCommentDto } from './dto/find-all-ticket-comments.dto';
 
 @Injectable()
 export class TicketCommentsService {
@@ -44,10 +45,12 @@ export class TicketCommentsService {
     paginationOptions,
     options,
     ticketId,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions & { createdBy?: boolean };
     ticketId?: string;
+    sortOptions?: SortTicketCommentDto[] | null;
   }) {
     return this.ticketCommentRepository.findAllWithPagination({
       paginationOptions: {
@@ -56,6 +59,7 @@ export class TicketCommentsService {
       },
       options,
       ticketId,
+      sortOptions,
     });
   }
 

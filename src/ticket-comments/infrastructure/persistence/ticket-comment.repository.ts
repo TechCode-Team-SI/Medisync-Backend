@@ -5,6 +5,7 @@ import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { TicketComment } from '../../domain/ticket-comment';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
+import { SortTicketCommentDto } from 'src/ticket-comments/dto/find-all-ticket-comments.dto';
 
 export abstract class TicketCommentRepository extends BaseRepository {
   abstract create(
@@ -18,6 +19,7 @@ export abstract class TicketCommentRepository extends BaseRepository {
     paginationOptions: IPaginationOptions;
     options?: findOptions & { createdBy?: boolean };
     ticketId?: string;
+    sortOptions?: SortTicketCommentDto[] | null;
   }): Promise<PaginationResponseDto<TicketComment>>;
 
   abstract findById(
