@@ -34,7 +34,7 @@ export class StatisticsController {
   async findTopSpecialties(
     @Query() query: StatisticsDateDto,
   ): Promise<TopSpecialties[]> {
-    return this.statisticsService.findtopSpecialties(query);
+    return this.statisticsService.findTopSpecialties(query);
   }
 
   @Get('top-weekdays')
@@ -44,7 +44,7 @@ export class StatisticsController {
   async findTopWeekdays(
     @Query() query: StatisticsDateDto,
   ): Promise<TopWeekdays[]> {
-    return this.statisticsService.findtopWeekdays(query);
+    return this.statisticsService.findTopWeekdays(query);
   }
 
   @Get()

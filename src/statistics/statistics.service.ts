@@ -18,11 +18,11 @@ export class StatisticsService {
     return this.topMedicsRepository.findAll(date);
   }
 
-  findtopSpecialties(date?: StatisticsDateDto) {
+  findTopSpecialties(date?: StatisticsDateDto) {
     return this.topSpecialtiesRepository.findAll(date);
   }
 
-  findtopWeekdays(date?: StatisticsDateDto) {
+  findTopWeekdays(date?: StatisticsDateDto) {
     return this.topWeekdaysRepository.findAll(date);
   }
 

@@ -40,7 +40,7 @@ export class TopWeekdaysRelationalRepository
 
     if (date) {
       const dateRange = dateRangeQuery(date);
-      query.where(`DATE(request.createdAt) ${dateRange}`);
+      query.andWhere(`(DATE(request.createdAt) ${dateRange})`);
     }
 
     entities = await query.getRawMany();
