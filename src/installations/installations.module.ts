@@ -6,6 +6,8 @@ import { RolesModule } from 'src/roles/roles.module';
 import { MedicalCentersModule } from 'src/medical-centers/medical-centers.module';
 import { InstallationsController } from './installations.controller';
 import { PackagesModule } from 'src/packages/packages.module';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { PackagesModule } from 'src/packages/packages.module';
     RolesModule,
     MedicalCentersModule,
     PackagesModule,
+    ConfigModule,
+    AuthModule,
   ],
   controllers: [InstallationsController],
   providers: [InstallationsService],

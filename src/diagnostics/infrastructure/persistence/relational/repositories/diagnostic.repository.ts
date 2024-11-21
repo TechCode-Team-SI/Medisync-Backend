@@ -1,25 +1,37 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { DiagnosticEntity } from '../entities/diagnostic.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { Diagnostic } from '../../../../domain/diagnostic';
-import { DiagnosticRepository } from '../../diagnostic.repository';
-import { DiagnosticMapper } from '../mappers/diagnostic.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/diagnostics/diagnostics.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { DataSource, FindOptionsRelations, Repository } from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Diagnostic } from '../../../../domain/diagnostic';
+import { DiagnosticRepository } from '../../diagnostic.repository';
+import { DiagnosticEntity } from '../entities/diagnostic.entity';
+import { DiagnosticMapper } from '../mappers/diagnostic.mapper';
 
-@Injectable()
-export class DiagnosticRelationalRepository implements DiagnosticRepository {
+@Injectable({ scope: Scope.REQUEST })
+export class DiagnosticRelationalRepository
+  extends BaseRepository
+  implements DiagnosticRepository
+{
   constructor(
-    @InjectRepository(DiagnosticEntity)
-    private readonly diagnosticRepository: Repository<DiagnosticEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
 
-  private relations = [];
+  private get diagnosticRepository(): Repository<DiagnosticEntity> {
+    return this.getRepository(DiagnosticEntity);
+  }
+
+  private relations: FindOptionsRelations<DiagnosticEntity> = {};
 
   async create(data: Diagnostic): Promise<Diagnostic> {
     const persistenceModel = DiagnosticMapper.toPersistence(data);
@@ -37,7 +49,7 @@ export class DiagnosticRelationalRepository implements DiagnosticRepository {
     options?: findOptions;
   }): Promise<PaginationResponseDto<Diagnostic>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const [entities, count] = await this.diagnosticRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
@@ -61,7 +73,7 @@ export class DiagnosticRelationalRepository implements DiagnosticRepository {
     options?: findOptions,
   ): Promise<NullableType<Diagnostic>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.diagnosticRepository.findOne({
       where: { id },

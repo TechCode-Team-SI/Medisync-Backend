@@ -2,8 +2,9 @@ import { findOptions } from 'src/utils/types/fine-options.type';
 import { User } from '../../../users/domain/user';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { Session } from '../../domain/session';
+import { BaseRepository } from 'src/common/base.repository';
 
-export abstract class SessionRepository {
+export abstract class SessionRepository extends BaseRepository {
   abstract findById(
     id: Session['id'],
     options?: findOptions,

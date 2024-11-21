@@ -1,12 +1,17 @@
-import { PartialType, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreateUserDto } from './create-user.dto';
 
 import { Transform, Type } from 'class-transformer';
-import { IsEmail, IsOptional, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  MinLength,
+  ValidateNested,
+} from 'class-validator';
+import { EmployeeProfilePartialDto } from 'src/employee-profiles/dto/employee-profile-partial.dto';
 import { FileDto } from '../../files/dto/file.dto';
 import { RoleDto } from '../../roles/dto/role.dto';
 import { lowerCaseTransformer } from '../../utils/transformers/lower-case.transformer';
-import { EmployeeProfileDto } from './employee-profile.dto';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiPropertyOptional({ example: 'test1@example.com', type: String })
@@ -33,7 +38,9 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @Type(() => RoleDto)
   roles?: RoleDto[] | null;
 
-  @ApiPropertyOptional({ type: () => EmployeeProfileDto })
+  @ApiPropertyOptional({ type: () => EmployeeProfilePartialDto })
   @IsOptional()
-  employeeProfile?: EmployeeProfileDto | null;
+  @ValidateNested()
+  @Type(() => EmployeeProfilePartialDto)
+  employeeProfile?: EmployeeProfilePartialDto | null;
 }

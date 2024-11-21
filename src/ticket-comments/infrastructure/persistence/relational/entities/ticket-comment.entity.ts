@@ -20,7 +20,7 @@ export class TicketCommentEntity extends EntityRelationalHelper {
   id: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ type: 'text' })
   comment: string;
 
   @ApiProperty()

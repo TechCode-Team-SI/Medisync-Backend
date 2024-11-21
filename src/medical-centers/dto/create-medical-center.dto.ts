@@ -1,8 +1,38 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateMedicalCenterDto {
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  description: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  instagramName: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  twitterName: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  facebookName: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  tiktokName: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  email: string;
+
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
@@ -31,12 +61,12 @@ export class CreateMedicalCenterDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  local_phone: string;
+  localPhone: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  mobile_phone: string;
+  mobilePhone: string;
 
   @ApiProperty()
   @IsNotEmpty()

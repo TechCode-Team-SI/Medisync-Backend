@@ -1,22 +1,37 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {
+  Inject,
+  Injectable,
+  Scope,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { exceptionResponses } from 'src/auth/auth.messages';
+import { BaseRepository } from 'src/common/base.repository';
+import { genOTPCode } from 'src/utils/utils';
+import { DataSource, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { PasswordToken } from '../../../../domain/password-token';
 import { PasswordTokenRepository } from '../../password-token.repository';
 import { PasswordTokenEntity } from '../entities/password-token.entity';
 import { PasswordTokenMapper } from '../mappers/password-token.mapper';
-import { exceptionResponses } from 'src/auth/auth.messages';
-import { genOTPCode } from 'src/utils/utils';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class PasswordTokenRelationalRepository
+  extends BaseRepository
   implements PasswordTokenRepository
 {
   constructor(
-    @InjectRepository(PasswordTokenEntity)
-    private readonly PasswordTokenRepository: Repository<PasswordTokenEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
+
+  private get PasswordTokenRepository(): Repository<PasswordTokenEntity> {
+    return this.getRepository(PasswordTokenEntity);
+  }
 
   async create(
     email: PasswordToken['email'],

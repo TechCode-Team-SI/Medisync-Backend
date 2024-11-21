@@ -4,8 +4,10 @@ import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Role } from '../../domain/role';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
+import { SortRoleDto } from 'src/roles/dto/find-all-roles.dto';
 
-export abstract class RoleRepository {
+export abstract class RoleRepository extends BaseRepository {
   abstract create(
     data: DeepPartial<Omit<Role, 'id' | 'createdAt' | 'updatedAt'>>,
   ): Promise<Role>;
@@ -15,6 +17,7 @@ export abstract class RoleRepository {
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortRoleDto[] | null;
   }): Promise<PaginationResponseDto<Role>>;
 
   abstract findManyByIds(

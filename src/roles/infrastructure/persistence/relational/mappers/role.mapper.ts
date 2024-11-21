@@ -9,6 +9,7 @@ export class RoleMapper {
     domainEntity.slug = raw.slug;
     domainEntity.id = raw.id;
     domainEntity.name = raw.name;
+    domainEntity.description = raw.description;
     if (raw.permissions) {
       domainEntity.permissions = raw.permissions.map((permission) =>
         PermissionMapper.toDomain(permission),
@@ -33,6 +34,7 @@ export class RoleMapper {
       );
     }
     persistenceEntity.name = domainEntity.name;
+    persistenceEntity.description = domainEntity.description;
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
 

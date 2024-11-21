@@ -62,6 +62,7 @@ export class <%= h.inflection.transform(name, ['pluralize']) %>Controller {
 
     return this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.findAllWithPagination({
         paginationOptions,
+        sortOptions: query.sort,
       })
   }
 

@@ -1,6 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class MedicalCenter {
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  instagramName: string;
+
+  @ApiProperty()
+  twitterName: string;
+
+  @ApiProperty()
+  facebookName: string;
+
+  @ApiProperty()
+  tiktokName: string;
+
+  @ApiProperty()
+  email: string;
+
   @ApiProperty({
     type: Number,
   })
@@ -22,10 +40,10 @@ export class MedicalCenter {
   parish: string;
 
   @ApiProperty()
-  local_phone: string;
+  localPhone: string;
 
   @ApiProperty()
-  mobile_phone: string;
+  mobilePhone: string;
 
   @ApiProperty()
   mission: string;

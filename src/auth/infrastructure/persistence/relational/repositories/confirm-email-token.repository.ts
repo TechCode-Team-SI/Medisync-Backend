@@ -1,22 +1,37 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {
+  Inject,
+  Injectable,
+  Scope,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { exceptionResponses } from 'src/auth/auth.messages';
+import { BaseRepository } from 'src/common/base.repository';
+import { genOTPCode } from 'src/utils/utils';
+import { DataSource, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { ConfirmEmailToken } from '../../../../domain/confirm-email-token';
 import { ConfirmEmailTokenRepository } from '../../confirm-email-token.repository';
 import { ConfirmEmailTokenEntity } from '../entities/confirm-email-token.entity';
 import { ConfirmEmailTokenMapper } from '../mappers/confirm-email-token.mapper';
-import { exceptionResponses } from 'src/auth/auth.messages';
-import { genOTPCode } from 'src/utils/utils';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class ConfirmEmailTokenRelationalRepository
+  extends BaseRepository
   implements ConfirmEmailTokenRepository
 {
   constructor(
-    @InjectRepository(ConfirmEmailTokenEntity)
-    private readonly ConfirmEmailTokenRepository: Repository<ConfirmEmailTokenEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
+
+  private get ConfirmEmailTokenRepository(): Repository<ConfirmEmailTokenEntity> {
+    return this.getRepository(ConfirmEmailTokenEntity);
+  }
 
   async create(
     email: ConfirmEmailToken['email'],

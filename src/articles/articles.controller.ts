@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -31,10 +32,13 @@ import { Article } from './domain/article';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { FindAllArticlesDto } from './dto/find-all-articles.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
+import { TransactionInterceptor } from 'src/common/transaction.interceptor';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Articles')
-@ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
 @Controller({
   path: 'articles',
   version: '1',
@@ -43,6 +47,12 @@ export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
   @Post()
+  @Permissions(PermissionsEnum.MANAGE_ARTICLES)
+  @UseGuards(PermissionsGuard)
+  @UseGuards(EmployeeOnlyGuard)
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(TransactionInterceptor)
   @ApiCreatedResponse({
     type: Article,
   })
@@ -64,6 +74,8 @@ export class ArticlesController {
 
     return this.articlesService.findAllWithPagination({
       paginationOptions,
+      sortOptions: query.sort,
+      filterOptions: query.filters,
     });
   }
 
@@ -87,6 +99,11 @@ export class ArticlesController {
   }
 
   @Patch(':id')
+  @Permissions(PermissionsEnum.MANAGE_ARTICLES)
+  @UseGuards(PermissionsGuard)
+  @UseGuards(EmployeeOnlyGuard)
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @ApiParam({
     name: 'id',
     type: String,
@@ -100,6 +117,11 @@ export class ArticlesController {
   }
 
   @Delete(':id')
+  @Permissions(PermissionsEnum.MANAGE_ARTICLES)
+  @UseGuards(PermissionsGuard)
+  @UseGuards(EmployeeOnlyGuard)
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @ApiParam({
     name: 'id',
     type: String,

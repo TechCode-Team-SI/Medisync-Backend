@@ -4,8 +4,10 @@ import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { TicketComment } from '../../domain/ticket-comment';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
+import { SortTicketCommentDto } from 'src/ticket-comments/dto/find-all-ticket-comments.dto';
 
-export abstract class TicketCommentRepository {
+export abstract class TicketCommentRepository extends BaseRepository {
   abstract create(
     data: Omit<TicketComment, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<TicketComment>;
@@ -15,7 +17,9 @@ export abstract class TicketCommentRepository {
     options,
   }: {
     paginationOptions: IPaginationOptions;
-    options?: findOptions;
+    options?: findOptions & { createdBy?: boolean };
+    ticketId?: string;
+    sortOptions?: SortTicketCommentDto[] | null;
   }): Promise<PaginationResponseDto<TicketComment>>;
 
   abstract findById(

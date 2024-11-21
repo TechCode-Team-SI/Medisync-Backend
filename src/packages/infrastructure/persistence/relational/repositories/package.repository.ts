@@ -1,25 +1,50 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { PackageEntity } from '../entities/package.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { Package } from '../../../../domain/package';
-import { PackageRepository } from '../../package.repository';
-import { PackageMapper } from '../mappers/package.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/packages/packages.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import {
+  DataSource,
+  FindOneOptions,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  In,
+  Like,
+  Repository,
+} from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Package } from '../../../../domain/package';
+import { PackageRepository } from '../../package.repository';
+import { PackageEntity } from '../entities/package.entity';
+import { PackageMapper } from '../mappers/package.mapper';
+import {
+  FilterPackageDto,
+  SortPackageDto,
+} from 'src/packages/dto/find-all-packages.dto';
+import { formatOrder } from 'src/utils/utils';
 
-@Injectable()
-export class PackageRelationalRepository implements PackageRepository {
+@Injectable({ scope: Scope.REQUEST })
+export class PackageRelationalRepository
+  extends BaseRepository
+  implements PackageRepository
+{
   constructor(
-    @InjectRepository(PackageEntity)
-    private readonly packageRepository: Repository<PackageEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
 
-  private relations = [];
+  private get packageRepository(): Repository<PackageEntity> {
+    return this.getRepository(PackageEntity);
+  }
+
+  private relations: FindOptionsRelations<PackageEntity> = {};
 
   async create(data: Package): Promise<Package> {
     const persistenceModel = PackageMapper.toPersistence(data);
@@ -32,17 +57,35 @@ export class PackageRelationalRepository implements PackageRepository {
   async findAllWithPagination({
     paginationOptions,
     options,
+    sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortPackageDto[] | null;
+    filterOptions?: FilterPackageDto | null;
   }): Promise<PaginationResponseDto<Package>> {
+    let where: FindOptionsWhere<PackageEntity> = {};
+    if (filterOptions?.search) {
+      where = {
+        ...where,
+        name: Like(`%${filterOptions.search}%`),
+      };
+    }
+    let order: FindOneOptions<PackageEntity>['order'] = {
+      name: 'DESC',
+    };
+    if (sortOptions) order = formatOrder(sortOptions);
+
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const [entities, count] = await this.packageRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       relations,
+      where,
+      order,
     });
     const items = entities.map((entity) => PackageMapper.toDomain(entity));
 
@@ -61,7 +104,7 @@ export class PackageRelationalRepository implements PackageRepository {
     options?: findOptions,
   ): Promise<NullableType<Package>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.packageRepository.findOne({
       where: { id },
@@ -76,7 +119,7 @@ export class PackageRelationalRepository implements PackageRepository {
     options?: findOptions,
   ): Promise<NullableType<Package[]>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entities = await this.packageRepository.find({
       where: { slug: In(slugs) },

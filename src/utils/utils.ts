@@ -35,3 +35,42 @@ export function isValueInEnum<T extends StandardEnum<unknown>>(
 ) {
   return Object.values(enumLike).includes(value);
 }
+
+export function getEnumKeys<T extends StandardEnum<unknown>>(enumLike: T) {
+  return Object.values(enumLike).filter(
+    (value) => typeof value === 'string',
+  ) as string[];
+}
+
+export function formatOrder(sortOptions: { orderBy: string; order: string }[]) {
+  return sortOptions?.reduce(
+    (accumulator, sort) => ({
+      ...accumulator,
+      [sort.orderBy]: sort.order,
+    }),
+    {},
+  );
+}
+
+export function isHourALessThanHourB(hourA: string, hourB: string) {
+  const [hourAHours, hourAMinutes] = hourA.split(':').map(Number);
+  const [hourBHours, hourBMinutes] = hourB.split(':').map(Number);
+
+  if (hourAHours < hourBHours) {
+    return true;
+  }
+
+  if (hourAHours === hourBHours && hourAMinutes < hourBMinutes) {
+    return true;
+  }
+
+  return false;
+}
+
+export function filterName(name: string) {
+  return `filters[${name}]`;
+}
+
+export function sortName(name: string) {
+  return `sort[0][${name}]`;
+}

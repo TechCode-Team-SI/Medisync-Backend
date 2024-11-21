@@ -1,6 +1,43 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsOptional } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { OrderEnum } from 'src/common/order.enum';
+import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
+import { ApiSortProperty } from 'src/utils/decorators/sort-property';
+import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
+
+export class SortArticleDto {
+  @ApiSortProperty({ enum: ['createdAt', 'title'] })
+  @Type(() => String)
+  @IsString()
+  orderBy: string;
+
+  @ApiSortProperty({ enum: OrderEnum })
+  @IsString()
+  order: string;
+}
+
+export class FilterArticleDto {
+  //Search by name
+  @ApiFilterProperty({ description: 'Search by title' })
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  @ApiFilterProperty({
+    isArray: true,
+    type: String,
+  })
+  @IsOptional()
+  @IsString({ each: true })
+  categoryIds?: string[] | string | null;
+}
 
 export class FindAllArticlesDto {
   @ApiPropertyOptional()
@@ -14,4 +51,19 @@ export class FindAllArticlesDto {
   @IsNumber()
   @IsOptional()
   limit?: number;
+
+  @ApiPropertyOptional({ type: () => SortArticleDto, isArray: true })
+  @IsOptional()
+  @Transform(ObjectTransformer(SortArticleDto))
+  @ValidateNested({ each: true })
+  @Type(() => SortArticleDto)
+  sort?: SortArticleDto[] | null;
+
+  @ApiPropertyOptional({ type: () => FilterArticleDto })
+  @IsOptional()
+  @IsObject()
+  @Transform(ObjectTransformer(FilterArticleDto))
+  @ValidateNested()
+  @Type(() => FilterArticleDto)
+  filters?: FilterArticleDto | null;
 }

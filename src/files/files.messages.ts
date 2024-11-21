@@ -12,4 +12,9 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'select_file',
     message: 'Seleccione un archivo',
   },
+  FileNotFound: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'file_not_found_dir',
+    message: 'File not found in the directory',
+  },
 } as const;

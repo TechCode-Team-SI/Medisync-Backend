@@ -1,29 +1,74 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Transform, Type, plainToInstance } from 'class-transformer';
-import { User } from '../domain/user';
-import { RoleDto } from '../../roles/dto/role.dto';
+import { OrderEnum } from 'src/common/order.enum';
+import { ApiFilterProperty } from 'src/utils/decorators/filter-property';
+import { ApiSortProperty } from 'src/utils/decorators/sort-property';
+import { BooleanTransformer } from 'src/utils/transformers/boolean.transformer';
+import { ObjectTransformer } from 'src/utils/transformers/object-transformer';
 
 export class FilterUserDto {
-  @ApiPropertyOptional({ type: RoleDto })
+  @ApiFilterProperty({
+    isArray: true,
+    type: String,
+  })
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => RoleDto)
-  roles?: RoleDto[] | null;
+  @IsString({ each: true })
+  roleIds?: string[] | string | null;
+
+  @ApiFilterProperty({
+    isArray: true,
+    type: String,
+  })
+  @IsOptional()
+  @IsString({ each: true })
+  permissionSlugs?: string[] | string | null;
+
+  @ApiFilterProperty({
+    isArray: true,
+    type: String,
+  })
+  @IsOptional()
+  @IsString({ each: true })
+  specialtyIds?: string[] | string | null;
+
+  @ApiFilterProperty({ type: Boolean })
+  @IsOptional()
+  @Transform(BooleanTransformer)
+  @IsBoolean()
+  onlyEmployee?: boolean;
+
+  @ApiFilterProperty({ type: Boolean })
+  @IsOptional()
+  @Transform(BooleanTransformer)
+  @IsBoolean()
+  status?: boolean;
+
+  //Search by name
+  @ApiFilterProperty({
+    type: String,
+    description: 'search by name',
+  })
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
 
 export class SortUserDto {
-  @ApiProperty()
-  @Type(() => String)
+  @ApiSortProperty({
+    enum: ['createdAt', 'fullName', 'email'],
+  })
   @IsString()
-  orderBy: keyof User;
+  orderBy: 'createdAt' | 'fullName' | 'email';
 
-  @ApiProperty()
+  @ApiSortProperty({ enum: OrderEnum })
   @IsString()
   order: string;
 }
@@ -41,20 +86,17 @@ export class QueryUserDto {
   @IsOptional()
   limit?: number;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: FilterUserDto })
   @IsOptional()
-  @Transform(({ value }) =>
-    value ? plainToInstance(FilterUserDto, JSON.parse(value)) : undefined,
-  )
+  @IsObject()
+  @Transform(ObjectTransformer(FilterUserDto))
   @ValidateNested()
   @Type(() => FilterUserDto)
   filters?: FilterUserDto | null;
 
-  @ApiPropertyOptional({ type: String })
+  @ApiPropertyOptional({ type: SortUserDto, isArray: true })
   @IsOptional()
-  @Transform(({ value }) => {
-    return value ? plainToInstance(SortUserDto, JSON.parse(value)) : undefined;
-  })
+  @Transform(ObjectTransformer(SortUserDto))
   @ValidateNested({ each: true })
   @Type(() => SortUserDto)
   sort?: SortUserDto[] | null;

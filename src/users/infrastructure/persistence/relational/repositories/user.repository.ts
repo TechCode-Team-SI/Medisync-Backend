@@ -1,29 +1,57 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 
-import { FindOptionsRelations, FindOptionsWhere, Repository } from 'typeorm';
-import { UserEntity } from '../entities/user.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { FilterUserDto, SortUserDto } from '../../../../dto/query-user.dto';
-import { User } from '../../../../domain/user';
-import { UserRepository } from '../../user.repository';
-import { UserMapper } from '../mappers/user.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/users/users.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import {
+  DataSource,
+  FindOneOptions,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  In,
+  IsNull,
+  Like,
+  Not,
+  Repository,
+} from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { User } from '../../../../domain/user';
+import { FilterUserDto, SortUserDto } from '../../../../dto/query-user.dto';
+import { UserRepository } from '../../user.repository';
+import { UserEntity } from '../entities/user.entity';
+import { UserMapper } from '../mappers/user.mapper';
+import { formatOrder } from 'src/utils/utils';
+import { isArray } from 'class-validator';
 
-@Injectable()
-export class UsersRelationalRepository implements UserRepository {
+@Injectable({ scope: Scope.REQUEST })
+export class UsersRelationalRepository
+  extends BaseRepository
+  implements UserRepository
+{
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly usersRepository: Repository<UserEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
+
+  private get usersRepository(): Repository<UserEntity> {
+    return this.getRepository(UserEntity);
+  }
 
   private relations: FindOptionsRelations<UserEntity> = {
     roles: true,
-    employeeProfile: true,
+    employeeProfile: {
+      specialties: true,
+      agenda: true,
+      room: true,
+    },
   };
 
   async create(data: User): Promise<User> {
@@ -43,14 +71,68 @@ export class UsersRelationalRepository implements UserRepository {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-    options?: findOptions;
+    options?: findOptions & { employeeProfile: boolean; specialties: boolean };
   }): Promise<PaginationResponseDto<User>> {
+    let order: FindOneOptions<UserEntity>['order'] = { createdAt: 'DESC' };
+    if (sortOptions) order = formatOrder(sortOptions);
+
     let relations = this.relations;
+    if (options) relations = {};
+    if (options?.employeeProfile)
+      relations = { ...relations, employeeProfile: true };
+    if (options?.specialties) {
+      relations = {
+        ...relations,
+        employeeProfile: {
+          specialties: true,
+        },
+      };
+    }
     if (options?.minimal) relations = {};
 
-    const where: FindOptionsWhere<UserEntity> = {};
-    if (filterOptions?.roles?.length) {
-      //TODO: Implement filters later
+    let where: FindOptionsWhere<UserEntity> = {};
+    if (filterOptions?.roleIds && filterOptions.roleIds.length > 0) {
+      const roleIds = isArray(filterOptions.roleIds)
+        ? filterOptions.roleIds
+        : [filterOptions.roleIds];
+      where = { ...where, roles: { id: In(roleIds) } };
+    }
+    if (filterOptions?.specialtyIds && filterOptions.specialtyIds.length > 0) {
+      const specialtyIds = isArray(filterOptions.specialtyIds)
+        ? filterOptions.specialtyIds
+        : [filterOptions.specialtyIds];
+      where = {
+        ...where,
+        employeeProfile: {
+          specialties: { id: In(specialtyIds) },
+        },
+      };
+    }
+    if (filterOptions?.search) {
+      where = { ...where, fullName: Like(`%${filterOptions?.search}%`) };
+    }
+    if (filterOptions?.onlyEmployee !== undefined) {
+      switch (filterOptions.onlyEmployee) {
+        case true:
+          where = {
+            ...where,
+            employeeProfile: { id: Not(IsNull()) },
+          };
+          break;
+        default:
+          where = {
+            ...where,
+            employeeProfile: { id: IsNull() },
+          };
+      }
+    }
+    if (filterOptions?.status !== undefined) {
+      where = {
+        ...where,
+        employeeProfile: {
+          status: filterOptions.status,
+        },
+      };
     }
 
     const [entities, count] = await this.usersRepository.findAndCount({
@@ -58,14 +140,8 @@ export class UsersRelationalRepository implements UserRepository {
       take: paginationOptions.limit,
       loadEagerRelations: true,
       relations,
-      where: where,
-      order: sortOptions?.reduce(
-        (accumulator, sort) => ({
-          ...accumulator,
-          [sort.orderBy]: sort.order,
-        }),
-        {},
-      ),
+      where,
+      order,
     });
     const items = entities.map((entity) => UserMapper.toDomain(entity));
 
@@ -75,24 +151,180 @@ export class UsersRelationalRepository implements UserRepository {
     );
   }
 
+  async findAvailableMedicsWithPagination({
+    paginationOptions,
+    specialtyId,
+  }: {
+    specialtyId: string;
+    paginationOptions: IPaginationOptions;
+  }): Promise<PaginationResponseDto<User>> {
+    const [entities, count] = await this.usersRepository.findAndCount({
+      skip: (paginationOptions.page - 1) * paginationOptions.limit,
+      take: paginationOptions.limit,
+      loadEagerRelations: true,
+      relations: {
+        photo: true,
+        employeeProfile: true,
+      },
+      where: {
+        employeeProfile: {
+          specialties: {
+            id: specialtyId,
+            isDisabled: false,
+          },
+          agenda: Not(IsNull()),
+          status: true,
+        },
+      },
+      order: { fullName: 'DESC' },
+    });
+
+    const items = entities.map((entity) => UserMapper.toDomain(entity));
+
+    return Pagination(
+      { items, count },
+      { ...paginationOptions, domain: 'users' },
+    );
+  }
+
+  async findAll({
+    filterOptions,
+    sortOptions,
+    options,
+  }: {
+    filterOptions?: FilterUserDto | null;
+    sortOptions?: SortUserDto[] | null;
+    options?: findOptions & { employeeProfile: boolean };
+  }): Promise<User[]> {
+    let order: FindOneOptions<UserEntity>['order'] = { createdAt: 'DESC' };
+    if (sortOptions) order = formatOrder(sortOptions);
+
+    let relations = this.relations;
+    if (options) relations = {};
+    if (options?.employeeProfile)
+      relations = {
+        ...relations,
+        employeeProfile: {
+          agenda: true,
+        },
+      };
+    if (options?.minimal) relations = {};
+
+    let where: FindOptionsWhere<UserEntity> = {};
+    if (filterOptions?.roleIds && filterOptions.roleIds.length > 0) {
+      const roleIds = isArray(filterOptions.roleIds)
+        ? filterOptions.roleIds
+        : [filterOptions.roleIds];
+      where = { ...where, roles: { id: In(roleIds) } };
+    }
+    if (
+      filterOptions?.permissionSlugs &&
+      filterOptions.permissionSlugs.length > 0
+    ) {
+      let rolesWhere = {};
+      if (where.roles) {
+        rolesWhere = where.roles;
+      }
+      const permissionSlugs = isArray(filterOptions.permissionSlugs)
+        ? filterOptions.permissionSlugs
+        : [filterOptions.permissionSlugs];
+      where = {
+        ...where,
+        roles: {
+          ...rolesWhere,
+          permissions: { slug: In(permissionSlugs) },
+        },
+      };
+    }
+    if (filterOptions?.specialtyIds && filterOptions.specialtyIds.length > 0) {
+      const specialtyIds = isArray(filterOptions.specialtyIds)
+        ? filterOptions.specialtyIds
+        : [filterOptions.specialtyIds];
+      where = {
+        ...where,
+        employeeProfile: {
+          specialties: { id: In(specialtyIds) },
+        },
+      };
+    }
+    if (filterOptions?.onlyEmployee !== undefined) {
+      switch (filterOptions.onlyEmployee) {
+        case true:
+          where = {
+            ...where,
+            employeeProfile: { id: Not(IsNull()) },
+          };
+          break;
+        default:
+          where = {
+            ...where,
+            employeeProfile: { id: IsNull() },
+          };
+      }
+    }
+    if (filterOptions?.status !== undefined) {
+      where = {
+        ...where,
+        employeeProfile: {
+          status: filterOptions.status,
+        },
+      };
+    }
+    if (filterOptions?.search) {
+      where = { ...where, fullName: Like(`%${filterOptions?.search}%`) };
+    }
+
+    const entities = await this.usersRepository.find({
+      loadEagerRelations: true,
+      relations,
+      where,
+      order,
+    });
+    const items = entities.map((entity) => UserMapper.toDomain(entity));
+
+    return items;
+  }
+
   async findById(
     id: User['id'],
-    options?: findOptions & { withProfile?: boolean; withSpecialty?: boolean },
+    options?: findOptions & {
+      withProfile?: boolean;
+      withSpecialty?: boolean;
+      withUserPatients?: boolean;
+    },
   ): Promise<NullableType<User>> {
     let relations = this.relations;
     if (options) relations = {};
     if (options?.withProfile) {
-      relations.employeeProfile = true;
+      relations.employeeProfile = {
+        agenda: true,
+      };
     }
     if (options?.withSpecialty) {
       relations.employeeProfile = {
         specialties: true,
       };
     }
+    if (options?.withUserPatients) {
+      relations.userPatients = true;
+    }
     if (options?.minimal) relations = {};
     const entity = await this.usersRepository.findOne({
       where: { id },
       relations,
+    });
+
+    return entity ? UserMapper.toDomain(entity) : null;
+  }
+
+  async findAvailableSchedule(id: User['id']): Promise<NullableType<User>> {
+    const entity = await this.usersRepository.findOne({
+      where: { id },
+      relations: {
+        employeeProfile: {
+          agenda: true,
+        },
+      },
     });
 
     return entity ? UserMapper.toDomain(entity) : null;

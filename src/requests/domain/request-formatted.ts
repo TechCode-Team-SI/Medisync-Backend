@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FieldQuestionTypeEnum } from 'src/field-questions/field-questions.enum';
 import { RequestStatusEnum } from '../requests.enum';
 
@@ -12,10 +12,16 @@ export class RequestFormatted {
   patient: Patient;
 
   @ApiProperty()
-  requestedMedic: Medic;
+  requestedMedic?: Medic;
 
   @ApiProperty()
+  referredBy: ReferredByMedic;
+
+  @ApiPropertyOptional()
   requestedSpecialty: Specialty;
+
+  @ApiPropertyOptional()
+  referredContent?: string;
 
   @ApiProperty()
   appointmentHour: string;
@@ -37,6 +43,10 @@ type Patient = {
 };
 
 type Medic = {
+  fullName: string;
+};
+
+type ReferredByMedic = {
   fullName: string;
 };
 

@@ -1,26 +1,55 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { TicketEntity } from '../entities/ticket.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { Ticket } from '../../../../domain/ticket';
-import { TicketRepository } from '../../ticket.repository';
-import { TicketMapper } from '../mappers/ticket.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
+import {
+  FilterTicketDto,
+  SortTicketDto,
+} from 'src/tickets/dto/find-all-tickets.dto';
 import { exceptionResponses } from 'src/tickets/tickets.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
-import { TicketTypeEnum } from 'src/tickets/tickets.enum';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { formatOrder } from 'src/utils/utils';
+import {
+  DataSource,
+  FindOneOptions,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  In,
+  Like,
+  Repository,
+} from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Ticket } from '../../../../domain/ticket';
+import { TicketRepository } from '../../ticket.repository';
+import { TicketEntity } from '../entities/ticket.entity';
+import { TicketMapper } from '../mappers/ticket.mapper';
 
-@Injectable()
-export class TicketRelationalRepository implements TicketRepository {
+@Injectable({ scope: Scope.REQUEST })
+export class TicketRelationalRepository
+  extends BaseRepository
+  implements TicketRepository
+{
   constructor(
-    @InjectRepository(TicketEntity)
-    private readonly ticketRepository: Repository<TicketEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
 
-  private relations = ['createdBy'];
+  private get ticketRepository(): Repository<TicketEntity> {
+    return this.getRepository(TicketEntity);
+  }
+
+  private relations: FindOptionsRelations<TicketEntity> = {
+    createdBy: {
+      roles: false,
+    },
+    ticketTag: true,
+  };
 
   async create(data: Ticket): Promise<Ticket> {
     const persistenceModel = TicketMapper.toPersistence(data);
@@ -32,22 +61,42 @@ export class TicketRelationalRepository implements TicketRepository {
 
   async findAllWithPagination({
     paginationOptions,
-    type,
     options,
+    sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
-    type?: TicketTypeEnum;
-    options?: findOptions;
+    options?: findOptions & { createdBy: boolean };
+    sortOptions?: SortTicketDto[] | null;
+    filterOptions?: FilterTicketDto | null;
   }): Promise<PaginationResponseDto<Ticket>> {
-    let relations = this.relations;
-    if (options?.minimal) relations = [];
+    let order: FindOneOptions<TicketEntity>['order'] = { createdAt: 'DESC' };
+    if (sortOptions) order = formatOrder(sortOptions);
 
-    const where = type ? { type } : {};
+    let where: FindOptionsWhere<TicketEntity> = {};
+    if (filterOptions?.search) {
+      where = {
+        ...where,
+        title: Like(`%${filterOptions.search}%`),
+      };
+    }
+    if (filterOptions?.type) where = { ...where, type: filterOptions.type };
+    if (filterOptions?.status)
+      where = { ...where, status: filterOptions.status };
+    if (filterOptions?.createdByIds)
+      where = { ...where, createdBy: { id: In(filterOptions.createdByIds) } };
+
+    let relations = this.relations;
+    if (options) relations = {};
+    if (options?.createdBy) relations = { createdBy: true };
+    if (options?.minimal) relations = {};
+
     const [entities, count] = await this.ticketRepository.findAndCount({
       where,
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       relations,
+      order,
     });
     const items = entities.map((entity) => TicketMapper.toDomain(entity));
 
@@ -66,7 +115,7 @@ export class TicketRelationalRepository implements TicketRepository {
     options?: findOptions,
   ): Promise<NullableType<Ticket>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.ticketRepository.findOne({
       where: { id },

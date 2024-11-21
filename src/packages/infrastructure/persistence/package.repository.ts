@@ -4,8 +4,13 @@ import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Package } from '../../domain/package';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
+import {
+  FilterPackageDto,
+  SortPackageDto,
+} from 'src/packages/dto/find-all-packages.dto';
 
-export abstract class PackageRepository {
+export abstract class PackageRepository extends BaseRepository {
   abstract create(
     data: Omit<Package, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Package>;
@@ -16,6 +21,8 @@ export abstract class PackageRepository {
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortPackageDto[] | null;
+    filterOptions?: FilterPackageDto | null;
   }): Promise<PaginationResponseDto<Package>>;
 
   abstract findAllBySlug(

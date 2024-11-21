@@ -26,6 +26,8 @@ import { ConfirmEmailTokenRepository } from './infrastructure/persistence/confir
 import { PasswordTokenRepository } from './infrastructure/persistence/password-token.repository';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
+import { RolesService } from 'src/roles/roles.service';
+import { RolesEnum } from 'src/roles/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -37,6 +39,7 @@ export class AuthService {
     private configService: ConfigService<AllConfigType>,
     private passwordTokenRepository: PasswordTokenRepository,
     private confirmEmailTokenRepository: ConfirmEmailTokenRepository,
+    private rolesService: RolesService,
   ) {}
 
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
@@ -75,6 +78,7 @@ export class AuthService {
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: user.id,
+      employeeId: user.employeeProfile?.id,
       email: user.email,
       roles: user.roles,
       sessionId: session.id,
@@ -90,10 +94,24 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<LoginResponseDto> {
+    const { userPatient, ...data } = dto;
+
     const user = await this.usersService.create({
-      ...dto,
-      email: dto.email,
+      ...data,
+      email: data.email,
     });
+
+    if (userPatient) {
+      const patientProfile = await this.usersService.createUserPatient(
+        user.id,
+        userPatient,
+      );
+      if (!patientProfile) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.UserPatientNotCreated,
+        );
+      }
+    }
 
     const hash = crypto
       .createHash('sha256')
@@ -112,8 +130,6 @@ export class AuthService {
       sessionId: session.id,
       hash,
     });
-
-    void this.generateCodeConfirmEmail(user.email);
 
     return {
       refreshToken,
@@ -142,6 +158,16 @@ export class AuthService {
     }
 
     await this.confirmEmailTokenRepository.deleteById(confirmEmailToken.id);
+
+    const role = await this.rolesService.findbySlug(RolesEnum.MOBILE_USER);
+
+    if (!role) {
+      throw new UnprocessableEntityException(exceptionResponses.RoleNotExists);
+    }
+
+    await this.usersService.update(user.id, {
+      roles: [{ id: role.id }],
+    });
 
     return {
       success: true,
@@ -249,6 +275,25 @@ export class AuthService {
     };
   }
 
+  async checkPasswordCode(email: string, code: string): Promise<boolean> {
+    const passwordToken = await this.passwordTokenRepository.findOne({
+      email,
+      code,
+    });
+
+    if (!passwordToken) {
+      return false;
+    }
+
+    const user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+      return false;
+    }
+
+    return true;
+  }
+
   async me(userJwtPayload: JwtPayloadType): Promise<NullableType<User>> {
     return this.usersService.findById(userJwtPayload.id);
   }
@@ -305,6 +350,7 @@ export class AuthService {
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: session.user.id,
+      employeeId: user.employeeProfile?.id,
       email: user.email,
       roles: user.roles,
       sessionId: session.id,
@@ -328,6 +374,7 @@ export class AuthService {
 
   private async getTokensData(data: {
     id: User['id'];
+    employeeId?: string;
     email: User['email'];
     roles: User['roles'];
     sessionId: Session['id'];
@@ -341,6 +388,7 @@ export class AuthService {
 
     const payload: Omit<JwtPayloadType, 'iat' | 'exp'> = {
       id: data.id,
+      employeeId: data.employeeId,
       email: data.email,
       roleSlugs: data.roles?.map((role) => role.slug) || [],
       sessionId: data.sessionId,

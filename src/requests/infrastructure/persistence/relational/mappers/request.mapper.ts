@@ -1,3 +1,4 @@
+import { SelectionConfiguration } from 'src/field-questions/domain/selection-configuration';
 import { RequestTemplateMapper } from 'src/request-templates/infrastructure/persistence/relational/mappers/request-template.mapper';
 import {
   RequestFormatted,
@@ -6,12 +7,13 @@ import {
 } from 'src/requests/domain/request-formatted';
 import { RequestStatusEnum } from 'src/requests/requests.enum';
 import { SpecialtyMapper } from 'src/specialties/infrastructure/persistence/relational/mappers/specialty.mapper';
+import { UserPatientMapper } from 'src/user-patients/infrastructure/persistence/relational/mappers/user-patient.mapper';
 import { UserMapper } from 'src/users/infrastructure/persistence/relational/mappers/user.mapper';
 import { isValueInEnum } from 'src/utils/utils';
 import { Request } from '../../../../domain/request';
 import { RequestEntity } from '../entities/request.entity';
 import { RequestValueMapper } from './request-value.mapper';
-import { SelectionConfiguration } from 'src/field-questions/domain/selection-configuration';
+import { RatingMapper } from 'src/ratings/infrastructure/persistence/relational/mappers/rating.mapper';
 
 export class RequestMapper {
   static toDomain(raw: RequestEntity): Request {
@@ -22,6 +24,7 @@ export class RequestMapper {
     domainEntity.patientAddress = raw.patientAddress;
     domainEntity.appointmentHour = raw.appointmentHour;
     domainEntity.status = raw.status;
+    domainEntity.appointmentDate = raw.appointmentDate;
     if (raw.requestedMedic) {
       domainEntity.requestedMedic = UserMapper.toDomain(raw.requestedMedic);
     }
@@ -40,6 +43,22 @@ export class RequestMapper {
         RequestValueMapper.toDomain(value),
       );
     }
+    if (raw.madeBy) {
+      domainEntity.madeBy = UserMapper.toDomain(raw.madeBy);
+    }
+    if (raw.rating) {
+      domainEntity.rating = RatingMapper.toDomain(raw.rating);
+    }
+    if (raw.madeFor) {
+      domainEntity.madeFor = UserPatientMapper.toDomain(raw.madeFor);
+    }
+    if (raw.savedTo) {
+      domainEntity.savedTo = UserPatientMapper.toDomain(raw.savedTo);
+    }
+    if (raw.referredBy) {
+      domainEntity.referredBy = UserMapper.toDomain(raw.referredBy);
+    }
+    domainEntity.referredContent = raw.referredContent;
     domainEntity.createdAt = raw.createdAt;
 
     return domainEntity;
@@ -54,6 +73,7 @@ export class RequestMapper {
     persistenceEntity.patientDNI = domainEntity.patientDNI;
     persistenceEntity.patientAddress = domainEntity.patientAddress;
     persistenceEntity.appointmentHour = domainEntity.appointmentHour;
+    persistenceEntity.appointmentDate = domainEntity.appointmentDate;
     if (isValueInEnum(RequestStatusEnum, domainEntity.status)) {
       persistenceEntity.status = domainEntity.status;
     }
@@ -61,6 +81,19 @@ export class RequestMapper {
       persistenceEntity.requestedMedic = UserMapper.toPersistence(
         domainEntity.requestedMedic,
       );
+    }
+    if (domainEntity.madeFor) {
+      persistenceEntity.madeFor = UserPatientMapper.toPersistence(
+        domainEntity.madeFor,
+      );
+    }
+    if (domainEntity.savedTo) {
+      persistenceEntity.savedTo = UserPatientMapper.toPersistence(
+        domainEntity.savedTo,
+      );
+    }
+    if (domainEntity.madeBy) {
+      persistenceEntity.madeBy = UserMapper.toPersistence(domainEntity.madeBy);
     }
     if (domainEntity.requestedSpecialty) {
       persistenceEntity.requestedSpecialty = SpecialtyMapper.toPersistence(
@@ -77,6 +110,12 @@ export class RequestMapper {
         (value) => RequestValueMapper.toPersistence(value),
       );
     }
+    if (domainEntity.referredBy) {
+      persistenceEntity.referredBy = UserMapper.toPersistence(
+        domainEntity.referredBy,
+      );
+    }
+    persistenceEntity.referredContent = domainEntity.referredContent;
     persistenceEntity.createdAt = domainEntity.createdAt;
 
     return persistenceEntity;
@@ -90,12 +129,20 @@ export class RequestMapper {
       dni: raw.patientDNI,
       address: raw.patientAddress,
     };
-    formattedEntity.requestedMedic = {
-      fullName: raw.requestedMedic.fullName,
-    };
+    formattedEntity.requestedMedic = raw.requestedMedic
+      ? {
+          fullName: raw.requestedMedic.fullName,
+        }
+      : undefined;
+    if (raw.referredBy) {
+      formattedEntity.referredBy = {
+        fullName: raw.referredBy?.fullName,
+      };
+    }
     formattedEntity.requestedSpecialty = {
       name: raw.requestedSpecialty.name,
     };
+    formattedEntity.referredContent = raw.referredContent;
     formattedEntity.appointmentHour = raw.appointmentHour;
     formattedEntity.status = raw.status;
     const fields = raw.requestTemplate.fields.reduce<

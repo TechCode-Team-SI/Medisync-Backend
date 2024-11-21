@@ -1,5 +1,12 @@
 import { FieldQuestionType } from 'src/database/seeds/relational/question/question-seed';
+import { FileDto } from 'src/files/dto/file.dto';
 import { RecursiveRequired } from 'src/utils/types/deep-required.type';
+
+export type GlossaryData = {
+  id: string;
+  name: string;
+  description: string;
+};
 
 type RequestTemplate = {
   id: string;
@@ -20,10 +27,21 @@ export type InstallationModule = {
   specialty: string;
   description: string;
   requestTemplate: RequestTemplate;
+  illnesses: GlossaryData[];
+  injuries: GlossaryData[];
+  treatments: GlossaryData[];
+  pathologies: GlossaryData[];
+  symptoms: GlossaryData[];
+  image?: string;
 };
 
 export type ModuleInstallationSteps = {
   fieldQuestions: FieldQuestionType[];
+  illnesses: RecursiveRequired<InstallationModule['illnesses']>;
+  injuries: RecursiveRequired<InstallationModule['injuries']>;
+  pathologies: RecursiveRequired<InstallationModule['pathologies']>;
+  treatments: RecursiveRequired<InstallationModule['treatments']>;
+  symptoms: RecursiveRequired<InstallationModule['symptoms']>;
   requestTemplates: RecursiveRequired<InstallationModule['requestTemplate']>[];
   specialties: {
     id: InstallationModule['id'];
@@ -34,5 +52,6 @@ export type ModuleInstallationSteps = {
     requestTemplate: {
       id: string;
     };
+    image?: FileDto | null;
   }[];
 };

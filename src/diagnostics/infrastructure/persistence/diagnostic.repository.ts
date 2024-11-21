@@ -4,8 +4,9 @@ import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Diagnostic } from '../../domain/diagnostic';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
 
-export abstract class DiagnosticRepository {
+export abstract class DiagnosticRepository extends BaseRepository {
   abstract create(
     data: Omit<Diagnostic, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Diagnostic>;

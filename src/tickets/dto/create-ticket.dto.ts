@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { TicketStatusEnum, TicketTypeEnum } from '../tickets.enum';
-
+import { Type } from 'class-transformer';
+import { TicketTypeIdDto } from 'src/ticket-types/dto/ticket-type-id.dto';
 export class CreateTicketDto {
   @ApiProperty()
   @IsNotEmpty()
@@ -19,4 +20,9 @@ export class CreateTicketDto {
   @ApiProperty()
   @IsEnum(TicketTypeEnum)
   type: TicketTypeEnum;
+
+  @ApiProperty()
+  @IsOptional()
+  @Type(() => TicketTypeIdDto)
+  ticketTag?: TicketTypeIdDto;
 }

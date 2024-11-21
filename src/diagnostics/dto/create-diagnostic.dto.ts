@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Specialty } from 'src/specialties/domain/specialty';
 import { Request } from 'src/requests/domain/request';
 
@@ -16,4 +16,28 @@ export class CreateDiagnosticDto {
   @ApiProperty()
   @IsNotEmpty()
   specialty: Specialty;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString({ each: true })
+  @IsArray()
+  illnesses: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString({ each: true })
+  @IsArray()
+  injuries: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString({ each: true })
+  @IsArray()
+  symptoms: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString({ each: true })
+  @IsArray()
+  treatments: string[];
 }

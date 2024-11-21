@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -15,6 +16,8 @@ import { CreateMedicalCenterDto } from 'src/medical-centers/dto/create-medical-c
 import { MedicalCentersService } from 'src/medical-centers/medical-centers.service';
 import { InstallationStepEnum } from './installations.enum';
 import { PackagesService } from 'src/packages/packages.service';
+import { ConfigService } from '@nestjs/config';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class InstallationsService {
@@ -24,6 +27,8 @@ export class InstallationsService {
     private readonly rolesService: RolesService,
     private readonly medicalCentersService: MedicalCentersService,
     private readonly packagesService: PackagesService,
+    private readonly configService: ConfigService,
+    private readonly authService: AuthService,
   ) {}
 
   async create(createInstallationDto: CreateInstallationDto) {
@@ -79,11 +84,23 @@ export class InstallationsService {
       throw new UnprocessableEntityException(exceptionResponses.UserNotCreated);
     }
 
-    return this.update({ step: InstallationStepEnum.CONFIGURE_COMPANY });
+    const authUser = await this.authService.validateLogin({
+      email: user.email,
+      password: createUserDto.password,
+    });
+
+    const installationInfo = await this.update({
+      step: InstallationStepEnum.CONFIGURE_MODULES,
+    });
+
+    return {
+      ...installationInfo,
+      user: authUser,
+    };
   }
 
   //CREATE MEDICAL CENTER
-  async processStepTwo(createMedicalCenterDto: CreateMedicalCenterDto) {
+  async processStepThree(createMedicalCenterDto: CreateMedicalCenterDto) {
     let medicalCenter = await this.medicalCentersService.findOne();
 
     if (medicalCenter) {
@@ -104,15 +121,36 @@ export class InstallationsService {
       );
     }
 
-    return this.update({ step: InstallationStepEnum.CONFIGURE_MODULES });
+    return this.update({ step: InstallationStepEnum.FINISHED });
   }
 
   //INSTALL MODULES
-  async processStepThree(...slugs: string[]) {
+  async processStepTwo(...slugs: string[]) {
     await this.packagesService.seed(...slugs);
     await this.update({
-      step: InstallationStepEnum.FINISHED,
+      step: InstallationStepEnum.CONFIGURE_COMPANY,
     });
     return { success: true };
+  }
+
+  //VERIFY TOKEN VALIDITY
+  verifyToken(receivedToken: string) {
+    const token = this.configService.getOrThrow('app.installToken', {
+      infer: true,
+    });
+
+    if (receivedToken !== token) {
+      throw new ForbiddenException(exceptionResponses.InvalidToken);
+    }
+
+    return { success: true };
+  }
+
+  async getInstallationStep() {
+    const installStep = await this.findOne();
+    if (!installStep) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+    return installStep;
   }
 }

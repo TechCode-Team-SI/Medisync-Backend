@@ -15,6 +15,10 @@ import { exceptionResponses } from './field-questions.messages';
 import { FieldQuestionRepository } from './infrastructure/persistence/field-question.repository';
 import { Selection } from './domain/selection';
 import { CreateMultipleFieldQuestionDto } from './dto/create-multiple-field-question.dto';
+import {
+  FilterFieldQuestionDto,
+  SortFieldQuestionDto,
+} from './dto/find-all-field-questions.dto';
 
 @Injectable()
 export class FieldQuestionsService {
@@ -131,9 +135,13 @@ export class FieldQuestionsService {
   findAllWithPagination({
     paginationOptions,
     options,
+    filterOptions,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    filterOptions?: FilterFieldQuestionDto | null;
+    sortOptions?: SortFieldQuestionDto[] | null;
   }) {
     return this.fieldQuestionRepository.findAllWithPagination({
       paginationOptions: {
@@ -141,11 +149,17 @@ export class FieldQuestionsService {
         limit: paginationOptions.limit,
       },
       options,
+      filterOptions,
+      sortOptions,
     });
   }
 
   findOne(id: FieldQuestion['id'], options?: findOptions) {
     return this.fieldQuestionRepository.findById(id, options);
+  }
+
+  findAllBySlugs(slugs: FieldQuestion['slug'][], options?: findOptions) {
+    return this.fieldQuestionRepository.findAllBySlug(slugs, options);
   }
 
   remove(id: FieldQuestion['id']) {

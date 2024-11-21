@@ -1,32 +1,44 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
-import { SessionEntity } from '../entities/session.entity';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { DataSource, FindOptionsRelations, Not, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
+import { SessionEntity } from '../entities/session.entity';
 
-import { SessionRepository } from '../../session.repository';
 import { Session } from '../../../../domain/session';
+import { SessionRepository } from '../../session.repository';
 
-import { SessionMapper } from '../mappers/session.mapper';
-import { User } from '../../../../../users/domain/user';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/session/session.messages';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { User } from '../../../../../users/domain/user';
+import { SessionMapper } from '../mappers/session.mapper';
 
 @Injectable()
-export class SessionRelationalRepository implements SessionRepository {
+export class SessionRelationalRepository
+  extends BaseRepository
+  implements SessionRepository
+{
   constructor(
-    @InjectRepository(SessionEntity)
-    private readonly sessionRepository: Repository<SessionEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
 
-  private relations = [];
+  private get sessionRepository(): Repository<SessionEntity> {
+    return this.getRepository(SessionEntity);
+  }
+
+  private relations: FindOptionsRelations<SessionEntity> = {};
 
   async findById(
     id: Session['id'],
     options?: findOptions,
   ): Promise<NullableType<Session>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.sessionRepository.findOne({
       where: { id },

@@ -26,6 +26,9 @@ import { RequestTemplate } from './domain/request-template';
 import { CreateRequestTemplateDto } from './dto/create-request-template.dto';
 import { FindAllRequestTemplatesDto } from './dto/find-all-request-templates.dto';
 import { RequestTemplatesService } from './request-templates.service';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Requesttemplates')
 @ApiBearerAuth()
@@ -40,6 +43,8 @@ export class RequestTemplatesController {
   ) {}
 
   @Post()
+  @Permissions(PermissionsEnum.MANAGE_FORMS)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: RequestTemplate,
   })
@@ -58,6 +63,8 @@ export class RequestTemplatesController {
 
     return this.requestTemplatesService.findAllWithPagination({
       paginationOptions,
+      sortOptions: query.sort,
+      filterOptions: query.filters,
     });
   }
 
@@ -72,6 +79,26 @@ export class RequestTemplatesController {
   })
   async findOne(@Param('id') id: string) {
     const entity = await this.requestTemplatesService.findOne(id);
+
+    if (!entity) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+
+    return entity;
+  }
+
+  @Get('/specialty/:specialtyId')
+  @ApiParam({
+    name: 'specialtyId',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({
+    type: RequestTemplate,
+  })
+  async findBySpecialtyId(@Param('specialtyId') specialtyId: string) {
+    const entity =
+      await this.requestTemplatesService.findBySpecialtyId(specialtyId);
 
     if (!entity) {
       throw new NotFoundException(exceptionResponses.NotFound);

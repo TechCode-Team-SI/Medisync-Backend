@@ -7,6 +7,30 @@ import { ApiProperty } from '@nestjs/swagger';
 })
 export class MedicalCenterEntity extends EntityRelationalHelper {
   @ApiProperty()
+  @Column({ type: 'text' })
+  description: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  instagramName: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  twitterName: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  facebookName: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  tiktokName: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  email: string;
+
+  @ApiProperty()
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -32,11 +56,11 @@ export class MedicalCenterEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @Column()
-  local_phone: string;
+  localPhone: string;
 
   @ApiProperty()
   @Column()
-  mobile_phone: string;
+  mobilePhone: string;
 
   @ApiProperty()
   @Column()

@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -26,6 +27,11 @@ import { ApplyPackagesDto } from './dto/apply-packages.dto';
 import { FindAllPackagesDto } from './dto/find-all-packages.dto';
 import { exceptionResponses } from './packages.messages';
 import { PackagesService } from './packages.service';
+import { TransactionInterceptor } from 'src/common/transaction.interceptor';
+import { EmployeeOnlyGuard } from 'src/common/employee-only.guard';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('Packages')
 @ApiBearerAuth()
@@ -46,7 +52,11 @@ export class PackagesController {
   ): Promise<PaginationResponseDto<Package>> {
     const paginationOptions = getPagination(query);
 
-    return this.packagesService.findAllWithPagination({ paginationOptions });
+    return this.packagesService.findAllWithPagination({
+      paginationOptions,
+      sortOptions: query.sort,
+      filterOptions: query.filters,
+    });
   }
 
   @Get(':id')
@@ -67,6 +77,10 @@ export class PackagesController {
   }
 
   @Post()
+  @UseGuards(EmployeeOnlyGuard)
+  @Permissions(PermissionsEnum.CONFIGURE_PACKAGES)
+  @UseGuards(PermissionsGuard)
+  @UseInterceptors(TransactionInterceptor)
   @ApiOkResponse()
   async seed(
     @Body() applyPackagesDto: ApplyPackagesDto,

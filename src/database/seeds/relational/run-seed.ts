@@ -10,6 +10,12 @@ import { FieldQuestionSeedService } from './question/question-seed.service';
 import { RequestTemplateSeedService } from './request-template/request-template-seed.service';
 import { SpecialtySeedService } from './specialty/specialty-seed.service';
 import { PackageSeedService } from './package/package-seed.service';
+import { MedicalCenterSeedService } from './medical-center/medical-center.service';
+import { PathologySeedService } from './pathology/pathology-seed.service';
+import { IllnessSeedService } from './illness/illness-seed.service';
+import { InjurySeedService } from './injury/injury-seed.service';
+import { SymptomSeedService } from './symptom/symptom-seed.service';
+import { TreatmentSeedService } from './treatment/treatment-seed.service';
 
 const runSeed = async () => {
   const app = await NestFactory.create(SeedModule);
@@ -28,6 +34,12 @@ const runSeed = async () => {
   await app.get(FieldQuestionSeedService).run();
   await app.get(RequestTemplateSeedService).run();
   await app.get(PackageSeedService).run();
+  await app.get(MedicalCenterSeedService).run();
+  await app.get(PathologySeedService).run();
+  await app.get(IllnessSeedService).run();
+  await app.get(InjurySeedService).run();
+  await app.get(SymptomSeedService).run();
+  await app.get(TreatmentSeedService).run();
 
   await app.close();
 };

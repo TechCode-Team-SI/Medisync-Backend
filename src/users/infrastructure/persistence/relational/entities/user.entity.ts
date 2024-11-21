@@ -1,3 +1,13 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
+import { ArticleEntity } from 'src/articles/infrastructure/persistence/relational/entities/article.entity';
+import { ConfirmEmailTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/confirm-email-token.entity';
+import { PasswordTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/password-token.entity';
+import { EmployeeProfileEntity } from 'src/employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
+import { FileEntity } from 'src/files/infrastructure/persistence/relational/entities/file.entity';
+import { RoleEntity } from 'src/roles/infrastructure/persistence/relational/entities/role.entity';
+import { UserPatientEntity } from 'src/user-patients/infrastructure/persistence/relational/entities/user-patient.entity';
+import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
 import {
   Column,
   CreateDateColumn,
@@ -11,25 +21,15 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { FileEntity } from '../../../../../files/infrastructure/persistence/relational/entities/file.entity';
-import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
-
-import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
-
-// We use class-transformer in ORM entity and domain entity.
-// We duplicate these rules because you can choose not to use adapters
-// in your project and return an ORM entity directly in response.
-import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
-import { ArticleEntity } from 'src/articles/infrastructure/persistence/relational/entities/article.entity';
-import { ConfirmEmailTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/confirm-email-token.entity';
-import { PasswordTokenEntity } from 'src/auth/infrastructure/persistence/relational/entities/password-token.entity';
-import { EmployeeProfileEntity } from './employee-profile.entity';
 
 @Entity({
   name: 'user',
 })
 export class UserEntity extends EntityRelationalHelper {
+  @ApiProperty()
+  @Column({ nullable: true })
+  phone: string;
+
   @ApiProperty({
     type: String,
   })
@@ -40,15 +40,12 @@ export class UserEntity extends EntityRelationalHelper {
     type: String,
     example: 'john.doe@example.com',
   })
-  // For "string | null" we need to use String type.
-  // More info: https://github.com/typeorm/typeorm/issues/2567
   @Column({ type: String, unique: true })
   email: string;
 
   @Column({ nullable: true })
   @Exclude({ toPlainOnly: true })
   password?: string;
-
   @ApiProperty({
     type: String,
     example: 'John Doe',
@@ -94,6 +91,12 @@ export class UserEntity extends EntityRelationalHelper {
     { cascade: true },
   )
   employeeProfile?: EmployeeProfileEntity;
+
+  @ApiProperty()
+  @OneToMany(() => UserPatientEntity, (userPatient) => userPatient.user, {
+    cascade: ['insert', 'update'],
+  })
+  userPatients?: UserPatientEntity[] | null;
 
   @ApiProperty()
   @CreateDateColumn()

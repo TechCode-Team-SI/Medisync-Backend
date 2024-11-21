@@ -1,25 +1,48 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, In, Repository } from 'typeorm';
-import { RequestTemplateEntity } from '../entities/request-template.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { RequestTemplate } from '../../../../domain/request-template';
-import { RequestTemplateRepository } from '../../request-template.repository';
-import { RequestTemplateMapper } from '../mappers/request-template.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/request-templates/request-templates.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import {
+  DataSource,
+  FindOneOptions,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  In,
+  Like,
+  Repository,
+} from 'typeorm';
+import { NullableType } from '../../../../../utils/types/nullable.type';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { RequestTemplate } from '../../../../domain/request-template';
+import { RequestTemplateRepository } from '../../request-template.repository';
+import { RequestTemplateEntity } from '../entities/request-template.entity';
+import { RequestTemplateMapper } from '../mappers/request-template.mapper';
+import {
+  FilterRequestTemplateDto,
+  SortRequestTemplateDto,
+} from 'src/request-templates/dto/find-all-request-templates.dto';
+import { formatOrder } from 'src/utils/utils';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class RequestTemplateRelationalRepository
+  extends BaseRepository
   implements RequestTemplateRepository
 {
   constructor(
-    @InjectRepository(RequestTemplateEntity)
-    private readonly requestTemplateRepository: Repository<RequestTemplateEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
+
+  private get requestTemplateRepository(): Repository<RequestTemplateEntity> {
+    return this.getRepository(RequestTemplateEntity);
+  }
 
   private relations: FindOptionsRelations<RequestTemplateEntity> = {
     fields: {
@@ -53,10 +76,25 @@ export class RequestTemplateRelationalRepository
   async findAllWithPagination({
     paginationOptions,
     options,
+    sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortRequestTemplateDto[] | null;
+    filterOptions?: FilterRequestTemplateDto | null;
   }): Promise<PaginationResponseDto<RequestTemplate>> {
+    let where: FindOptionsWhere<RequestTemplateEntity> = {};
+    if (filterOptions?.search) {
+      where = {
+        name: Like(`%${filterOptions.search}%`),
+      };
+    }
+    let order: FindOneOptions<RequestTemplateEntity>['order'] = {
+      createdAt: 'DESC',
+    };
+    if (sortOptions) order = formatOrder(sortOptions);
+
     let relations = this.relations;
     if (options?.minimal) relations = {};
 
@@ -65,6 +103,8 @@ export class RequestTemplateRelationalRepository
         skip: (paginationOptions.page - 1) * paginationOptions.limit,
         take: paginationOptions.limit,
         relations,
+        order,
+        where,
       },
     );
     const items = entities.map((entity) =>
@@ -90,6 +130,21 @@ export class RequestTemplateRelationalRepository
 
     const entity = await this.requestTemplateRepository.findOne({
       where: { id },
+      relations,
+    });
+
+    return entity ? RequestTemplateMapper.toDomain(entity) : null;
+  }
+
+  async findBySpecialtyId(
+    specialtyId: string,
+    options?: findOptions,
+  ): Promise<NullableType<RequestTemplate>> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entity = await this.requestTemplateRepository.findOne({
+      where: { specialties: { id: specialtyId } },
       relations,
     });
 

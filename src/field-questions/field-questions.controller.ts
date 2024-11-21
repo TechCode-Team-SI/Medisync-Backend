@@ -28,6 +28,9 @@ import { CreateSelectionFieldQuestionDto } from './dto/create-selection-field-qu
 import { CreateTextfieldFieldQuestionDto } from './dto/create-textfield-field-question.dto';
 import { FindAllFieldQuestionsDto } from './dto/find-all-field-questions.dto';
 import { FieldQuestionsService } from './field-questions.service';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Permissions } from 'src/permissions/permissions.decorator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @ApiTags('FieldQuestions')
 @ApiBearerAuth()
@@ -40,6 +43,8 @@ export class FieldQuestionsController {
   constructor(private readonly fieldQuestionsService: FieldQuestionsService) {}
 
   @Post('selection')
+  @Permissions(PermissionsEnum.MANAGE_QUESTIONS)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: FieldQuestion,
   })
@@ -50,6 +55,8 @@ export class FieldQuestionsController {
   }
 
   @Post('textfield')
+  @Permissions(PermissionsEnum.MANAGE_QUESTIONS)
+  @UseGuards(PermissionsGuard)
   @ApiCreatedResponse({
     type: FieldQuestion,
   })
@@ -70,6 +77,8 @@ export class FieldQuestionsController {
 
     return this.fieldQuestionsService.findAllWithPagination({
       paginationOptions,
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
     });
   }
 
@@ -93,6 +102,8 @@ export class FieldQuestionsController {
   }
 
   @Delete(':id')
+  @Permissions(PermissionsEnum.MANAGE_QUESTIONS)
+  @UseGuards(PermissionsGuard)
   @ApiParam({
     name: 'id',
     type: String,

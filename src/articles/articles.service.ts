@@ -1,18 +1,26 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { FilesService } from 'src/files/files.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { UsersService } from 'src/users/users.service';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { exceptionResponses } from './articles.messages';
 import { Article } from './domain/article';
 import { CreateArticleDto } from './dto/create-article.dto';
+import { FilterArticleDto, SortArticleDto } from './dto/find-all-articles.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticleRepository } from './infrastructure/persistence/article.repository';
-import { findOptions } from 'src/utils/types/fine-options.type';
+import { ArticleCategoriesService } from '../article-categories/article-categories.service';
+import { ArticleCategory } from 'src/article-categories/domain/article-category';
 
 @Injectable()
 export class ArticlesService {
   constructor(
     private readonly articleRepository: ArticleRepository,
     private usersService: UsersService,
+    private notificationsService: NotificationsService,
+    private readonly filesService: FilesService,
+    private readonly articleCategoriesService: ArticleCategoriesService,
   ) {}
 
   async create(createArticleDto: CreateArticleDto, userId: string) {
@@ -20,20 +28,48 @@ export class ArticlesService {
     if (!user) {
       throw new UnprocessableEntityException(exceptionResponses);
     }
+    const categories = await this.articleCategoriesService.findMany(
+      createArticleDto.categories,
+    );
 
-    const data = {
+    const clonedPayload: Omit<Article, 'id' | 'createdAt' | 'updatedAt'> = {
       ...createArticleDto,
       updatedBy: user,
+      categories: categories,
     };
-    return this.articleRepository.create(data);
+
+    if (createArticleDto.photo?.id) {
+      const fileObject = await this.filesService.findById(
+        createArticleDto.photo.id,
+      );
+      if (!fileObject) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.AvatarNotExist,
+        );
+      }
+      clonedPayload.image = fileObject;
+    }
+
+    const result = await this.articleRepository.create(clonedPayload);
+
+    await this.notificationsService.createForAllMobileUsers({
+      title: 'Nuevo Articulo disponible!',
+      content: `Hay un nuevo articulo medico disponible en nuestra plataforma: ${clonedPayload.title}`,
+    });
+
+    return result;
   }
 
   findAllWithPagination({
     paginationOptions,
     options,
+    sortOptions,
+    filterOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortArticleDto[] | null;
+    filterOptions?: FilterArticleDto | null;
   }) {
     return this.articleRepository.findAllWithPagination({
       paginationOptions: {
@@ -41,6 +77,8 @@ export class ArticlesService {
         limit: paginationOptions.limit,
       },
       options,
+      sortOptions,
+      filterOptions,
     });
   }
 
@@ -48,8 +86,29 @@ export class ArticlesService {
     return this.articleRepository.findById(id, options);
   }
 
-  update(id: Article['id'], updateArticleDto: UpdateArticleDto) {
-    return this.articleRepository.update(id, updateArticleDto);
+  async update(id: Article['id'], updateArticleDto: UpdateArticleDto) {
+    const clonedPayload: Partial<Article> = {
+      ...updateArticleDto,
+      categories: updateArticleDto.categories?.map((catId) => {
+        const obj = new ArticleCategory();
+        obj.id = catId;
+        return obj;
+      }),
+    };
+
+    if (updateArticleDto.photo?.id) {
+      const fileObject = await this.filesService.findById(
+        updateArticleDto.photo.id,
+      );
+      if (!fileObject) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.AvatarNotExist,
+        );
+      }
+      clonedPayload.image = fileObject;
+    }
+
+    return this.articleRepository.update(id, clonedPayload);
   }
 
   remove(id: Article['id']) {

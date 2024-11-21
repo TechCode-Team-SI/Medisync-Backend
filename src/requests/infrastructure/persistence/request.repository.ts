@@ -1,26 +1,38 @@
+import { BaseRepository } from 'src/common/base.repository';
+import { RequestFormatted } from 'src/requests/domain/request-formatted';
+import {
+  FilterRequestDto,
+  SortRequestDto,
+} from 'src/requests/dto/find-all-requests.dto';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
 import { Request } from '../../domain/request';
-import { findOptions } from 'src/utils/types/fine-options.type';
-import { RequestFormatted } from 'src/requests/domain/request-formatted';
+import { RequestStatusEnum } from 'src/requests/requests.enum';
 
-export abstract class RequestRepository {
+export abstract class RequestRepository extends BaseRepository {
   abstract create(
-    data: Omit<Request, 'id' | 'createdAt' | 'updatedAt'>,
+    data: Omit<Request, 'id' | 'createdAt' | 'updatedAt' | 'rating'>,
   ): Promise<Request>;
 
-  abstract findAllMinimalWithPagination({
-    paginationOptions,
-  }: {
+  abstract findAllMinimalWithPagination(options: {
     paginationOptions: IPaginationOptions;
+    sortOptions?: SortRequestDto[] | null;
+    filterOptions?: (FilterRequestDto & { includeGroup?: boolean }) | null;
   }): Promise<PaginationResponseDto<Request>>;
 
   abstract findById(
     id: Request['id'],
-    options?: findOptions & { withSpecialty?: boolean; withMedic?: boolean },
+    options?: findOptions & {
+      withSpecialty?: boolean;
+      withMedic?: boolean;
+      withMadeBy?: boolean;
+    },
   ): Promise<NullableType<Request>>;
+
+  abstract findRating(id: Request['id']): Promise<NullableType<Request>>;
 
   abstract findByIdFormatted(
     id: Request['id'],
@@ -30,6 +42,11 @@ export abstract class RequestRepository {
     id: Request['id'],
     payload: DeepPartial<Request>,
   ): Promise<Request | null>;
+
+  abstract updateStatusBySpecialty(
+    specialtyId: string,
+    status: RequestStatusEnum,
+  ): Promise<void>;
 
   abstract remove(id: Request['id']): Promise<void>;
 }

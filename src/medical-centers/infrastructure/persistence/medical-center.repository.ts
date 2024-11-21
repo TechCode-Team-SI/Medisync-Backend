@@ -1,9 +1,10 @@
+import { BaseRepository } from 'src/common/base.repository';
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { MedicalCenter } from '../../domain/medical-center';
 import { findOptions } from 'src/utils/types/fine-options.type';
 
-export abstract class MedicalCenterRepository {
+export abstract class MedicalCenterRepository extends BaseRepository {
   abstract create(data: Omit<MedicalCenter, 'id'>): Promise<MedicalCenter>;
 
   abstract findById(

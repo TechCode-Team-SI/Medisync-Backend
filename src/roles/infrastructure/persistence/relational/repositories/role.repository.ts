@@ -1,29 +1,54 @@
 import {
+  Inject,
   Injectable,
   NotFoundException,
+  Scope,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/common/base.repository';
 import { exceptionResponses } from 'src/roles/roles.messages';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
-import { In, Repository } from 'typeorm';
+import { findOptions } from 'src/utils/types/fine-options.type';
+import {
+  DataSource,
+  FindOneOptions,
+  FindOptionsRelations,
+  In,
+  Repository,
+} from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { Role } from '../../../../domain/role';
 import { RoleRepository } from '../../role.repository';
 import { RoleEntity } from '../entities/role.entity';
 import { RoleMapper } from '../mappers/role.mapper';
-import { findOptions } from 'src/utils/types/fine-options.type';
+import { SortRoleDto } from 'src/roles/dto/find-all-roles.dto';
+import { formatOrder } from 'src/utils/utils';
 
-@Injectable()
-export class RoleRelationalRepository implements RoleRepository {
+@Injectable({ scope: Scope.REQUEST })
+export class RoleRelationalRepository
+  extends BaseRepository
+  implements RoleRepository
+{
   constructor(
-    @InjectRepository(RoleEntity)
-    private readonly roleRepository: Repository<RoleEntity>,
-  ) {}
+    datasource: DataSource,
+    @Inject(REQUEST)
+    request: Request,
+  ) {
+    super(datasource, request);
+  }
 
-  private relations = ['users', 'permissions'];
+  private get roleRepository(): Repository<RoleEntity> {
+    return this.getRepository(RoleEntity);
+  }
+
+  private relations: FindOptionsRelations<RoleEntity> = {
+    users: true,
+    permissions: true,
+  };
 
   async create(data: Role): Promise<Role> {
     const persistenceModel = RoleMapper.toPersistence(data);
@@ -45,7 +70,7 @@ export class RoleRelationalRepository implements RoleRepository {
 
   async findManyByIds(ids: string[], options?: findOptions): Promise<Role[]> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entities = await this.roleRepository.find({
       where: { id: In(ids) },
@@ -59,7 +84,7 @@ export class RoleRelationalRepository implements RoleRepository {
     options?: findOptions,
   ): Promise<Role[]> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entities = await this.roleRepository.find({
       where: { id: In(slugs) },
@@ -71,17 +96,23 @@ export class RoleRelationalRepository implements RoleRepository {
   async findAllWithPagination({
     paginationOptions,
     options,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions;
+    sortOptions?: SortRoleDto[] | null;
   }): Promise<PaginationResponseDto<Role>> {
+    let order: FindOneOptions<RoleEntity>['order'] = { createdAt: 'DESC' };
+    if (sortOptions) order = formatOrder(sortOptions);
+
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const [entities, count] = await this.roleRepository.findAndCount({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       relations,
+      order,
     });
     const items = entities.map((entity) => RoleMapper.toDomain(entity));
 
@@ -96,7 +127,7 @@ export class RoleRelationalRepository implements RoleRepository {
     options?: findOptions,
   ): Promise<NullableType<Role>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.roleRepository.findOne({
       where: { id },
@@ -111,7 +142,7 @@ export class RoleRelationalRepository implements RoleRepository {
     options?: findOptions,
   ): Promise<NullableType<Role>> {
     let relations = this.relations;
-    if (options?.minimal) relations = [];
+    if (options?.minimal) relations = {};
 
     const entity = await this.roleRepository.findOne({
       where: { slug },

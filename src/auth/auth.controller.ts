@@ -10,23 +10,26 @@ import {
   Request,
   SerializeOptions,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../users/domain/user';
 import { NullableType } from '../utils/types/nullable.type';
+import { Me } from './auth.decorator';
 import { AuthService } from './auth.service';
 import { AuthConfirmEmailDto } from './dto/auth-confirm-email.dto';
 import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
 import { AuthForgotPasswordDto } from './dto/auth-forgot-password.dto';
+import { IsValidPassCodeDto } from './dto/auth-is-valid-code.dto';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { RefreshResponseDto } from './dto/refresh-response.dto';
 import { SuccessResponseDto } from './dto/success-response.dto';
-import { Me } from './auth.decorator';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
+import { TransactionInterceptor } from 'src/common/transaction.interceptor';
 
 @ApiTags('Auth')
 @Controller({
@@ -49,6 +52,7 @@ export class AuthController {
   }
 
   @Post('register')
+  @UseInterceptors(TransactionInterceptor)
   @HttpCode(HttpStatus.OK)
   async register(
     @Body() createUserDto: AuthRegisterLoginDto,
@@ -67,6 +71,7 @@ export class AuthController {
   }
 
   @Post('confirm')
+  @UseInterceptors(TransactionInterceptor)
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
@@ -95,6 +100,18 @@ export class AuthController {
       resetPasswordDto.code,
       resetPasswordDto.password,
     );
+  }
+
+  @Post('forgot/password-code')
+  @HttpCode(HttpStatus.OK)
+  async checkPassCode(
+    @Body() checkPassCodeDto: IsValidPassCodeDto,
+  ): Promise<SuccessResponseDto> {
+    const isValid = await this.service.checkPasswordCode(
+      checkPassCodeDto.email,
+      checkPassCodeDto.code,
+    );
+    return { success: isValid };
   }
 
   @ApiBearerAuth()

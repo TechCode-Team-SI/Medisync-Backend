@@ -1,47 +1,81 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateTicketDto } from './dto/create-ticket.dto';
-import { UpdateTicketDto } from './dto/update-ticket.dto';
-import { TicketRepository } from './infrastructure/persistence/ticket.repository';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { UsersService } from 'src/users/users.service';
+import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Ticket } from './domain/ticket';
-import { UsersService } from 'src/users/users.service';
-import { TicketTypeEnum } from './tickets.enum';
+import { CreateTicketDto } from './dto/create-ticket.dto';
+import { FilterTicketDto, SortTicketDto } from './dto/find-all-tickets.dto';
+import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { TicketRepository } from './infrastructure/persistence/ticket.repository';
+import { TicketStatusEnum, TicketTypeEnum } from './tickets.enum';
+import { exceptionResponses } from './tickets.messages';
+import { TicketTypeRepository } from 'src/ticket-types/infrastructure/persistence/ticket-type.repository';
+import { TicketType } from 'src/ticket-types/domain/ticket-type';
 
 @Injectable()
 export class TicketsService {
   constructor(
     private readonly ticketRepository: TicketRepository,
     private readonly usersService: UsersService,
+    private readonly ticketTypeRepository: TicketTypeRepository,
   ) {}
 
   async create(createTicketDto: CreateTicketDto, createdBy: string) {
     const user = await this.usersService.findById(createdBy);
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(exceptionResponses.TicketOwnerNotFound);
+    }
+
+    let ticketTag: TicketType | undefined;
+
+    if (createTicketDto.type === TicketTypeEnum.COMPLAINT) {
+      if (!createTicketDto.ticketTag) {
+        throw new UnprocessableEntityException(
+          exceptionResponses.TicketTagNotProvided,
+        );
+      }
+      const ticketType = await this.ticketTypeRepository.findById(
+        createTicketDto.ticketTag.id,
+      );
+
+      if (!ticketType) {
+        throw new NotFoundException(exceptionResponses.TicketTypeNotFound);
+      }
+      ticketTag = ticketType;
     }
 
     const clonedPayload = {
       ...createTicketDto,
       createdBy: user,
+      ticketTag: ticketTag,
     };
-
     return this.ticketRepository.create(clonedPayload);
   }
 
   findAllWithPagination({
     paginationOptions,
-    type,
+    filterOptions,
+    sortOptions,
+    options,
   }: {
     paginationOptions: IPaginationOptions;
-    type?: TicketTypeEnum;
+    filterOptions?: FilterTicketDto | null;
+    sortOptions?: SortTicketDto[] | null;
+    options?: findOptions & { createdBy: boolean };
   }) {
     return this.ticketRepository.findAllWithPagination({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
-      type,
+      sortOptions,
+      filterOptions,
+      options,
     });
   }
 
@@ -55,5 +89,20 @@ export class TicketsService {
 
   remove(id: Ticket['id']) {
     return this.ticketRepository.remove(id);
+  }
+
+  async close(id: Ticket['id']) {
+    const ticket = await this.ticketRepository.findById(id);
+    if (!ticket) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+
+    if (ticket.status === TicketStatusEnum.CLOSED) {
+      throw new UnprocessableEntityException(exceptionResponses.StatusClosed);
+    }
+
+    return this.ticketRepository.update(id, {
+      status: TicketStatusEnum.CLOSED,
+    });
   }
 }

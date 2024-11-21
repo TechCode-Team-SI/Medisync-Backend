@@ -8,6 +8,7 @@ export class PackageMapper {
     domainEntity.name = raw.name;
     domainEntity.slug = raw.slug;
     domainEntity.applied = raw.applied;
+    domainEntity.description = raw.description;
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
 
@@ -21,6 +22,7 @@ export class PackageMapper {
     }
     persistenceEntity.name = domainEntity.name;
     persistenceEntity.slug = domainEntity.slug;
+    persistenceEntity.description = domainEntity.description;
     persistenceEntity.applied = domainEntity.applied;
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;

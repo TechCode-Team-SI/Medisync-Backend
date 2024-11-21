@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { FileEntity } from 'src/files/infrastructure/persistence/relational/entities/file.entity';
 import { RequestTemplateEntity } from 'src/request-templates/infrastructure/persistence/relational/entities/request-template.entity';
-import { EmployeeProfileEntity } from 'src/users/infrastructure/persistence/relational/entities/employee-profile.entity';
+import { EmployeeProfileEntity } from 'src/employee-profiles/infrastructure/persistence/relational/entities/employee-profile.entity';
 import {
   Column,
   CreateDateColumn,
@@ -10,11 +10,14 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
+import { AgendaEntity } from 'src/agendas/infrastructure/persistence/relational/entities/agenda.entity';
+import { DaysOffEntity } from 'src/days-offs/infrastructure/persistence/relational/entities/days-off.entity';
 
 @Entity({
   name: 'specialty',
@@ -63,6 +66,16 @@ export class SpecialtyEntity extends EntityRelationalHelper {
   })
   @ManyToOne(() => RequestTemplateEntity)
   requestTemplate?: RequestTemplateEntity;
+
+  @ApiProperty({
+    type: () => AgendaEntity,
+  })
+  @ManyToOne(() => AgendaEntity)
+  agenda: AgendaEntity;
+
+  @ApiProperty()
+  @OneToMany(() => DaysOffEntity, (daysOff) => daysOff.agenda)
+  daysOffs?: DaysOffEntity;
 
   @ApiProperty()
   @CreateDateColumn()

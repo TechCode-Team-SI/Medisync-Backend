@@ -7,8 +7,9 @@ import { RoleDto } from 'src/roles/dto/role.dto';
 import { FilterUserDto, SortUserDto } from '../../dto/query-user.dto';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { BaseRepository } from 'src/common/base.repository';
 
-export abstract class UserRepository {
+export abstract class UserRepository extends BaseRepository {
   abstract create(
     data: Omit<User, 'id' | 'createdAt' | 'deletedAt' | 'updatedAt' | 'roles'>,
     roles: RoleDto[],
@@ -23,12 +24,37 @@ export abstract class UserRepository {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-    options?: findOptions;
+    options?: findOptions & {
+      employeeProfile?: boolean;
+      specialties?: boolean;
+    };
   }): Promise<PaginationResponseDto<User>>;
+
+  abstract findAvailableMedicsWithPagination({
+    paginationOptions,
+    specialtyId,
+  }: {
+    specialtyId: string;
+    paginationOptions: IPaginationOptions;
+  }): Promise<PaginationResponseDto<User>>;
+
+  abstract findAll({
+    filterOptions,
+    sortOptions,
+    options,
+  }: {
+    filterOptions?: FilterUserDto | null;
+    sortOptions?: SortUserDto[] | null;
+    options?: findOptions & { employeeProfile: boolean };
+  }): Promise<User[]>;
 
   abstract findById(
     id: User['id'],
-    options?: findOptions & { withProfile?: boolean; withSpecialty?: boolean },
+    options?: findOptions & {
+      withProfile?: boolean;
+      withSpecialty?: boolean;
+      withUserPatients?: boolean;
+    },
   ): Promise<NullableType<User>>;
   abstract findByEmail(email: User['email']): Promise<NullableType<User>>;
 
