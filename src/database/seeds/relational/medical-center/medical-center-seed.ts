@@ -8,6 +8,7 @@ type MedicalCenter = {
   municipality: string;
   mission: string;
   vision: string;
+  description: string;
 };
 
 export const medicalCenter: MedicalCenter = {
@@ -20,4 +21,5 @@ export const medicalCenter: MedicalCenter = {
   mobilePhone: '123456',
   mission: 'ser kevin ',
   vision: 'pensar como kevin',
+  description: 'Centro medico de lara',
 };
