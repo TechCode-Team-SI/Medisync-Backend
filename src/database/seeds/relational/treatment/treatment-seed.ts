@@ -48,7 +48,7 @@ const treatments: Treatments = [
       'Procedimiento para abrir arterias bloqueadas mediante un balón y colocar un stent si es necesario.',
   },
   {
-    id: 'h8i9j0k1-8f1e-4d3b-9b8b-1f2e4d3b9b6h',
+    id: 'h8i9j0k1-8f1e-4d3b-9b8b-1f2e4d3b9b65',
     name: 'Rehabilitación cardíaca',
     description:
       'Programa de ejercicios y educación diseñado para mejorar la salud cardiovascular tras un evento cardíaco.',
@@ -73,7 +73,7 @@ const treatments: Treatments = [
   },
   {
     id: 'l2m3n4o5-8f1e-4d3c-b7a0-d2a5c7a0c7a0',
-    name: 'Tratamiento antibiótico',
+    name: 'Antibióticos',
     description: 'Uso de antibióticos para combatir infecciones bacterianas.',
   },
   {
@@ -123,6 +123,42 @@ const treatments: Treatments = [
     name: 'Evaluación del desarrollo infantil',
     description:
       'Exámenes regulares para monitorear el crecimiento y desarrollo adecuado en niños.',
+  },
+  {
+    id: 'v2w3x4y5-a23c-b45d-e67g-h89i01j23k45',
+    name: 'Analgésicos',
+    description:
+      'Medicamentos que alivian el dolor, incluyendo opciones como el paracetamol y los antiinflamatorios no esteroides (AINEs).',
+  },
+  {
+    id: 'w3x4y5z6-a34c-b56d-e78g-h90i12j34k56',
+    name: 'Antiinflamatorios',
+    description:
+      'Medicamentos que reducen la inflamación y el dolor, como el ibuprofeno y la aspirina.',
+  },
+  {
+    id: 'y5z6a7a8-a56c-b78d-e90g-h12i34j56k78',
+    name: 'Cirugía',
+    description:
+      'Intervenciones quirúrgicas para reparar, extirpar o tratar condiciones médicas específicas.',
+  },
+  {
+    id: 'k1l2m3n4-a12c-b34d-e56g-h78i90j12k34',
+    name: 'Inmovilización',
+    description:
+      'Uso de férulas o yesos para estabilizar huesos fracturados o esguinces mientras sanan.',
+  },
+  {
+    id: 'h8i9j0k1-8f1e-4d3b-9b8b-1f2e4d3b9b6h',
+    name: 'Diuréticos',
+    description:
+      'Medicamentos que ayudan a eliminar el exceso de agua y sal del cuerpo, utilizados en casos de hipertensión e insuficiencia cardíaca.',
+  },
+  {
+    id: 'i9j0k1l2-8f1e-4d3b-9b9b-1f2e4d3b9b6i',
+    name: 'Antidepresivos',
+    description:
+      'Medicamentos utilizados para tratar trastornos del estado de ánimo, como la depresión y la ansiedad.',
   },
 ];
 
