@@ -6,6 +6,7 @@ import { RequestStatusEnum } from '../requests.enum';
 import { RequestValue } from './request-value';
 import { Rating } from 'src/ratings/domain/rating';
 import { UserPatient } from 'src/user-patients/domain/user-patient';
+import { genderEnum } from 'src/employee-profiles/employee-profiles.enum';
 
 export class Request {
   @ApiProperty({
@@ -22,8 +23,11 @@ export class Request {
   @ApiProperty()
   patientAddress: string;
 
-  @ApiProperty({ type: () => UserPatient })
-  madeFor?: UserPatient | null;
+  @ApiProperty()
+  patientGender: genderEnum;
+
+  @ApiProperty()
+  patientBirthday: Date;
 
   @ApiProperty({ type: () => UserPatient })
   savedTo?: UserPatient | null;

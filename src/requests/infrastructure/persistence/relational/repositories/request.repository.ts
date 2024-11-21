@@ -53,7 +53,6 @@ export class RequestRelationalRepository
     requestedSpecialty: true,
     requestedMedic: true,
     rating: true,
-    madeFor: true,
     requestTemplate: {
       fields: {
         fieldQuestion: {
@@ -87,7 +86,6 @@ export class RequestRelationalRepository
       .createQueryBuilder('r')
       .leftJoinAndSelect('r.requestedMedic', 'requestedMedic')
       .leftJoinAndSelect('r.requestedSpecialty', 'requestedSpecialty')
-      .leftJoinAndSelect('r.madeFor', 'madeFor')
       .leftJoinAndSelect('r.requestTemplate', 'requestTemplate')
       .leftJoinAndSelect('r.savedTo', 'savedTo')
       .leftJoinAndSelect('r.rating', 'rating')
@@ -98,9 +96,9 @@ export class RequestRelationalRepository
         madeByIds: filterOptions.madeByIds,
       });
     }
-    if (filterOptions?.madeForIds) {
-      query.andWhere('r.madeForId IN (:...madeForIds)', {
-        madeForIds: filterOptions.madeForIds,
+    if (filterOptions?.patientDNIs) {
+      query.andWhere('r.patientDNI IN (:...patientDNIs)', {
+        patientDNIs: filterOptions.patientDNIs,
       });
     }
     if (filterOptions?.savedToIds) {

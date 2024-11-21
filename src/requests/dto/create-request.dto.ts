@@ -1,18 +1,46 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsOptional, Validate } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Validate,
+} from 'class-validator';
 import { EmployeeProfileIdDto } from 'src/employee-profiles/dto/employee-profile-id.dto';
+import { genderEnum } from 'src/employee-profiles/employee-profiles.enum';
 import { RequestTemplateDto } from 'src/request-templates/dto/request-template.dto';
 import { SpecialtyDto } from 'src/specialties/dto/specialty.dto';
-import { UserPatientIdDto } from 'src/user-patients/dto/user-patient-id.dto';
 import { IsHourFormat } from 'src/utils/validators/is-hour-format';
 import { RequestValueDto } from './request-value.dto';
 
 export class CreateRequestDto {
-  @ApiProperty({ type: () => UserPatientIdDto })
+  @ApiProperty()
   @IsNotEmpty()
-  @Type(() => UserPatientIdDto)
-  madeFor: UserPatientIdDto;
+  @IsString()
+  patientFullName: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  patientDNI: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  patientAddress?: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEnum(genderEnum)
+  patientGender: genderEnum;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Type(() => Date)
+  @IsDate()
+  patientBirthday: Date;
 
   @ApiProperty()
   @IsNotEmpty()

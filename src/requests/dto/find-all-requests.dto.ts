@@ -33,7 +33,7 @@ export class FilterRequestDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  madeForIds?: string[] | null;
+  patientDNIs?: string[] | null;
 
   @ApiFilterProperty({ isArray: true, type: String })
   @IsOptional()

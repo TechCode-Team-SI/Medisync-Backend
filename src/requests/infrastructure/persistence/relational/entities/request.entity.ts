@@ -16,6 +16,7 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 import { RequestValueEntity } from './request-value.entity';
 import { UserPatientEntity } from 'src/user-patients/infrastructure/persistence/relational/entities/user-patient.entity';
 import { RatingEntity } from 'src/ratings/infrastructure/persistence/relational/entities/rating.entity';
+import { genderEnum } from 'src/employee-profiles/employee-profiles.enum';
 
 @Entity({
   name: 'request',
@@ -38,8 +39,12 @@ export class RequestEntity extends EntityRelationalHelper {
   patientAddress: string;
 
   @ApiProperty()
-  @ManyToOne(() => UserPatientEntity)
-  madeFor?: UserPatientEntity | null;
+  @Column({ type: 'enum', enum: genderEnum })
+  patientGender: genderEnum;
+
+  @ApiProperty()
+  @Column()
+  patientBirthday: Date;
 
   @ApiProperty()
   @ManyToOne(() => UserEntity)
