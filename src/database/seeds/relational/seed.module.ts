@@ -15,7 +15,11 @@ import { RequestTemplateSeedModule } from './request-template/request-template-s
 import { SpecialtySeedModule } from './specialty/specialty-seed.module';
 import { PackageSeedModule } from './package/package-seed.module';
 import { MedicalCenterSeedModule } from './medical-center/medical-center.module';
-
+import { PathologySeedModule } from './pathology/pathology-seed.module';
+import { IllnessSeedModule } from './illness/illness-seed.module';
+import { InjurySeedModule } from './injury/injury-seed.module';
+import { SymptomSeedModule } from './symptom/symptom-seed.module';
+import { TreatmentSeedModule } from './treatment/treatment-seed.module';
 @Module({
   imports: [
     RoleSeedModule,
@@ -27,6 +31,11 @@ import { MedicalCenterSeedModule } from './medical-center/medical-center.module'
     SpecialtySeedModule,
     PackageSeedModule,
     MedicalCenterSeedModule,
+    PathologySeedModule,
+    IllnessSeedModule,
+    InjurySeedModule,
+    SymptomSeedModule,
+    TreatmentSeedModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, appConfig],
