@@ -4,6 +4,8 @@ import { TopSpecialtiesRepository } from './infrastructure/persistence/top-speci
 import { TopWeekdaysRepository } from './infrastructure/persistence/top-weekdays.repository';
 import { StatisticsMetadataRepository } from 'src/statistics-metadata/infrastructure/persistence/statistics-metadata.repository';
 import { StatisticsDateDto } from './dto/statistics-date.dto';
+import { TopGenericRepository } from './infrastructure/persistence/top-generic.repository';
+import { StatisticsTopEnum } from './statistics-top.enum';
 
 @Injectable()
 export class StatisticsService {
@@ -12,6 +14,7 @@ export class StatisticsService {
     private readonly topSpecialtiesRepository: TopSpecialtiesRepository,
     private readonly topWeekdaysRepository: TopWeekdaysRepository,
     private readonly statisticMetadataRepository: StatisticsMetadataRepository,
+    private readonly topGenericRepository: TopGenericRepository,
   ) {}
 
   findTopMedics(date?: StatisticsDateDto) {
@@ -34,5 +37,21 @@ export class StatisticsService {
         return this.statisticMetadataRepository.genTartMetadata(metadata, date);
       }),
     );
+  }
+
+  findTopIllness(date?: StatisticsDateDto) {
+    return this.topGenericRepository.findAll(date, StatisticsTopEnum.ILLNESS);
+  }
+
+  findTopInjury(date?: StatisticsDateDto) {
+    return this.topGenericRepository.findAll(date, StatisticsTopEnum.INJURY);
+  }
+
+  findTopSymptom(date?: StatisticsDateDto) {
+    return this.topGenericRepository.findAll(date, StatisticsTopEnum.SYMPTOM);
+  }
+
+  findTopTreatment(date?: StatisticsDateDto) {
+    return this.topGenericRepository.findAll(date, StatisticsTopEnum.TREATMENT);
   }
 }
