@@ -62,7 +62,7 @@ export class StatisticsService {
       }),
     );
 
-    return { histogram: histogramData, tart: tartData };
+    return { histograms: histogramData, tarts: tartData };
   }
 
   findTopIllness(date?: StatisticsDateDto) {

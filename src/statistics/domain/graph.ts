@@ -6,8 +6,8 @@ import {
 
 export class Graph {
   @ApiProperty()
-  histogram: Histogram[];
+  histograms: Histogram[];
 
   @ApiProperty()
-  tart: Tart[];
+  tarts: Tart[];
 }
