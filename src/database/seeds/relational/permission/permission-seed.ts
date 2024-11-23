@@ -99,8 +99,13 @@ const permissions: Permissions = [
   },
   {
     name: 'Ver Estadísticas',
-    slug: PermissionsEnum.MANAGE_STATISTICS,
+    slug: PermissionsEnum.VIEW_STATISTICS,
     description: 'Permite ver estadísticas',
+  },
+  {
+    name: 'Ver Estadísticas',
+    slug: PermissionsEnum.MANAGE_STATISTICS,
+    description: 'Permite solicitar estadísticas',
   },
   {
     name: 'Gestionar Enfermedades',
@@ -166,6 +171,12 @@ const permissions: Permissions = [
     name: 'Ver Todas las Citas',
     slug: PermissionsEnum.VIEW_ALL_REQUESTS,
     description: 'Permite ver todas las citas',
+  },
+  {
+    name: 'Crear Citas desde el CRM',
+    slug: PermissionsEnum.CREATE_PRIVATE_REQUEST,
+    description:
+      'Permite crear citas desde el CRM, para clientes sin la aplicacion',
   },
 ];
 
