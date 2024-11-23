@@ -6,7 +6,7 @@ import { TopMedics } from './domain/top-medics';
 import { StatisticsService } from './statistics.service';
 import { TopSpecialties } from './domain/top-specialties';
 import { TopWeekdays } from './domain/top-weekdays';
-import { Graph } from 'src/statistics-metadata/statistics-metadata.type';
+import { Graph } from './domain/graph';
 import { StatisticsDateDto } from './dto/statistics-date.dto';
 import { TopGeneric } from './domain/top-generic';
 
@@ -50,11 +50,11 @@ export class StatisticsController {
 
   @Get()
   @ApiOkResponse({
-    type: PaginationResponse(TopMedics),
+    type: PaginationResponse(Graph),
   })
   async findAllStatisticGraphsMetadata(
     @Query() query: StatisticsDateDto,
-  ): Promise<Graph[]> {
+  ): Promise<Graph> {
     return this.statisticsService.findStatisticsGraphMetadata(query);
   }
 

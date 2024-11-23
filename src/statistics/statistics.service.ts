@@ -6,6 +6,11 @@ import { StatisticsMetadataRepository } from 'src/statistics-metadata/infrastruc
 import { StatisticsDateDto } from './dto/statistics-date.dto';
 import { TopGenericRepository } from './infrastructure/persistence/top-generic.repository';
 import { StatisticsTopEnum } from './statistics-top.enum';
+import { StatisticType } from 'src/statistics-metadata/statistics-metadata.enum';
+import {
+  Histogram,
+  Tart,
+} from 'src/statistics-metadata/statistics-metadata.type';
 
 @Injectable()
 export class StatisticsService {
@@ -30,13 +35,34 @@ export class StatisticsService {
   }
 
   async findStatisticsGraphMetadata(date: StatisticsDateDto) {
+    const tartData: Tart[] = [];
+    const histogramData: Histogram[] = [];
+
     const metadatas = await this.statisticMetadataRepository.findAll({});
-    return Promise.all(
+    await Promise.all(
       metadatas.map(async (metadata) => {
-        //TODO: add control flow for different type of metadata (tart only rn)
-        return this.statisticMetadataRepository.genTartMetadata(metadata, date);
+        switch (metadata.type) {
+          case StatisticType.TART:
+            tartData.push(
+              await this.statisticMetadataRepository.genTartMetadata(
+                metadata,
+                date,
+              ),
+            );
+            break;
+          case StatisticType.HISTOGRAM:
+            histogramData.push(
+              await this.statisticMetadataRepository.genHistogramMetadata(
+                metadata,
+                date,
+              ),
+            );
+            break;
+        }
       }),
     );
+
+    return { histogram: histogramData, tart: tartData };
   }
 
   findTopIllness(date?: StatisticsDateDto) {
