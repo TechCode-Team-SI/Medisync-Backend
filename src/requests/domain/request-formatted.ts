@@ -13,6 +13,9 @@ export class RequestFormatted {
   patient: Patient;
 
   @ApiProperty()
+  createdBy: Creator;
+
+  @ApiProperty()
   requestedMedic?: Medic;
 
   @ApiProperty()
@@ -43,6 +46,11 @@ type Patient = {
   address: string;
   gender: genderEnum;
   birthday: Date;
+};
+
+type Creator = {
+  fullName: string;
+  id: string;
 };
 
 type Medic = {

@@ -127,6 +127,10 @@ export class RequestMapper {
       birthday: raw.patientBirthday,
       gender: raw.patientGender,
     };
+    formattedEntity.createdBy = {
+      fullName: raw.madeBy.fullName,
+      id: raw.madeBy.id,
+    };
     formattedEntity.requestedMedic = raw.requestedMedic
       ? {
           fullName: raw.requestedMedic.fullName,

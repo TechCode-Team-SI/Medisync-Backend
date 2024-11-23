@@ -50,6 +50,7 @@ export class RequestRelationalRepository
       },
       selections: true,
     },
+    madeBy: true,
     requestedSpecialty: true,
     requestedMedic: true,
     rating: true,
