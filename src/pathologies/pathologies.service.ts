@@ -39,6 +39,10 @@ export class PathologiesService {
     return this.pathologyRepository.findById(id, options);
   }
 
+  findMany(ids: Pathology['id'][], options?: findOptions) {
+    return this.pathologyRepository.findManyByIds(ids, options);
+  }
+
   update(id: Pathology['id'], updatePathologyDto: UpdatePathologyDto) {
     return this.pathologyRepository.update(id, updatePathologyDto);
   }
