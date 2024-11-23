@@ -53,6 +53,7 @@ export class RequestRelationalRepository
     madeBy: true,
     requestedSpecialty: true,
     requestedMedic: true,
+    referredBy: true,
     rating: true,
     requestTemplate: {
       fields: {
