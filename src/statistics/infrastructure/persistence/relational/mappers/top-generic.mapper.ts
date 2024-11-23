@@ -1,5 +1,5 @@
 import { TopGenericEntity } from '../entities/top-generic.entity';
-import { TopGeneric } from '../../../../domain/top-generic';
+import { TopGeneric } from 'src/statistics/domain/top-generic';
 
 export class TopGenericMapper {
   static toDomain(raw: TopGenericEntity): TopGeneric {

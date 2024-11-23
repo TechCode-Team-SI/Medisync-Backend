@@ -41,17 +41,17 @@ export function dateGroupingQuery(grouping?: StatisticsTimeUnitEnum): string {
   }
 }
 
-export function topQuery(filter?: StatisticsTopEnum): string {
+export function topQuery(filter?: StatisticsTopEnum): string[] {
   switch (filter) {
     case StatisticsTopEnum.ILLNESS:
-      return 'illness';
+      return ['illness', 'illnesses'];
     case StatisticsTopEnum.INJURY:
-      return 'injury';
+      return ['injury', 'injuries'];
     case StatisticsTopEnum.SYMPTOM:
-      return 'symptom';
+      return ['symptom', 'symptoms'];
     case StatisticsTopEnum.TREATMENT:
-      return 'treatment';
+      return ['treatment', 'treatments'];
     default:
-      return '';
+      return ['', ''];
   }
 }

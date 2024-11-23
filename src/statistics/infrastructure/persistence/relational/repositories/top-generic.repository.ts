@@ -2,14 +2,14 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
-import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
 import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
 import { DataSource } from 'typeorm';
-import { TopGeneric } from '../../../../domain/top-generic';
+import { TopGeneric } from 'src/statistics/domain/top-generic';
 import { TopGenericRepository } from '../../top-generic.repository';
 import { TopGenericMapper } from '../mappers/top-generic.mapper';
 import { dateRangeQuery, topQuery } from 'src/utils/statistics-utils';
 import { StatisticsTopEnum } from 'src/statistics/statistics-top.enum';
+import { DiagnosticEntity } from 'src/diagnostics/infrastructure/persistence/relational/entities/diagnostic.entity';
 
 @Injectable({ scope: Scope.REQUEST })
 export class TopGenericRelationalRepository
@@ -31,15 +31,15 @@ export class TopGenericRelationalRepository
     const entityManager = this.getEntityManager();
     let entities: any[] = [];
     const query = entityManager
-      .getRepository(RequestEntity)
+      .getRepository(DiagnosticEntity)
       .createQueryBuilder('diagnostic');
 
-    const entityName = topQuery(filter);
+    const [entityName, columnName] = topQuery(filter);
     query
       .leftJoin(
-        `diagnostic.${entityName}`,
+        `diagnostic.${columnName}`,
         `${entityName}`,
-        `diagnostic.${entityName}Id = ${entityName}.id`,
+        `${entityName}Id = ${entityName}.id`,
       )
       .groupBy(`${entityName}.id`)
       .orderBy(`count(${entityName}.id)`, 'DESC')
