@@ -47,6 +47,30 @@ export class NotificationsService {
     return notifUsers;
   }
 
+  async createForUsersByPermission(
+    createNotificationDto: CreateNotificationDto,
+    permissions: PermissionsEnum[],
+  ) {
+    const notification = await this.notificationRepository.create(
+      createNotificationDto,
+    );
+    const users = await this.usersRepository.findAllByPermissions(permissions);
+    const userIds = users.map((user) => user.id);
+
+    const notifUserData = userIds.map((userId) => {
+      const user = new User();
+      user.id = userId;
+      const notificationUser = new NotificationUser();
+      notificationUser.notification = notification;
+      notificationUser.read = false;
+      notificationUser.user = user;
+      return notificationUser;
+    });
+    const notifUsers =
+      await this.notificationUserRepository.createMany(notifUserData);
+    return notifUsers;
+  }
+
   async createForAllSpecialty(
     createNotificationDto: CreateNotificationNoTypeDto,
     specialtyId: string,

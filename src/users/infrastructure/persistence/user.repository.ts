@@ -8,6 +8,7 @@ import { FilterUserDto, SortUserDto } from '../../dto/query-user.dto';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { BaseRepository } from 'src/common/base.repository';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 export abstract class UserRepository extends BaseRepository {
   abstract create(
@@ -47,6 +48,10 @@ export abstract class UserRepository extends BaseRepository {
     sortOptions?: SortUserDto[] | null;
     options?: findOptions & { employeeProfile: boolean };
   }): Promise<User[]>;
+
+  abstract findAllByPermissions(
+    permissions: PermissionsEnum[],
+  ): Promise<User[]>;
 
   abstract findById(
     id: User['id'],
