@@ -80,4 +80,8 @@ export class StatisticsService {
   findTopTreatment(date?: StatisticsDateDto) {
     return this.topGenericRepository.findAll(date, StatisticsTopEnum.TREATMENT);
   }
+
+  findTopPathology(date?: StatisticsDateDto) {
+    return this.topGenericRepository.findAll(date, StatisticsTopEnum.PATHOLOGY);
+  }
 }
