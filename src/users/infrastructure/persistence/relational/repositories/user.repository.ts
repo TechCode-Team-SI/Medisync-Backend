@@ -27,6 +27,7 @@ import { UserEntity } from '../entities/user.entity';
 import { UserMapper } from '../mappers/user.mapper';
 import { formatOrder } from 'src/utils/utils';
 import { isArray } from 'class-validator';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UsersRelationalRepository
@@ -53,6 +54,17 @@ export class UsersRelationalRepository
       room: true,
     },
   };
+
+  async findAllByPermissions(permissions: PermissionsEnum[]): Promise<User[]> {
+    const entities = await this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.roles', 'roles')
+      .leftJoin('roles.permissions', 'permissions')
+      .where('permissions.slug IN (:...permissions)', { permissions })
+      .getMany();
+
+    return entities.map((entity) => UserMapper.toDomain(entity));
+  }
 
   async create(data: User): Promise<User> {
     const persistenceModel = UserMapper.toPersistence(data);

@@ -200,6 +200,7 @@ export class TicketsController {
     return this.ticketCommentsService.findAllWithPagination({
       paginationOptions,
       ticketId,
+      sortOptions: query.sort,
     });
   }
 }

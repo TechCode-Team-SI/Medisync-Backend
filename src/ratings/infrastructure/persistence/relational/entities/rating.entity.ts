@@ -15,6 +15,10 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 })
 export class RatingEntity extends EntityRelationalHelper {
   @ApiProperty()
+  @Column({ type: 'text' })
+  review: string;
+
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

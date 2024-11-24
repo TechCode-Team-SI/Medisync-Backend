@@ -25,6 +25,8 @@ export class RequestMapper {
     domainEntity.appointmentHour = raw.appointmentHour;
     domainEntity.status = raw.status;
     domainEntity.appointmentDate = raw.appointmentDate;
+    domainEntity.patientGender = raw.patientGender;
+    domainEntity.patientBirthday = raw.patientBirthday;
     if (raw.requestedMedic) {
       domainEntity.requestedMedic = UserMapper.toDomain(raw.requestedMedic);
     }
@@ -49,9 +51,6 @@ export class RequestMapper {
     if (raw.rating) {
       domainEntity.rating = RatingMapper.toDomain(raw.rating);
     }
-    if (raw.madeFor) {
-      domainEntity.madeFor = UserPatientMapper.toDomain(raw.madeFor);
-    }
     if (raw.savedTo) {
       domainEntity.savedTo = UserPatientMapper.toDomain(raw.savedTo);
     }
@@ -74,17 +73,14 @@ export class RequestMapper {
     persistenceEntity.patientAddress = domainEntity.patientAddress;
     persistenceEntity.appointmentHour = domainEntity.appointmentHour;
     persistenceEntity.appointmentDate = domainEntity.appointmentDate;
+    persistenceEntity.patientGender = domainEntity.patientGender;
+    persistenceEntity.patientBirthday = domainEntity.patientBirthday;
     if (isValueInEnum(RequestStatusEnum, domainEntity.status)) {
       persistenceEntity.status = domainEntity.status;
     }
     if (domainEntity.requestedMedic) {
       persistenceEntity.requestedMedic = UserMapper.toPersistence(
         domainEntity.requestedMedic,
-      );
-    }
-    if (domainEntity.madeFor) {
-      persistenceEntity.madeFor = UserPatientMapper.toPersistence(
-        domainEntity.madeFor,
       );
     }
     if (domainEntity.savedTo) {
@@ -128,6 +124,12 @@ export class RequestMapper {
       fullName: raw.patientFullName,
       dni: raw.patientDNI,
       address: raw.patientAddress,
+      birthday: raw.patientBirthday,
+      gender: raw.patientGender,
+    };
+    formattedEntity.createdBy = {
+      fullName: raw.madeBy.fullName,
+      id: raw.madeBy.id,
     };
     formattedEntity.requestedMedic = raw.requestedMedic
       ? {

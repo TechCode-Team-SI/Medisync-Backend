@@ -2,6 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class MedicalCenter {
   @ApiProperty()
+  description: string;
+
+  @ApiProperty()
   instagramName: string;
 
   @ApiProperty()

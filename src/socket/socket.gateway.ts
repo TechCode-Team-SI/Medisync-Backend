@@ -58,6 +58,7 @@ export class SocketGateway
     @MessageBody() body: JoinSocketRoomDto,
     @ConnectedSocket() socket: Socket,
   ) {
+    console.log(`socket ${socket.id} Joining room ${body.roomId}`);
     await socket.join(body.roomId);
   }
 
@@ -66,6 +67,7 @@ export class SocketGateway
     @MessageBody() body: JoinSocketRoomDto,
     @ConnectedSocket() socket: Socket,
   ) {
+    console.log(`socket ${socket.id} leaving room ${body.roomId}`);
     return socket.leave(body.roomId);
   }
 
@@ -75,6 +77,7 @@ export class SocketGateway
     @ConnectedSocket() socket: Socket,
   ) {
     const { event, message } = data;
+    console.log(event, message);
 
     this.socketService.sendMessageToUser(socket, event, message);
   }

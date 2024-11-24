@@ -27,6 +27,5 @@ export class SendTicketMessageDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsString()
   sender: User;
 }

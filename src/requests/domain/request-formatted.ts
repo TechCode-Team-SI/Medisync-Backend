@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FieldQuestionTypeEnum } from 'src/field-questions/field-questions.enum';
 import { RequestStatusEnum } from '../requests.enum';
+import { genderEnum } from 'src/employee-profiles/employee-profiles.enum';
 
 export class RequestFormatted {
   @ApiProperty({
@@ -10,6 +11,9 @@ export class RequestFormatted {
 
   @ApiProperty()
   patient: Patient;
+
+  @ApiProperty()
+  createdBy: Creator;
 
   @ApiProperty()
   requestedMedic?: Medic;
@@ -40,6 +44,13 @@ type Patient = {
   fullName: string;
   dni: string;
   address: string;
+  gender: genderEnum;
+  birthday: Date;
+};
+
+type Creator = {
+  fullName: string;
+  id: string;
 };
 
 type Medic = {

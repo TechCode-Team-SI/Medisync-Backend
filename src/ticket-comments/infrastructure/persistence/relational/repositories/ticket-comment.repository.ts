@@ -8,6 +8,7 @@ import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import {
   DataSource,
+  FindOneOptions,
   FindOptionsRelations,
   FindOptionsWhere,
   Repository,
@@ -18,6 +19,8 @@ import { TicketComment } from '../../../../domain/ticket-comment';
 import { TicketCommentRepository } from '../../ticket-comment.repository';
 import { TicketCommentEntity } from '../entities/ticket-comment.entity';
 import { TicketCommentMapper } from '../mappers/ticket-comment.mapper';
+import { formatOrder } from 'src/utils/utils';
+import { SortTicketCommentDto } from 'src/ticket-comments/dto/find-all-ticket-comments.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class TicketCommentRelationalRepository
@@ -52,11 +55,17 @@ export class TicketCommentRelationalRepository
     paginationOptions,
     options,
     ticketId,
+    sortOptions,
   }: {
     paginationOptions: IPaginationOptions;
     options?: findOptions & { createdBy?: boolean };
     ticketId?: string;
+    sortOptions?: SortTicketCommentDto[] | null;
   }): Promise<PaginationResponseDto<TicketComment>> {
+    let order: FindOneOptions<TicketCommentEntity>['order'] = {
+      createdAt: 'DESC',
+    };
+    if (sortOptions) order = formatOrder(sortOptions);
     let where: FindOptionsWhere<TicketCommentEntity> = {};
     if (ticketId) {
       where = { ...where, ticket: { id: ticketId } };
@@ -72,6 +81,7 @@ export class TicketCommentRelationalRepository
       take: paginationOptions.limit,
       where,
       relations,
+      order,
     });
     const items = entities.map((entity) =>
       TicketCommentMapper.toDomain(entity),

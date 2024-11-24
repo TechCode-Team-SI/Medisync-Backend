@@ -17,7 +17,8 @@ export enum PermissionsEnum {
   MANAGE_FORMS = 'manage-forms',
   SET_FORM_FOR_SPECIALTY = 'set-form-for-specialty',
   MANAGE_SPECIALTIES = 'manage-specialties',
-  MANAGE_STATISTICS = 'view-statistics',
+  MANAGE_STATISTICS = 'manage-statistics',
+  VIEW_STATISTICS = 'view-statistics',
   MANAGE_ILLNESSES = 'manage-illnesses',
   MANAGE_TREATMENTS = 'manage-treatments',
   MANAGE_INJURIES = 'manage-injuries',
@@ -31,4 +32,5 @@ export enum PermissionsEnum {
   ASSIGN_AGENDA = 'assign-agenda',
   MANAGE_EMPLOYEES = 'manage-employees',
   VIEW_ALL_REQUESTS = 'view-all-requests',
+  CREATE_PRIVATE_REQUEST = 'create-private-request',
 }

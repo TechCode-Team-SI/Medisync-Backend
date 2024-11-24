@@ -4,6 +4,7 @@ import { MedicalCenterEntity } from '../entities/medical-center.entity';
 export class MedicalCenterMapper {
   static toDomain(raw: MedicalCenterEntity): MedicalCenter {
     const domainEntity = new MedicalCenter();
+    domainEntity.description = raw.description;
     domainEntity.instagramName = raw.instagramName;
     domainEntity.twitterName = raw.twitterName;
     domainEntity.facebookName = raw.facebookName;
@@ -25,6 +26,7 @@ export class MedicalCenterMapper {
 
   static toPersistence(domainEntity: MedicalCenter): MedicalCenterEntity {
     const persistenceEntity = new MedicalCenterEntity();
+    persistenceEntity.description = domainEntity.description;
     persistenceEntity.instagramName = domainEntity.instagramName;
     persistenceEntity.twitterName = domainEntity.twitterName;
     persistenceEntity.facebookName = domainEntity.facebookName;

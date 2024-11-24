@@ -98,7 +98,6 @@ export class UsersController {
       filterOptions: query?.filters,
       sortOptions: query?.sort,
       paginationOptions,
-      options: { employeeProfile: true, specialties: true },
     });
   }
 

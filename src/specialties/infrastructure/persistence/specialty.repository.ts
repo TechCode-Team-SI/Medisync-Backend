@@ -32,6 +32,7 @@ export abstract class SpecialtyRepository extends BaseRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
+    isPublic?: boolean;
   }): Promise<PaginationResponseDto<Specialty>>;
 
   abstract findAllWithNames(

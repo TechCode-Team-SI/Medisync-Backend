@@ -8,7 +8,9 @@ export class WsAuthGuard extends AuthGuard('jwt') {
   }
 
   getRequest(context: ExecutionContext) {
-    return context.switchToWs().getClient().handshake;
+    const data = context.switchToWs().getClient().handshake;
+    data['headers'].authorization = data.auth.token;
+    return data;
   }
 
   handleRequest(err, user) {

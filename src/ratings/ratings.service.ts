@@ -18,7 +18,11 @@ export class RatingsService {
     private readonly usersService: UsersService,
   ) {}
 
-  async create(stars: number, requestId: string, userPayload: JwtPayloadType) {
+  async create(
+    { stars, review }: { stars: number; review: string },
+    requestId: string,
+    userPayload: JwtPayloadType,
+  ) {
     if (!(stars >= 0 && stars <= 5)) {
       throw new UnprocessableEntityException(exceptionResponses.StarsOutRange);
     }
@@ -32,12 +36,6 @@ export class RatingsService {
     if (!foundRequest) {
       throw new UnprocessableEntityException(
         exceptionResponses.RequestNotExists,
-      );
-    }
-
-    if (foundRequest.madeBy?.id !== foundUser.id) {
-      throw new UnprocessableEntityException(
-        exceptionResponses.UserNotCreateRequest,
       );
     }
 
@@ -56,6 +54,7 @@ export class RatingsService {
 
     const clonedPayload = {
       stars,
+      review,
       ratedBy: foundUser,
       request: foundRequest,
     };

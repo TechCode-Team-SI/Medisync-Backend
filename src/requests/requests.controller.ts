@@ -64,9 +64,7 @@ export class RequestsController {
     @Body() createRequestDto: CreateRequestWithReferenceDto,
     @Me() userPayload: JwtPayloadType,
   ) {
-    return this.requestsService.create(createRequestDto, userPayload.id, {
-      shouldBeSameAsUser: false,
-    });
+    return this.requestsService.create(createRequestDto, userPayload.id);
   }
 
   //In private, the user can create a request with a reference
@@ -79,9 +77,7 @@ export class RequestsController {
     @Body() createRequestDto: CreateRequestDto,
     @Me() userPayload: JwtPayloadType,
   ) {
-    return this.requestsService.create(createRequestDto, userPayload.id, {
-      shouldBeSameAsUser: false,
-    });
+    return this.requestsService.create(createRequestDto, userPayload.id);
   }
 
   //In public, the user can create a request without a reference
@@ -228,27 +224,30 @@ export class RequestsController {
     @Body() createRatingDto: CreateRatingDto,
   ) {
     const rating = await this.ratingsService.create(
-      createRatingDto.stars,
+      {
+        stars: createRatingDto.stars,
+        review: createRatingDto.review,
+      },
       id,
       userPayload,
     );
     return { success: !!rating };
   }
 
-  @Get('save/:requestTemplateId/:madeForId')
+  @Get('save/:requestTemplateId/:savedToId')
   @ApiParam({
     name: 'requestTemplateId',
     type: String,
     required: true,
   })
   @ApiParam({
-    name: 'madeForId',
+    name: 'savedToId',
     type: String,
     required: true,
   })
   async findSaved(
     @Param('requestTemplateId') requestTemplateId: string,
-    @Param('madeForId') madeForId: string,
+    @Param('savedToId') savedToId: string,
   ): Promise<RequestFormatted | null> {
     const request = await this.requestsService.findAllMinimalWithPagination({
       paginationOptions: {
@@ -257,7 +256,7 @@ export class RequestsController {
       },
       filterOptions: {
         requestTemplateIds: [requestTemplateId],
-        madeForIds: [madeForId],
+        patientDNIs: [savedToId],
       },
     });
 
@@ -268,26 +267,26 @@ export class RequestsController {
     return this.requestsService.findOneDetailed(request.data[0].id);
   }
 
-  @Post('save/:requestId/:madeForId')
+  @Post('save/:requestId/:savedToId')
   @ApiParam({
     name: 'requestId',
     type: String,
     required: true,
   })
   @ApiParam({
-    name: 'madeForId',
+    name: 'savedToId',
     type: String,
     required: true,
   })
   async createSavedData(
     @Param('requestId') requestId: string,
-    @Param('madeForId') madeForId: string,
+    @Param('savedToId') savedToId: string,
     @Me() userPayload: JwtPayloadType,
   ): Promise<Request | null> {
     return this.requestsService.updateSaveData(
       requestId,
       userPayload.id,
-      madeForId,
+      savedToId,
     );
   }
 }

@@ -110,6 +110,22 @@ export class SpecialtiesController {
 
     return this.specialtiesService.findAllActiveWithPagination({
       paginationOptions,
+      isPublic: true,
+    });
+  }
+
+  //TODO: update specialty pending permissions
+  @Get('active/private')
+  @ApiOkResponse({
+    type: PaginationResponse(Specialty),
+  })
+  async findAllActivePrivate(
+    @Query() query: FindAllSpecialtiesPaginationOnlyDto,
+  ): Promise<PaginationResponseDto<Specialty>> {
+    const paginationOptions = getPagination(query);
+
+    return this.specialtiesService.findAllActiveWithPagination({
+      paginationOptions,
     });
   }
 
