@@ -11,6 +11,7 @@ import {
   Histogram,
   Tart,
 } from 'src/statistics-metadata/statistics-metadata.type';
+import { GraphMetadataRepository } from 'src/statistics-metadata/infrastructure/persistence/graph-metadata.repository';
 
 @Injectable()
 export class StatisticsService {
@@ -20,6 +21,7 @@ export class StatisticsService {
     private readonly topWeekdaysRepository: TopWeekdaysRepository,
     private readonly statisticMetadataRepository: StatisticsMetadataRepository,
     private readonly topGenericRepository: TopGenericRepository,
+    private readonly graphMetadataRepository: GraphMetadataRepository,
   ) {}
 
   findTopMedics(date?: StatisticsDateDto) {
@@ -61,6 +63,27 @@ export class StatisticsService {
         }
       }),
     );
+
+    const ageGraph = await this.graphMetadataRepository.age(date);
+    if (ageGraph.data.length > 0) {
+      histogramData.push(ageGraph);
+    }
+
+    const ratingGraph = await this.graphMetadataRepository.rating(date);
+    if (ratingGraph.data.length > 0) {
+      histogramData.push(ratingGraph);
+    }
+
+    const genderGraph = await this.graphMetadataRepository.gender(date);
+    if (genderGraph.data.length > 0) {
+      tartData.push(genderGraph);
+    }
+
+    const requestStatusGraph =
+      await this.graphMetadataRepository.requestStatus(date);
+    if (requestStatusGraph.data.length > 0) {
+      tartData.push(requestStatusGraph);
+    }
 
     return { histograms: histogramData, tarts: tartData };
   }
