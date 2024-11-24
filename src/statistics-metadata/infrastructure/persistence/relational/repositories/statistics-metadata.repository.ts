@@ -195,7 +195,7 @@ export class StatisticsMetadataRelationalRepository
 
     if (date?.from || date?.to) {
       const dateRange = dateRangeQuery(date);
-      query.where(`DATE(s.createdAt) ${dateRange}`);
+      query.where(`DATE(r.createdAt) ${dateRange}`);
     }
 
     const entities = await query.getRawMany();
@@ -244,13 +244,13 @@ export class StatisticsMetadataRelationalRepository
 
     if (date?.from || date?.to) {
       const dateRange = dateRangeQuery(date);
-      query.where(`DATE(s.createdAt) ${dateRange}`);
+      query.where(`DATE(r.createdAt) ${dateRange}`);
     }
 
     if (date?.grouping) {
       const dateGrouping = dateGroupingQuery(date.grouping);
       query.addSelect(
-        `DATE_FORMAT(s.createdAt, ${dateGrouping}) AS dateFormatted`,
+        `DATE_FORMAT(r.createdAt, ${dateGrouping}) AS dateFormatted`,
       );
       query.groupBy('dateFormatted');
       query.orderBy('dateFormatted');
