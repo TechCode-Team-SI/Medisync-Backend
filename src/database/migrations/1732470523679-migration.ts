@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Migration1732388327853 implements MigrationInterface {
-  name = 'Migration1732388327853';
+export class Migration1732470523679 implements MigrationInterface {
+  name = 'Migration1732470523679';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -12,9 +12,6 @@ export class Migration1732388327853 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE \`field_question\` ADD UNIQUE INDEX \`IDX_30b498d38d1b4b7f7768d08f02\` (\`slug\`)`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`statistics_metadata\` CHANGE \`type\` \`type\` enum ('tart', 'histogram') NOT NULL`,
     );
     await queryRunner.query(
       `ALTER TABLE \`diagnostic_pathology\` ADD CONSTRAINT \`FK_9f40135c5e75bc32a5808869c13\` FOREIGN KEY (\`diagnosticId\`) REFERENCES \`diagnostic\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE`,
@@ -30,9 +27,6 @@ export class Migration1732388327853 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE \`diagnostic_pathology\` DROP FOREIGN KEY \`FK_9f40135c5e75bc32a5808869c13\``,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`statistics_metadata\` CHANGE \`type\` \`type\` enum ('tart') NOT NULL`,
     );
     await queryRunner.query(
       `ALTER TABLE \`field_question\` DROP INDEX \`IDX_30b498d38d1b4b7f7768d08f02\``,
