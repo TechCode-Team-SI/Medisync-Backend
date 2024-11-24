@@ -7,6 +7,7 @@ import { IllnessMapper } from 'src/illnesses/infrastructure/persistence/relation
 import { InjuryMapper } from 'src/injuries/infrastructure/persistence/relational/mappers/injury.mapper';
 import { SymptomMapper } from 'src/symptoms/infrastructure/persistence/relational/mappers/symptom.mapper';
 import { TreatmentMapper } from 'src/treatments/infrastructure/persistence/relational/mappers/treatment.mapper';
+import { PathologyMapper } from 'src/pathologies/infrastructure/persistence/relational/mappers/pathology.mapper';
 
 export class DiagnosticMapper {
   static toDomain(raw: DiagnosticEntity): Diagnostic {
@@ -40,6 +41,11 @@ export class DiagnosticMapper {
     if (raw.treatments) {
       domainEntity.treatments = raw.treatments.map((treatment) =>
         TreatmentMapper.toDomain(treatment),
+      );
+    }
+    if (raw.pathologies) {
+      domainEntity.pathologies = raw.pathologies.map((pathology) =>
+        PathologyMapper.toDomain(pathology),
       );
     }
     domainEntity.createdAt = raw.createdAt;
@@ -85,6 +91,11 @@ export class DiagnosticMapper {
     if (domainEntity.treatments) {
       persistenceEntity.treatments = domainEntity.treatments.map((treatment) =>
         TreatmentMapper.toPersistence(treatment),
+      );
+    }
+    if (domainEntity.pathologies) {
+      persistenceEntity.pathologies = domainEntity.pathologies.map(
+        (pathology) => PathologyMapper.toPersistence(pathology),
       );
     }
     persistenceEntity.createdAt = domainEntity.createdAt;

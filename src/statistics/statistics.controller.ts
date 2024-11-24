@@ -97,4 +97,14 @@ export class StatisticsController {
   ): Promise<TopGeneric[]> {
     return this.statisticsService.findTopTreatment(query);
   }
+
+  @Get('top-pathology')
+  @ApiOkResponse({
+    type: PaginationResponse(TopGeneric),
+  })
+  async findTopPathology(
+    @Query() query: StatisticsDateDto,
+  ): Promise<TopGeneric[]> {
+    return this.statisticsService.findTopPathology(query);
+  }
 }

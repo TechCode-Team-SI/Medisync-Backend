@@ -57,6 +57,8 @@ export class TopGenericRelationalRepository
 
     entities = await query.getRawMany();
 
-    return entities.map((entity) => TopGenericMapper.toDomain(entity));
+    return entities
+      .filter((entity) => entity.name !== null)
+      .map((entity) => TopGenericMapper.toDomain(entity));
   }
 }

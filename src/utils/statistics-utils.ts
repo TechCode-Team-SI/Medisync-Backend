@@ -47,6 +47,8 @@ export function topQuery(filter?: StatisticsTopEnum): string[] {
       return ['illness', 'illnesses'];
     case StatisticsTopEnum.INJURY:
       return ['injury', 'injuries'];
+    case StatisticsTopEnum.PATHOLOGY:
+      return ['pathology', 'pathologies'];
     case StatisticsTopEnum.SYMPTOM:
       return ['symptom', 'symptoms'];
     case StatisticsTopEnum.TREATMENT:

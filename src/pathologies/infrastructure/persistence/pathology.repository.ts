@@ -40,6 +40,11 @@ export abstract class PathologyRepository extends BaseRepository {
     options?: findOptions,
   ): Promise<NullableType<Pathology>>;
 
+  abstract findManyByIds(
+    ids: Pathology['id'][],
+    options?: findOptions,
+  ): Promise<Pathology[]>;
+
   abstract update(
     id: Pathology['id'],
     payload: DeepPartial<Pathology>,
