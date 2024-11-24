@@ -6,6 +6,7 @@ import { UsersModule } from 'src/users/users.module';
 import { TicketCommentsModule } from 'src/ticket-comments/ticket-comments.module';
 import { permissionsModule } from 'src/permissions/permissions.module';
 import { TicketTypesModule } from 'src/ticket-types/ticket-types.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TicketTypesModule } from 'src/ticket-types/ticket-types.module';
     permissionsModule,
     forwardRef(() => TicketCommentsModule),
     TicketTypesModule,
+    NotificationsModule,
   ],
   controllers: [TicketsController],
   providers: [TicketsService],
