@@ -5,6 +5,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -29,7 +30,7 @@ export class RatingEntity extends EntityRelationalHelper {
   @ApiProperty({
     type: () => UserEntity,
   })
-  @OneToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'ratedBy' })
   ratedBy: UserEntity;
 
