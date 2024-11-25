@@ -9,6 +9,10 @@ export class CreateRoleDto {
   @IsNotEmpty()
   name: string;
 
+  @ApiProperty()
+  @IsNotEmpty()
+  description: string;
+
   @ApiProperty({ type: PermissionDto })
   @IsArray()
   @Type(() => PermissionDto)
