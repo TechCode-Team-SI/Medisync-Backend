@@ -90,7 +90,9 @@ export class NotificationRelationalRepository
         type: filterOptions.type,
       };
     }
-    let order: FindOneOptions<NotificationEntity>['order'] = {};
+    let order: FindOneOptions<NotificationEntity>['order'] = {
+      createdAt: 'DESC',
+    };
     if (sortOptions) order = formatOrder(sortOptions);
 
     let relations = this.relations;
