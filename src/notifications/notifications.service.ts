@@ -17,6 +17,8 @@ import { PermissionsEnum } from 'src/permissions/permissions.enum';
 import { CreateNotificationNoTypeDto } from './dto/create-notification-no-type.dto';
 import { NotificationTypeEnum } from './notifications.enum';
 import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
+import { SocketService } from 'src/socket/socket.service';
+import { SocketEnum } from 'src/socket/socket-enum';
 
 @Injectable()
 export class NotificationsService {
@@ -24,6 +26,7 @@ export class NotificationsService {
     private readonly notificationRepository: NotificationRepository,
     private readonly notificationUserRepository: NotificationUserRepository,
     private readonly usersRepository: UserRepository,
+    private readonly socketService: SocketService,
   ) {}
 
   async createForIndividuals(
@@ -44,6 +47,12 @@ export class NotificationsService {
     });
     const notifUsers =
       await this.notificationUserRepository.createMany(notifUserData);
+
+    this.socketService.broadcastMessageToRooms(
+      userIds,
+      SocketEnum.NOTIFICATION,
+      notifUsers,
+    );
     return notifUsers;
   }
 
@@ -68,6 +77,12 @@ export class NotificationsService {
     });
     const notifUsers =
       await this.notificationUserRepository.createMany(notifUserData);
+
+    this.socketService.broadcastMessageToRooms(
+      userIds,
+      SocketEnum.NOTIFICATION,
+      notifUsers,
+    );
     return notifUsers;
   }
 
