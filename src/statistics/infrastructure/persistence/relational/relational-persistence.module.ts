@@ -9,6 +9,9 @@ import { TopSpecialtiesRelationalRepository } from './repositories/top-specialti
 import { TopWeekdaysEntity } from './entities/top-weekdays.entity';
 import { TopWeekdaysRepository } from '../top-weekdays.repository';
 import { TopWeekdaysRelationalRepository } from './repositories/top-weekdays.repository';
+import { TopGenericEntity } from './entities/top-generic.entity';
+import { TopGenericRepository } from '../top-generic.repository';
+import { TopGenericRelationalRepository } from './repositories/top-generic.repository';
 
 @Module({
   imports: [
@@ -16,6 +19,7 @@ import { TopWeekdaysRelationalRepository } from './repositories/top-weekdays.rep
       TopMedicsEntity,
       TopSpecialtiesEntity,
       TopWeekdaysEntity,
+      TopGenericEntity,
     ]),
   ],
   providers: [
@@ -31,11 +35,16 @@ import { TopWeekdaysRelationalRepository } from './repositories/top-weekdays.rep
       provide: TopWeekdaysRepository,
       useClass: TopWeekdaysRelationalRepository,
     },
+    {
+      provide: TopGenericRepository,
+      useClass: TopGenericRelationalRepository,
+    },
   ],
   exports: [
     TopMedicsRepository,
     TopSpecialtiesRepository,
     TopWeekdaysRepository,
+    TopGenericRepository,
   ],
 })
 export class RelationalStatisticsPersistenceModule {}

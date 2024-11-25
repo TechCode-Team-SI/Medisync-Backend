@@ -6,6 +6,7 @@ import { Illness } from 'src/illnesses/domain/illness';
 import { Injury } from 'src/injuries/domain/injury';
 import { Symptom } from 'src/symptoms/domain/symptom';
 import { Treatment } from 'src/treatments/domain/treatment';
+import { Pathology } from 'src/pathologies/domain/pathology';
 
 export class Diagnostic {
   @ApiProperty({
@@ -36,6 +37,9 @@ export class Diagnostic {
 
   @ApiProperty({ type: Treatment, isArray: true })
   treatments: Treatment[];
+
+  @ApiProperty({ type: Pathology, isArray: true })
+  pathologies: Pathology[];
 
   @ApiProperty()
   createdAt: Date;

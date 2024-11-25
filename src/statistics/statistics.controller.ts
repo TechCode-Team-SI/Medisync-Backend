@@ -6,8 +6,9 @@ import { TopMedics } from './domain/top-medics';
 import { StatisticsService } from './statistics.service';
 import { TopSpecialties } from './domain/top-specialties';
 import { TopWeekdays } from './domain/top-weekdays';
-import { Tart } from 'src/statistics-metadata/statistics-metadata.type';
+import { Graph } from './domain/graph';
 import { StatisticsDateDto } from './dto/statistics-date.dto';
+import { TopGeneric } from './domain/top-generic';
 
 @ApiTags('Statistics')
 @ApiBearerAuth()
@@ -49,11 +50,61 @@ export class StatisticsController {
 
   @Get()
   @ApiOkResponse({
-    type: PaginationResponse(TopMedics),
+    type: PaginationResponse(Graph),
   })
   async findAllStatisticGraphsMetadata(
     @Query() query: StatisticsDateDto,
-  ): Promise<Tart[]> {
+  ): Promise<Graph> {
     return this.statisticsService.findStatisticsGraphMetadata(query);
+  }
+
+  @Get('top-illness')
+  @ApiOkResponse({
+    type: PaginationResponse(TopGeneric),
+  })
+  async findTopIllness(
+    @Query() query: StatisticsDateDto,
+  ): Promise<TopGeneric[]> {
+    return this.statisticsService.findTopIllness(query);
+  }
+
+  @Get('top-injury')
+  @ApiOkResponse({
+    type: PaginationResponse(TopGeneric),
+  })
+  async findTopInjury(
+    @Query() query: StatisticsDateDto,
+  ): Promise<TopGeneric[]> {
+    return this.statisticsService.findTopInjury(query);
+  }
+
+  @Get('top-symptom')
+  @ApiOkResponse({
+    type: PaginationResponse(TopGeneric),
+  })
+  async findTopSymptom(
+    @Query() query: StatisticsDateDto,
+  ): Promise<TopGeneric[]> {
+    return this.statisticsService.findTopSymptom(query);
+  }
+
+  @Get('top-treatment')
+  @ApiOkResponse({
+    type: PaginationResponse(TopGeneric),
+  })
+  async findTopTreatment(
+    @Query() query: StatisticsDateDto,
+  ): Promise<TopGeneric[]> {
+    return this.statisticsService.findTopTreatment(query);
+  }
+
+  @Get('top-pathology')
+  @ApiOkResponse({
+    type: PaginationResponse(TopGeneric),
+  })
+  async findTopPathology(
+    @Query() query: StatisticsDateDto,
+  ): Promise<TopGeneric[]> {
+    return this.statisticsService.findTopPathology(query);
   }
 }

@@ -44,7 +44,6 @@ export class RequestsService {
     createRequestDto: CreateRequestDto &
       Pick<Partial<CreateRequestWithReferenceDto>, 'referredContent'>,
     madeById: string,
-    options: { shouldBeSameAsUser: boolean } = { shouldBeSameAsUser: true },
   ) {
     const {
       requestTemplate,
@@ -53,7 +52,7 @@ export class RequestsService {
       requestedMedic,
       referredContent,
     } = createRequestDto;
-    const { madeFor, ...data } = createRequestDto;
+    const data = createRequestDto;
 
     const foundUser = await this.usersService.findById(madeById, {
       withUserPatients: true,
@@ -63,24 +62,6 @@ export class RequestsService {
       throw new UnprocessableEntityException(
         exceptionResponses.CurrentUserNotExists,
       );
-    }
-
-    const foundUserPatient = await this.userPatientsService.findOne(madeFor.id);
-    if (!foundUserPatient) {
-      throw new UnprocessableEntityException(
-        exceptionResponses.PatientNotExists,
-      );
-    }
-    if (options.shouldBeSameAsUser) {
-      const userPatient = foundUser.userPatients?.find(
-        (patient) => patient.id === madeFor.id,
-      );
-
-      if (!userPatient) {
-        throw new UnprocessableEntityException(
-          exceptionResponses.PatientNotAllowed,
-        );
-      }
     }
 
     const foundRequestTemplate = await this.requestTemplateService.findOne(
@@ -197,9 +178,11 @@ export class RequestsService {
 
     const clonedPayload = {
       ...data,
-      patientFullName: foundUserPatient.fullName,
-      patientDNI: foundUserPatient.dni,
-      patientAddress: foundUserPatient.address || 'N/A',
+      patientFullName: data.patientFullName,
+      patientDNI: data.patientDNI,
+      patientAddress: data.patientAddress || 'N/A',
+      patientGender: data.patientGender,
+      patientBirthday: data.patientBirthday,
       status: RequestStatusEnum.PENDING,
       requestTemplate: foundRequestTemplate,
       requestedSpecialty: foundSpecialty,
@@ -207,7 +190,6 @@ export class RequestsService {
       requestValues: requestValuesUpdated,
       referredContent: referredContent,
       referredBy: referredContent ? foundUser : undefined,
-      madeFor: foundUserPatient,
       madeBy: foundUser,
     };
 
@@ -242,7 +224,6 @@ export class RequestsService {
     options?: findOptions & {
       withSpecialty?: boolean;
       withMedic?: boolean;
-      withmadeFor?: boolean;
     },
   ) {
     return this.requestRepository.findById(id, options);
@@ -407,6 +388,7 @@ export class RequestsService {
       injuries: finishRequestDto.diagnostic.injuries,
       symptoms: finishRequestDto.diagnostic.symptoms,
       treatments: finishRequestDto.diagnostic.treatments,
+      pathologies: finishRequestDto.diagnostic.pathologies,
     };
 
     const createInstructionsDto: CreateInstructionsDto = {

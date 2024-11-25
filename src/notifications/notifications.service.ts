@@ -17,6 +17,9 @@ import { PermissionsEnum } from 'src/permissions/permissions.enum';
 import { CreateNotificationNoTypeDto } from './dto/create-notification-no-type.dto';
 import { NotificationTypeEnum } from './notifications.enum';
 import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
+import { SocketService } from 'src/socket/socket.service';
+import { SocketEnum } from 'src/socket/socket-enum';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class NotificationsService {
@@ -24,27 +27,54 @@ export class NotificationsService {
     private readonly notificationRepository: NotificationRepository,
     private readonly notificationUserRepository: NotificationUserRepository,
     private readonly usersRepository: UserRepository,
+    private readonly socketService: SocketService,
+    private readonly mailService: MailService,
   ) {}
 
   async createForIndividuals(
     createNotificationDto: CreateNotificationDto,
-    userIds: string[],
+    users: User[],
   ) {
     const notification = await this.notificationRepository.create(
       createNotificationDto,
     );
-    const notifUserData = userIds.map((userId) => {
-      const user = new User();
-      user.id = userId;
+    const notifUserData = users.map((user) => {
       const notificationUser = new NotificationUser();
       notificationUser.notification = notification;
       notificationUser.read = false;
       notificationUser.user = user;
       return notificationUser;
     });
-    const notifUsers =
-      await this.notificationUserRepository.createMany(notifUserData);
+
+    const [notifUsers] = await Promise.all([
+      this.notificationUserRepository.createMany(notifUserData),
+      ...users.map((user) =>
+        this.mailService.notificationEmail({
+          to: user.email,
+          data: {
+            content: createNotificationDto.content,
+            title: createNotificationDto.title,
+          },
+        }),
+      ),
+    ]);
+
+    this.socketService.broadcastMessageToRooms(
+      users.map((user) => user.id),
+      SocketEnum.NOTIFICATION,
+      notifUsers,
+    );
+
     return notifUsers;
+  }
+
+  async createForUsersByPermission(
+    createNotificationDto: CreateNotificationDto,
+    permissions: PermissionsEnum[],
+  ) {
+    const users = await this.usersRepository.findAllByPermissions(permissions);
+
+    return this.createForIndividuals(createNotificationDto, users);
   }
 
   async createForAllSpecialty(
@@ -56,13 +86,13 @@ export class NotificationsService {
         specialtyIds: [specialtyId],
       },
     });
-    const userIds = users.map((user) => user.id);
+
     return this.createForIndividuals(
       {
         ...createNotificationDto,
         type: NotificationTypeEnum.WORK,
       },
-      userIds,
+      users,
     );
   }
 
@@ -74,13 +104,13 @@ export class NotificationsService {
         permissionSlugs: [PermissionsEnum.USE_MOBILE],
       },
     });
-    const userIds = users.map((user) => user.id);
+
     return this.createForIndividuals(
       {
         ...createNotificationDto,
         type: NotificationTypeEnum.PATIENT,
       },
-      userIds,
+      users,
     );
   }
 

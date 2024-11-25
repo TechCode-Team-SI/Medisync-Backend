@@ -1,0 +1,7 @@
+export enum StatisticsTopEnum {
+  ILLNESS = 'ILLNESS',
+  INJURY = 'INJURY',
+  PATHOLOGY = 'PATHOLOGY',
+  SYMPTOM = 'SYMPTOM',
+  TREATMENT = 'TREATMENT',
+}

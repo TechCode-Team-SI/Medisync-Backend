@@ -10,6 +10,7 @@ import { DiagnosticRepository } from './infrastructure/persistence/diagnostic.re
 import { IllnessesService } from 'src/illnesses/illnesses.service';
 import { InjuriesService } from 'src/injuries/injuries.service';
 import { TreatmentsService } from 'src/treatments/treatments.service';
+import { PathologiesService } from 'src/pathologies/pathologies.service';
 
 @Injectable()
 export class DiagnosticsService {
@@ -20,6 +21,7 @@ export class DiagnosticsService {
     private readonly injuriesService: InjuriesService,
     private readonly symptomsService: SymptomsService,
     private readonly treatmentsService: TreatmentsService,
+    private readonly pathologiesService: PathologiesService,
   ) {}
 
   async create(createDiagnosticDto: CreateDiagnosticDto, userId: string) {
@@ -46,6 +48,10 @@ export class DiagnosticsService {
       createDiagnosticDto.treatments,
     );
 
+    const pathologies = await this.pathologiesService.findMany(
+      createDiagnosticDto.pathologies,
+    );
+
     const clonedPayload = {
       ...createDiagnosticDto,
       madeBy: user,
@@ -53,6 +59,7 @@ export class DiagnosticsService {
       injuries,
       symptoms,
       treatments,
+      pathologies,
     };
     return this.diagnosticRepository.create(clonedPayload);
   }

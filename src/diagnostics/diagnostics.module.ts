@@ -6,6 +6,7 @@ import { IllnessesModule } from 'src/illnesses/illnesses.module';
 import { InjuriesModule } from 'src/injuries/injuries.module';
 import { SymptomsModule } from 'src/symptoms/symptoms.module';
 import { treatmentsModule } from 'src/treatments/treatments.module';
+import { PathologiesModule } from 'src/pathologies/pathologies.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { treatmentsModule } from 'src/treatments/treatments.module';
     InjuriesModule,
     SymptomsModule,
     treatmentsModule,
+    PathologiesModule,
   ],
   providers: [DiagnosticsService],
   exports: [DiagnosticsService, RelationalDiagnosticPersistenceModule],
