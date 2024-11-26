@@ -30,4 +30,10 @@ export class DiagnosticDto {
   @IsString({ each: true })
   @IsArray()
   treatments: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString({ each: true })
+  @IsArray()
+  pathologies: string[];
 }

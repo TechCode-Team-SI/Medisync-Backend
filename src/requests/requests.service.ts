@@ -388,6 +388,7 @@ export class RequestsService {
       injuries: finishRequestDto.diagnostic.injuries,
       symptoms: finishRequestDto.diagnostic.symptoms,
       treatments: finishRequestDto.diagnostic.treatments,
+      pathologies: finishRequestDto.diagnostic.pathologies,
     };
 
     const createInstructionsDto: CreateInstructionsDto = {

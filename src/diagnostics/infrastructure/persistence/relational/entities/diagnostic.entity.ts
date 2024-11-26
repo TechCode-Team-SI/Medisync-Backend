@@ -17,6 +17,7 @@ import { IllnessEntity } from 'src/illnesses/infrastructure/persistence/relation
 import { InjuryEntity } from 'src/injuries/infrastructure/persistence/relational/entities/injury.entity';
 import { SymptomEntity } from 'src/symptoms/infrastructure/persistence/relational/entities/symptom.entity';
 import { TreatmentEntity } from 'src/treatments/infrastructure/persistence/relational/entities/treatment.entity';
+import { PathologyEntity } from 'src/pathologies/infrastructure/persistence/relational/entities/pathology.entity';
 
 @Entity({
   name: 'diagnostic',
@@ -61,6 +62,11 @@ export class DiagnosticEntity extends EntityRelationalHelper {
   @ManyToMany(() => TreatmentEntity)
   @JoinTable({ name: 'diagnostic_treatment' })
   treatments: TreatmentEntity[];
+
+  @ApiProperty()
+  @ManyToMany(() => PathologyEntity)
+  @JoinTable({ name: 'diagnostic_pathology' })
+  pathologies: PathologyEntity[];
 
   @ApiProperty()
   @CreateDateColumn()

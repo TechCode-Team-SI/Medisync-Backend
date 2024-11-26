@@ -27,6 +27,11 @@ export class SocketService {
     this.server.emit(event, payload);
   }
 
+  broadcastMessageToRooms(rooms: string[], event: string, payload: unknown) {
+    if (!this.server) return;
+    this.server.to(rooms).emit(event, payload);
+  }
+
   sendMessageToUser(socket: Socket, event: string, payload: unknown) {
     if (socket && socket.connected) {
       socket.emit(event, payload);

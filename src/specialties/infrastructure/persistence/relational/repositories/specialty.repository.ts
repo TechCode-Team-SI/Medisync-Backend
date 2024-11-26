@@ -12,6 +12,7 @@ import { Pagination } from 'src/utils/pagination';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { formatOrder } from 'src/utils/utils';
 import {
+  Brackets,
   DataSource,
   FindOneOptions,
   FindOptionsRelations,
@@ -144,9 +145,22 @@ export class SpecialtyRelationalRepository
       .createQueryBuilder('s')
       .leftJoinAndSelect('s.image', 'i')
       .innerJoin('s.employees', 'e')
-      .where('s.isDisabled = :isDisabled', { isDisabled: false })
+      .where('s.isDisabled = false')
       .andWhere('s.requestTemplate IS NOT NULL')
-      .andWhere('e.status = :status', { status: true })
+      .andWhere('e.status = true')
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where(
+            new Brackets((qb) => {
+              qb.where('s.isGroup = false').andWhere('e.agendaId IS NOT NULL');
+            }),
+          ).orWhere(
+            new Brackets((qb) => {
+              qb.where('s.isGroup = true').andWhere('s.agendaId IS NOT NULL');
+            }),
+          );
+        }),
+      )
       .orderBy('s.name', 'DESC');
 
     if (isPublic) {

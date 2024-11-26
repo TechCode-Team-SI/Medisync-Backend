@@ -136,6 +136,20 @@ export class PathologyRelationalRepository
     return entity ? PathologyMapper.toDomain(entity) : null;
   }
 
+  async findManyByIds(
+    ids: string[],
+    options?: findOptions,
+  ): Promise<Pathology[]> {
+    let relations = this.relations;
+    if (options?.minimal) relations = {};
+
+    const entities = await this.pathologyRepository.find({
+      where: { id: In(ids) },
+      relations,
+    });
+    return entities.map((illness) => PathologyMapper.toDomain(illness));
+  }
+
   async update(
     id: Pathology['id'],
     payload: Partial<Pathology>,

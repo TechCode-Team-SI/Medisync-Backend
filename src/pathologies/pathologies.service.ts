@@ -52,7 +52,9 @@ export class PathologiesService {
   findOne(id: Pathology['id'], options?: findOptions) {
     return this.pathologyRepository.findById(id, options);
   }
-
+ findMany(ids: Pathology['id'][], options?: findOptions) {
+    return this.pathologyRepository.findManyByIds(ids, options);
+  }
   async update(id: Pathology['id'], updatePathologyDto: UpdatePathologyDto) {
     await this.notificationsService.createForUsersByPermission(
       {
