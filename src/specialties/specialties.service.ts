@@ -18,6 +18,9 @@ import { exceptionResponses } from './specialties.messages';
 import { RequestsService } from 'src/requests/requests.service';
 import { RequestStatusEnum } from 'src/requests/requests.enum';
 import { AgendaRepository } from 'src/agendas/infrastructure/persistence/agenda.repository';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @Injectable()
 export class SpecialtiesService {
@@ -28,6 +31,7 @@ export class SpecialtiesService {
     private readonly requestTemplateService: RequestTemplatesService,
     private readonly requestsService: RequestsService,
     private readonly agendasRepository: AgendaRepository,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(createSpecialtyDto: CreateSpecialtyDto) {
@@ -54,10 +58,19 @@ export class SpecialtiesService {
         );
       }
     }
-    return this.specialtyRepository.create({
+    const result = await this.specialtyRepository.create({
       ...createSpecialtyDto,
       requestTemplate: foundRequestTemplate,
     });
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.specialty.created.title,
+        content: MessagesContent.specialty.created.content(result.id),
+        type: MessagesContent.specialty.created.type,
+      },
+      permissions: [PermissionsEnum.MANAGE_SPECIALTIES],
+    });
+    return result;
   }
 
   async createMultiple({ specialties }: CreateMultipleSpecialtyInternalDto) {
@@ -168,11 +181,27 @@ export class SpecialtiesService {
     return this.specialtyRepository.findAllWithNames(names, options);
   }
 
-  update(id: Specialty['id'], updateSpecialtyDto: UpdateSpecialtyDto) {
+  async update(id: Specialty['id'], updateSpecialtyDto: UpdateSpecialtyDto) {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.specialty.updated.title,
+        content: MessagesContent.specialty.updated.content(id),
+        type: MessagesContent.specialty.updated.type,
+      },
+      permissions: [PermissionsEnum.MANAGE_SPECIALTIES],
+    });
     return this.specialtyRepository.update(id, updateSpecialtyDto);
   }
 
-  remove(id: Specialty['id']) {
+  async remove(id: Specialty['id']) {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.specialty.remove.title,
+        content: MessagesContent.specialty.remove.content(id),
+        type: MessagesContent.specialty.created.type,
+      },
+      permissions: [PermissionsEnum.MANAGE_SPECIALTIES],
+    });
     return this.specialtyRepository.remove(id);
   }
 

@@ -7,13 +7,27 @@ import { Pathology } from './domain/pathology';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { SortPathologiesDto } from 'src/pathologies/dto/find-all-pathologies.dto';
 import { CreateMultiplePathologyDto } from './dto/create-multiple-pathology.dto';
-
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 @Injectable()
 export class PathologiesService {
-  constructor(private readonly pathologyRepository: PathologyRepository) {}
+  constructor(
+    private readonly pathologyRepository: PathologyRepository,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
-  create(createPathologyDto: CreatePathologyDto) {
-    return this.pathologyRepository.create(createPathologyDto);
+  async create(createPathologyDto: CreatePathologyDto) {
+    const patho = await this.pathologyRepository.create(createPathologyDto);
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.pathologie.created.title,
+        content: MessagesContent.pathologie.created.content(patho.id),
+        type: MessagesContent.pathologie.created.type,
+      },
+      permissions: [PermissionsEnum.MANAGE_PATHOLOGIES],
+    });
+    return patho;
   }
 
   findAllWithPagination({
@@ -38,16 +52,30 @@ export class PathologiesService {
   findOne(id: Pathology['id'], options?: findOptions) {
     return this.pathologyRepository.findById(id, options);
   }
-
   findMany(ids: Pathology['id'][], options?: findOptions) {
     return this.pathologyRepository.findManyByIds(ids, options);
   }
-
-  update(id: Pathology['id'], updatePathologyDto: UpdatePathologyDto) {
+  async update(id: Pathology['id'], updatePathologyDto: UpdatePathologyDto) {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.pathologie.updated.title,
+        content: MessagesContent.pathologie.updated.content(id),
+        type: MessagesContent.pathologie.updated.type,
+      },
+      permissions: [PermissionsEnum.MANAGE_PATHOLOGIES],
+    });
     return this.pathologyRepository.update(id, updatePathologyDto);
   }
 
-  remove(id: Pathology['id']) {
+  async remove(id: Pathology['id']) {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.pathologie.remove.title,
+        content: MessagesContent.pathologie.remove.content(id),
+        type: MessagesContent.pathologie.remove.type,
+      },
+      permissions: [PermissionsEnum.MANAGE_PATHOLOGIES],
+    });
     return this.pathologyRepository.remove(id);
   }
 

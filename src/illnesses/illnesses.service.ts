@@ -10,13 +10,27 @@ import {
   SortIllnessesDto,
 } from 'src/illnesses/dto/find-all-illnesses.dto';
 import { CreateMultipleIllnessesDto } from './dto/create-multiple-illnesses.dto';
-
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 @Injectable()
 export class IllnessesService {
-  constructor(private readonly illnessRepository: IllnessRepository) {}
+  constructor(
+    private readonly illnessRepository: IllnessRepository,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
-  create(createIllnessDto: CreateIllnessDto) {
-    return this.illnessRepository.create(createIllnessDto);
+  async create(createIllnessDto: CreateIllnessDto) {
+    const result = await this.illnessRepository.create(createIllnessDto);
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.illness.created.title,
+        content: MessagesContent.illness.created.content(result.id),
+        type: MessagesContent.illness.created.type,
+      },
+      permissions: [PermissionsEnum.MANAGE_ILLNESSES],
+    });
+    return result;
   }
 
   findAllWithPagination({
@@ -45,11 +59,27 @@ export class IllnessesService {
     return this.illnessRepository.findById(id, options);
   }
 
-  update(id: Illness['id'], updateIllnessDto: UpdateIllnessDto) {
+  async update(id: Illness['id'], updateIllnessDto: UpdateIllnessDto) {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.illness.updated.title,
+        content: MessagesContent.illness.updated.content(id),
+        type: MessagesContent.illness.updated.type,
+      },
+      permissions: [PermissionsEnum.MANAGE_ILLNESSES],
+    });
     return this.illnessRepository.update(id, updateIllnessDto);
   }
 
-  remove(id: Illness['id']) {
+  async remove(id: Illness['id']) {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.illness.remove.title,
+        content: MessagesContent.illness.remove.content(id),
+        type: MessagesContent.illness.remove.type,
+      },
+      permissions: [PermissionsEnum.MANAGE_ILLNESSES],
+    });
     return this.illnessRepository.remove(id);
   }
 

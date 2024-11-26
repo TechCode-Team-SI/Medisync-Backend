@@ -99,7 +99,7 @@ import { QueueName } from './utils/queue-enum';
       inject: [ConfigService],
     }),
     BullModule.registerQueue({ name: QueueName.MAIL }),
-
+    BullModule.registerQueue({ name: QueueName.NOTIFICATION }),
     ArticleCategoriesModule,
     TicketTypesModule,
     StatisticsMetadataModule,

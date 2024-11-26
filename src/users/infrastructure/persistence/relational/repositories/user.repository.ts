@@ -223,6 +223,12 @@ export class UsersRelationalRepository
     if (options?.minimal) relations = {};
 
     let where: FindOptionsWhere<UserEntity> = {};
+    if (filterOptions?.ids && filterOptions.ids.length > 0) {
+      const ids = isArray(filterOptions.ids)
+        ? filterOptions.ids
+        : [filterOptions.ids];
+      where = { ...where, id: In(ids) };
+    }
     if (filterOptions?.roleIds && filterOptions.roleIds.length > 0) {
       const roleIds = isArray(filterOptions.roleIds)
         ? filterOptions.roleIds

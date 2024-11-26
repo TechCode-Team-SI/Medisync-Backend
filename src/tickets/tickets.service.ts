@@ -15,6 +15,9 @@ import { TicketStatusEnum, TicketTypeEnum } from './tickets.enum';
 import { exceptionResponses } from './tickets.messages';
 import { TicketTypeRepository } from 'src/ticket-types/infrastructure/persistence/ticket-type.repository';
 import { TicketType } from 'src/ticket-types/domain/ticket-type';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @Injectable()
 export class TicketsService {
@@ -22,6 +25,7 @@ export class TicketsService {
     private readonly ticketRepository: TicketRepository,
     private readonly usersService: UsersService,
     private readonly ticketTypeRepository: TicketTypeRepository,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(createTicketDto: CreateTicketDto, createdBy: string) {
@@ -54,7 +58,21 @@ export class TicketsService {
       createdBy: user,
       ticketTag: ticketTag,
     };
-    return this.ticketRepository.create(clonedPayload);
+    const ticket = await this.ticketRepository.create(clonedPayload);
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.ticket.created.title,
+        content: MessagesContent.ticket.created.content(ticket.id),
+        type: MessagesContent.ticket.created.type,
+      },
+      permissions: [
+        PermissionsEnum.ATTEND_SUGGESTION,
+        PermissionsEnum.ATTEND_COMPLAINT,
+        PermissionsEnum.VIEW_SUGGESTION,
+        PermissionsEnum.VIEW_COMPLAINT,
+      ],
+    });
+    return ticket;
   }
 
   findAllWithPagination({
@@ -83,12 +101,43 @@ export class TicketsService {
     return this.ticketRepository.findById(id);
   }
 
-  update(id: Ticket['id'], updateTicketDto: UpdateTicketDto) {
-    return this.ticketRepository.update(id, updateTicketDto);
+  async update(id: Ticket['id'], updateTicketDto: UpdateTicketDto) {
+    const ticketUpdate = await this.ticketRepository.update(
+      id,
+      updateTicketDto,
+    );
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.ticket.updated.title,
+        content: MessagesContent.ticket.updated.content(id),
+        type: MessagesContent.ticket.updated.type,
+      },
+      permissions: [
+        PermissionsEnum.ATTEND_SUGGESTION,
+        PermissionsEnum.ATTEND_COMPLAINT,
+        PermissionsEnum.VIEW_SUGGESTION,
+        PermissionsEnum.VIEW_COMPLAINT,
+      ],
+    });
+    return ticketUpdate;
   }
 
-  remove(id: Ticket['id']) {
-    return this.ticketRepository.remove(id);
+  async remove(id: Ticket['id']) {
+    const ticketRemove = await this.ticketRepository.remove(id);
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.ticket.remove.title,
+        content: MessagesContent.ticket.remove.content(id),
+        type: MessagesContent.ticket.remove.type,
+      },
+      permissions: [
+        PermissionsEnum.ATTEND_SUGGESTION,
+        PermissionsEnum.ATTEND_COMPLAINT,
+        PermissionsEnum.VIEW_SUGGESTION,
+        PermissionsEnum.VIEW_COMPLAINT,
+      ],
+    });
+    return ticketRemove;
   }
 
   async close(id: Ticket['id']) {
@@ -100,7 +149,19 @@ export class TicketsService {
     if (ticket.status === TicketStatusEnum.CLOSED) {
       throw new UnprocessableEntityException(exceptionResponses.StatusClosed);
     }
-
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.ticket.closed.title,
+        content: MessagesContent.ticket.closed.content(id),
+        type: MessagesContent.ticket.closed.type,
+      },
+      permissions: [
+        PermissionsEnum.ATTEND_SUGGESTION,
+        PermissionsEnum.ATTEND_COMPLAINT,
+        PermissionsEnum.VIEW_SUGGESTION,
+        PermissionsEnum.VIEW_COMPLAINT,
+      ],
+    });
     return this.ticketRepository.update(id, {
       status: TicketStatusEnum.CLOSED,
     });

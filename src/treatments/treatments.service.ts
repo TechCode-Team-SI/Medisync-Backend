@@ -10,13 +10,28 @@ import {
   SortTreatmentsDto,
 } from 'src/treatments/dto/find-all-treatments.dto';
 import { CreateMultipleTreatmentsDto } from './dto/create-multiple-treatments.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @Injectable()
 export class TreatmentsService {
-  constructor(private readonly TreatmentRepository: TreatmentRepository) {}
+  constructor(
+    private readonly TreatmentRepository: TreatmentRepository,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
-  create(createtreatmentDto: CreatetreatmentDto) {
-    return this.TreatmentRepository.create(createtreatmentDto);
+  async create(createtreatmentDto: CreatetreatmentDto) {
+    const treatment = await this.TreatmentRepository.create(createtreatmentDto);
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.treatment.created.title,
+        content: MessagesContent.treatment.created.content(treatment.id),
+        type: MessagesContent.treatment.created.type,
+      },
+      permissions: [PermissionsEnum.MANAGE_TREATMENTS],
+    });
+    return treatment;
   }
 
   findAllWithPagination({
@@ -45,11 +60,27 @@ export class TreatmentsService {
     return this.TreatmentRepository.findById(id, options);
   }
 
-  update(id: Treatment['id'], updatetreatmentDto: UpdatetreatmentDto) {
+  async update(id: Treatment['id'], updatetreatmentDto: UpdatetreatmentDto) {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.treatment.updated.title,
+        content: MessagesContent.treatment.updated.content(id),
+        type: MessagesContent.treatment.updated.type,
+      },
+      permissions: [PermissionsEnum.MANAGE_TREATMENTS],
+    });
     return this.TreatmentRepository.update(id, updatetreatmentDto);
   }
 
-  remove(id: Treatment['id']) {
+  async remove(id: Treatment['id']) {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
+        title: MessagesContent.treatment.remove.title,
+        content: MessagesContent.treatment.remove.content(id),
+        type: MessagesContent.treatment.remove.type,
+      },
+      permissions: [PermissionsEnum.MANAGE_TREATMENTS],
+    });
     return this.TreatmentRepository.remove(id);
   }
 
