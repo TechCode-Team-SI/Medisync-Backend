@@ -225,6 +225,17 @@ export class RequestsService {
           },
         );
       }
+      await this.notificationQueue.add(
+        NotificationQueueOperations.CREATE_FOR_INDIVIDUALS,
+        {
+          payload: {
+            title: `¡Has creado una nueva cita!`,
+            content: `Has creado una cita de ${foundSpecialty.name} para la fecha ${format(data.appointmentDate, 'P')}.`,
+            type: NotificationTypeEnum.PATIENT,
+          },
+          userIds: [request.madeBy.id],
+        },
+      );
     } else {
       await this.notificationQueue.add(
         NotificationQueueOperations.CREATE_FOR_INDIVIDUALS,
@@ -337,7 +348,24 @@ export class RequestsService {
       );
     }
 
-    return this.updateStatus(requestId, RequestStatusEnum.ATTENDING);
+    const updated = await this.updateStatus(
+      requestId,
+      RequestStatusEnum.ATTENDING,
+    );
+
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_INDIVIDUALS,
+      {
+        payload: {
+          title: `¡La cita de ${request.patientFullName} esta siendo atendida!`,
+          content: `La cita de ${request.requestedSpecialty.name} con el id ${requestId} esta siendo atendido ahora mismo.`,
+          type: NotificationTypeEnum.PATIENT,
+        },
+        userIds: [request.madeBy.id],
+      },
+    );
+
+    return updated;
   }
 
   async cancel(
