@@ -9,7 +9,7 @@ import { Request } from 'express';
 import { exceptionResponses } from 'src/auth/auth.messages';
 import { BaseRepository } from 'src/common/base.repository';
 import { genOTPCode } from 'src/utils/utils';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, MoreThanOrEqual, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { ConfirmEmailToken } from '../../../../domain/confirm-email-token';
 import { ConfirmEmailTokenRepository } from '../../confirm-email-token.repository';
@@ -68,7 +68,7 @@ export class ConfirmEmailTokenRelationalRepository
     NullableType<ConfirmEmailToken>
   > {
     const ConfirmEmailToken = await this.ConfirmEmailTokenRepository.findOne({
-      where: { code, email },
+      where: { code, email, expiresAt: MoreThanOrEqual(new Date()) },
     });
 
     return ConfirmEmailToken

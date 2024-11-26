@@ -9,7 +9,7 @@ import { Request } from 'express';
 import { exceptionResponses } from 'src/auth/auth.messages';
 import { BaseRepository } from 'src/common/base.repository';
 import { genOTPCode } from 'src/utils/utils';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, MoreThanOrEqual, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { PasswordToken } from '../../../../domain/password-token';
 import { PasswordTokenRepository } from '../../password-token.repository';
@@ -66,7 +66,7 @@ export class PasswordTokenRelationalRepository
     NullableType<PasswordToken>
   > {
     const PasswordToken = await this.PasswordTokenRepository.findOne({
-      where: { code, email },
+      where: { code, email, expiresAt: MoreThanOrEqual(new Date()) },
     });
 
     return PasswordToken ? PasswordTokenMapper.toDomain(PasswordToken) : null;
