@@ -1,3 +1,4 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import {
   Injectable,
   UnauthorizedException,
@@ -7,10 +8,13 @@ import { randomStringGenerator } from '@nestjs/common/utils/random-string-genera
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
+import { Queue } from 'bullmq';
 import crypto from 'crypto';
 import ms from 'ms';
+import { RolesEnum } from 'src/roles/roles.enum';
+import { RolesService } from 'src/roles/roles.service';
+import { MailQueueOperations, QueueName } from 'src/utils/queue-enum';
 import { AllConfigType } from '../config/config.type';
-import { MailService } from '../mail/mail.service';
 import { Session } from '../session/domain/session';
 import { SessionService } from '../session/session.service';
 import { User } from '../users/domain/user';
@@ -26,8 +30,6 @@ import { ConfirmEmailTokenRepository } from './infrastructure/persistence/confir
 import { PasswordTokenRepository } from './infrastructure/persistence/password-token.repository';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
-import { RolesService } from 'src/roles/roles.service';
-import { RolesEnum } from 'src/roles/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +37,7 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
     private sessionService: SessionService,
-    private mailService: MailService,
+    @InjectQueue(QueueName.MAIL) private mailQueue: Queue,
     private configService: ConfigService<AllConfigType>,
     private passwordTokenRepository: PasswordTokenRepository,
     private confirmEmailTokenRepository: ConfirmEmailTokenRepository,
@@ -195,7 +197,7 @@ export class AuthService {
       new Date(tokenExpires),
     );
 
-    void this.mailService.confirmEmail({
+    await this.mailQueue.add(MailQueueOperations.CONFIRM_EMAIL, {
       to: email,
       data: {
         code: passwordToken.code,
@@ -226,7 +228,7 @@ export class AuthService {
       new Date(tokenExpires),
     );
 
-    void this.mailService.forgotPassword({
+    await this.mailQueue.add(MailQueueOperations.FORGOT_PASSWORD, {
       to: email,
       data: {
         code: passwordToken.code,

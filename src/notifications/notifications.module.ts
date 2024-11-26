@@ -1,11 +1,12 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { NotificationsService } from './notifications.service';
+import { NotificationUsersModule } from 'src/notification-users/notification-users.module';
+import { SocketModule } from 'src/socket/socket.module';
+import { UsersModule } from 'src/users/users.module';
 import { RelationalNotificationPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
 import { NotificationsController } from './notification.controller';
-import { NotificationUsersModule } from 'src/notification-users/notification-users.module';
-import { UsersModule } from 'src/users/users.module';
-import { SocketModule } from 'src/socket/socket.module';
-import { MailModule } from 'src/mail/mail.module';
+import { NotificationsService } from './notifications.service';
+import { BullModule } from '@nestjs/bullmq';
+import { QueueName } from 'src/utils/queue-enum';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { MailModule } from 'src/mail/mail.module';
     forwardRef(() => NotificationUsersModule),
     forwardRef(() => UsersModule),
     SocketModule,
-    MailModule,
+    BullModule.registerQueue({ name: QueueName.MAIL }),
   ],
   controllers: [NotificationsController],
   providers: [NotificationsService],

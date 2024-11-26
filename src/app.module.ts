@@ -1,5 +1,6 @@
+import { CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { Module, Scope } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
@@ -60,11 +61,45 @@ import { StatisticsMetadataModule } from './statistics-metadata/statistics-metad
 import { SocketModule } from './socket/socket.module';
 import { TicketTypesModule } from './ticket-types/ticket-types.module';
 
+import { redisStore } from 'cache-manager-redis-yet';
 import { ArticleCategoriesModule } from './article-categories/article-categories.module';
 import { QueryExceptionsFilter } from './common/query-failed.exception';
+import { AllConfigType } from './config/config.type';
+import { BullModule } from '@nestjs/bullmq';
+import { QueueName } from './utils/queue-enum';
 
 @Module({
   imports: [
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService<AllConfigType>) => {
+        const store = await redisStore({
+          socket: {
+            host: configService.getOrThrow('app.workerHost', { infer: true }),
+            port: configService.getOrThrow('app.workerPort', { infer: true }),
+          },
+        });
+
+        return {
+          store: store as unknown as CacheStore,
+          ttl: 3 * 60000, // 3 minutes (milliseconds)
+        };
+      },
+      inject: [ConfigService],
+      isGlobal: true,
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService<AllConfigType>) => ({
+        connection: {
+          host: configService.getOrThrow('app.workerHost', { infer: true }),
+          port: configService.getOrThrow('app.workerPort', { infer: true }),
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    BullModule.registerQueue({ name: QueueName.MAIL }),
+
     ArticleCategoriesModule,
     TicketTypesModule,
     StatisticsMetadataModule,

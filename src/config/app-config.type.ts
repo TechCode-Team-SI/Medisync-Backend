@@ -11,4 +11,6 @@ export type AppConfig = {
   installToken: string;
   installInitialStep: string;
   installPrefix: string;
+  workerHost: string;
+  workerPort: number;
 };
