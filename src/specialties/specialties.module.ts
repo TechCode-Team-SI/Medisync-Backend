@@ -8,7 +8,7 @@ import { RequestTemplatesModule } from 'src/request-templates/request-templates.
 import { permissionsModule } from 'src/permissions/permissions.module';
 import { RequestsModule } from 'src/requests/requests.module';
 import { AgendasModule } from 'src/agendas/agendas.module';
-
+import { NotificationsModule } from 'src/notifications/notifications.module';
 @Module({
   imports: [
     RelationalSpecialtyPersistenceModule,
@@ -18,6 +18,7 @@ import { AgendasModule } from 'src/agendas/agendas.module';
     permissionsModule,
     forwardRef(() => RequestsModule),
     forwardRef(() => AgendasModule),
+    NotificationsModule,
   ],
   controllers: [SpecialtiesController],
   providers: [SpecialtiesService],

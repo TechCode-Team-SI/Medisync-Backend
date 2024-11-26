@@ -10,13 +10,28 @@ import {
   SortInjuriesDto,
 } from 'src/injuries/dto/find-all-injuries.dto';
 import { CreateMultipleInjuriesDto } from './dto/create-multiple-injuries.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @Injectable()
 export class InjuriesService {
-  constructor(private readonly injuryRepository: InjuryRepository) {}
+  constructor(
+    private readonly injuryRepository: InjuryRepository,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
-  create(createInjuryDto: CreateInjuryDto) {
-    return this.injuryRepository.create(createInjuryDto);
+  async create(createInjuryDto: CreateInjuryDto) {
+    const result = await this.injuryRepository.create(createInjuryDto);
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.injurie.created.title,
+        content: MessagesContent.injurie.created.content(result.id),
+        type: MessagesContent.injurie.created.type,
+      },
+      [PermissionsEnum.MANAGE_INJURIES],
+    );
+    return result;
   }
 
   findAllWithPagination({
@@ -45,11 +60,27 @@ export class InjuriesService {
     return this.injuryRepository.findById(id, options);
   }
 
-  update(id: Injury['id'], updateInjuryDto: UpdateInjuryDto) {
+  async update(id: Injury['id'], updateInjuryDto: UpdateInjuryDto) {
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.injurie.updated.title,
+        content: MessagesContent.injurie.updated.content(id),
+        type: MessagesContent.injurie.updated.type,
+      },
+      [PermissionsEnum.MANAGE_INJURIES],
+    );
     return this.injuryRepository.update(id, updateInjuryDto);
   }
 
-  remove(id: Injury['id']) {
+  async remove(id: Injury['id']) {
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.injurie.remove.title,
+        content: MessagesContent.injurie.remove.content(id),
+        type: MessagesContent.injurie.remove.type,
+      },
+      [PermissionsEnum.MANAGE_INJURIES],
+    );
     return this.injuryRepository.remove(id);
   }
 

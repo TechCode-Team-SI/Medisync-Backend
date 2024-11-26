@@ -6,6 +6,7 @@ import { EmployeeProfilesModule } from 'src/employee-profiles/employee-profiles.
 import { SpecialtiesModule } from 'src/specialties/specialties.module';
 import { permissionsModule } from 'src/permissions/permissions.module';
 import { UsersModule } from 'src/users/users.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UsersModule } from 'src/users/users.module';
     forwardRef(() => SpecialtiesModule),
     permissionsModule,
     forwardRef(() => UsersModule),
+    NotificationsModule,
   ],
   controllers: [AgendasController],
   providers: [AgendasService],

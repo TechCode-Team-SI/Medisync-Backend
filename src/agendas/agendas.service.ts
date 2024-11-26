@@ -19,6 +19,9 @@ import { CreateAgendaDto } from './dto/create-agenda.dto';
 import { UpdateAgendaDto } from './dto/update-agenda.dto';
 import { AgendaRepository } from './infrastructure/persistence/agenda.repository';
 import { AgendaMapper } from './infrastructure/persistence/relational/mappers/agenda.mapper';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @Injectable()
 export class AgendasService {
@@ -27,9 +30,10 @@ export class AgendasService {
     private readonly specialtiesService: SpecialtiesService,
     private readonly employeesRepository: EmployeeProfileRepository,
     private readonly userRepository: UserRepository,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
-  create(createAgendaDto: CreateAgendaDto) {
+  async create(createAgendaDto: CreateAgendaDto) {
     const payload = {
       ...createAgendaDto,
       weekdays: createAgendaDto.weekdays.split('_'),
@@ -41,7 +45,16 @@ export class AgendasService {
       }),
     };
 
-    return this.agendaRepository.create(payload);
+    const result = await this.agendaRepository.create(payload);
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.agenda.created.title,
+        content: MessagesContent.agenda.created.content(result.id),
+        type: MessagesContent.agenda.created.type,
+      },
+      [PermissionsEnum.MANAGE_AGENDA],
+    );
+    return result;
   }
 
   findAllWithPagination({
@@ -110,7 +123,15 @@ export class AgendasService {
     }
   }
 
-  update(id: Agenda['id'], updateAgendaDto: UpdateAgendaDto) {
+  async update(id: Agenda['id'], updateAgendaDto: UpdateAgendaDto) {
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.agenda.updated.title,
+        content: MessagesContent.agenda.updated.content(id),
+        type: MessagesContent.agenda.updated.type,
+      },
+      [PermissionsEnum.MANAGE_AGENDA],
+    );
     return this.agendaRepository.update(id, {
       ...updateAgendaDto,
       weekdays: updateAgendaDto.weekdays?.split('_'),
@@ -126,7 +147,15 @@ export class AgendasService {
     });
   }
 
-  remove(id: Agenda['id']) {
+  async remove(id: Agenda['id']) {
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.agenda.remove.title,
+        content: MessagesContent.agenda.remove.content(id),
+        type: MessagesContent.agenda.remove.type,
+      },
+      [PermissionsEnum.MANAGE_AGENDA],
+    );
     return this.agendaRepository.remove(id);
   }
 

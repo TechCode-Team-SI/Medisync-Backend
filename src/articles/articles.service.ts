@@ -12,6 +12,8 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticleRepository } from './infrastructure/persistence/article.repository';
 import { ArticleCategoriesService } from '../article-categories/article-categories.service';
 import { ArticleCategory } from 'src/article-categories/domain/article-category';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @Injectable()
 export class ArticlesService {
@@ -52,9 +54,18 @@ export class ArticlesService {
 
     const result = await this.articleRepository.create(clonedPayload);
 
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.article.create.title,
+        content: MessagesContent.article.create.content(result.id),
+        type: MessagesContent.article.create.type,
+      },
+      [PermissionsEnum.MANAGE_ARTICLES],
+    );
+
     await this.notificationsService.createForAllMobileUsers({
-      title: 'Nuevo Articulo disponible!',
-      content: `Hay un nuevo articulo medico disponible en nuestra plataforma: ${clonedPayload.title}`,
+      title: MessagesContent.article.userNoti.title,
+      content: MessagesContent.article.userNoti.content(clonedPayload.title),
     });
 
     return result;
@@ -107,11 +118,26 @@ export class ArticlesService {
       }
       clonedPayload.image = fileObject;
     }
-
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.article.updated.title,
+        content: MessagesContent.article.updated.content(id),
+        type: MessagesContent.article.updated.type,
+      },
+      [PermissionsEnum.MANAGE_ARTICLES],
+    );
     return this.articleRepository.update(id, clonedPayload);
   }
 
-  remove(id: Article['id']) {
+  async remove(id: Article['id']) {
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.article.remove.title,
+        content: MessagesContent.article.remove.content(id),
+        type: MessagesContent.article.remove.type,
+      },
+      [PermissionsEnum.MANAGE_ARTICLES],
+    );
     return this.articleRepository.remove(id);
   }
 }

@@ -101,12 +101,43 @@ export class TicketsService {
     return this.ticketRepository.findById(id);
   }
 
-  update(id: Ticket['id'], updateTicketDto: UpdateTicketDto) {
-    return this.ticketRepository.update(id, updateTicketDto);
+  async update(id: Ticket['id'], updateTicketDto: UpdateTicketDto) {
+    const ticketUpdate = await this.ticketRepository.update(
+      id,
+      updateTicketDto,
+    );
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.ticket.updated.title,
+        content: MessagesContent.ticket.updated.content(id),
+        type: MessagesContent.ticket.updated.type,
+      },
+      [
+        PermissionsEnum.ATTEND_SUGGESTION,
+        PermissionsEnum.ATTEND_COMPLAINT,
+        PermissionsEnum.VIEW_SUGGESTION,
+        PermissionsEnum.VIEW_COMPLAINT,
+      ],
+    );
+    return ticketUpdate;
   }
 
-  remove(id: Ticket['id']) {
-    return this.ticketRepository.remove(id);
+  async remove(id: Ticket['id']) {
+    const ticketRemove = await this.ticketRepository.remove(id);
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.ticket.remove.title,
+        content: MessagesContent.ticket.remove.content(id),
+        type: MessagesContent.ticket.remove.type,
+      },
+      [
+        PermissionsEnum.ATTEND_SUGGESTION,
+        PermissionsEnum.ATTEND_COMPLAINT,
+        PermissionsEnum.VIEW_SUGGESTION,
+        PermissionsEnum.VIEW_COMPLAINT,
+      ],
+    );
+    return ticketRemove;
   }
 
   async close(id: Ticket['id']) {
@@ -121,7 +152,7 @@ export class TicketsService {
     await this.notificationsService.createForUsersByPermission(
       {
         title: MessagesContent.ticket.closed.title,
-        content: MessagesContent.ticket.closed.content(ticket.id),
+        content: MessagesContent.ticket.closed.content(id),
         type: MessagesContent.ticket.closed.type,
       },
       [

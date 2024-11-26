@@ -8,10 +8,15 @@ import { RoleRepository } from './infrastructure/persistence/role.repository';
 import { exceptionResponses } from './roles.messages';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { SortRoleDto } from './dto/find-all-roles.dto';
-
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 @Injectable()
 export class RolesService {
-  constructor(private readonly roleRepository: RoleRepository) {}
+  constructor(
+    private readonly roleRepository: RoleRepository,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   async create(createRoleDto: CreateRoleDto) {
     const slug = slugify(createRoleDto.name);
@@ -21,7 +26,16 @@ export class RolesService {
     }
 
     const data = { ...createRoleDto, slug };
-    return this.roleRepository.create(data);
+    const result = await this.roleRepository.create(data);
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.role.created.title,
+        content: MessagesContent.role.created.content(result.id),
+        type: MessagesContent.role.created.type,
+      },
+      [PermissionsEnum.MANAGE_ROLES],
+    );
+    return result;
   }
 
   findAllWithPagination({
@@ -59,7 +73,7 @@ export class RolesService {
     return this.roleRepository.findManyBySlugs(slugs, options);
   }
 
-  update(id: Role['id'], updateRoleDto: UpdateRoleDto) {
+  async update(id: Role['id'], updateRoleDto: UpdateRoleDto) {
     const data: UpdateRoleDto & { slug?: string } = {
       ...updateRoleDto,
     };
@@ -67,11 +81,26 @@ export class RolesService {
     if (updateRoleDto.name) {
       data.slug = slugify(updateRoleDto.name);
     }
-
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.role.updated.title,
+        content: MessagesContent.role.updated.content(id),
+        type: MessagesContent.role.updated.type,
+      },
+      [PermissionsEnum.MANAGE_ROLES],
+    );
     return this.roleRepository.update(id, data);
   }
 
   async remove(id: Role['id']) {
+    await this.notificationsService.createForUsersByPermission(
+      {
+        title: MessagesContent.role.remove.title,
+        content: MessagesContent.role.remove.content(id),
+        type: MessagesContent.role.remove.type,
+      },
+      [PermissionsEnum.MANAGE_ROLES],
+    );
     return this.roleRepository.remove(id);
   }
 }
