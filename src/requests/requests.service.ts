@@ -439,6 +439,7 @@ export class RequestsService {
     const request = await this.requestRepository.findById(requestId, {
       withSpecialty: true,
       withMedic: true,
+      withMadeBy: true,
     });
     if (!request) {
       throw new NotFoundException(exceptionResponses.NotFound);
