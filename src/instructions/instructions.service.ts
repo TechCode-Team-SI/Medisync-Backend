@@ -57,4 +57,8 @@ export class InstructionsService {
   remove(id: Instructions['id']) {
     return this.instructionsRepository.remove(id);
   }
+
+  findOneByRequest(requestId: string) {
+    return this.instructionsRepository.findByRequestId(requestId);
+  }
 }

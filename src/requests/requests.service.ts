@@ -272,8 +272,20 @@ export class RequestsService {
     });
   }
 
-  findOneDetailed(id: Request['id']) {
-    return this.requestRepository.findByIdFormatted(id);
+  async findOneDetailed(id: Request['id']) {
+    const [request, diagnostic, instruction] = await Promise.all([
+      this.requestRepository.findByIdFormatted(id),
+      this.diagnosticsService.findOneByRequest(id),
+      this.instructionsService.findOneByRequest(id),
+    ]);
+    if (!request) {
+      throw new NotFoundException(exceptionResponses.NotFound);
+    }
+    return {
+      ...request,
+      diagnostic,
+      instruction,
+    };
   }
 
   findOne(

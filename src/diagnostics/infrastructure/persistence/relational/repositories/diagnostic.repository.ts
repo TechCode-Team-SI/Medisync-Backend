@@ -31,7 +31,13 @@ export class DiagnosticRelationalRepository
     return this.getRepository(DiagnosticEntity);
   }
 
-  private relations: FindOptionsRelations<DiagnosticEntity> = {};
+  private relations: FindOptionsRelations<DiagnosticEntity> = {
+    injuries: true,
+    pathologies: true,
+    illnesses: true,
+    treatments: true,
+    symptoms: true,
+  };
 
   async create(data: Diagnostic): Promise<Diagnostic> {
     const persistenceModel = DiagnosticMapper.toPersistence(data);
@@ -77,6 +83,17 @@ export class DiagnosticRelationalRepository
 
     const entity = await this.diagnosticRepository.findOne({
       where: { id },
+      relations,
+    });
+
+    return entity ? DiagnosticMapper.toDomain(entity) : null;
+  }
+
+  async findByRequestId(requestId: string): Promise<NullableType<Diagnostic>> {
+    const relations = this.relations;
+
+    const entity = await this.diagnosticRepository.findOne({
+      where: { request: { id: requestId } },
       relations,
     });
 

@@ -83,4 +83,8 @@ export class DiagnosticsService {
   findOne(id: Diagnostic['id'], options?: findOptions) {
     return this.diagnosticRepository.findById(id, options);
   }
+
+  findOneByRequest(requestId: string) {
+    return this.diagnosticRepository.findByRequestId(requestId);
+  }
 }

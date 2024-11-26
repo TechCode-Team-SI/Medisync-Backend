@@ -29,5 +29,9 @@ export abstract class InstructionsRepository extends BaseRepository {
     payload: DeepPartial<Instructions>,
   ): Promise<Instructions | null>;
 
+  abstract findByRequestId(
+    requestId: string,
+  ): Promise<NullableType<Instructions>>;
+
   abstract remove(id: Instructions['id']): Promise<void>;
 }
