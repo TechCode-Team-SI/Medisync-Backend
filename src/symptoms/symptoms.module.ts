@@ -1,16 +1,17 @@
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { SymptomsService } from './symptoms.service';
-import { SymptomsController } from './symptoms.controller';
-import { RelationalSymptomPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
-import { UsersModule } from 'src/users/users.module';
 import { permissionsModule } from 'src/permissions/permissions.module';
-import { NotificationsModule } from 'src/notifications/notifications.module';
+import { UsersModule } from 'src/users/users.module';
+import { QueueName } from 'src/utils/queue-enum';
+import { RelationalSymptomPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
+import { SymptomsController } from './symptoms.controller';
+import { SymptomsService } from './symptoms.service';
 @Module({
   imports: [
     RelationalSymptomPersistenceModule,
     UsersModule,
     permissionsModule,
-    NotificationsModule,
+    BullModule.registerQueue({ name: QueueName.NOTIFICATION }),
   ],
   controllers: [SymptomsController],
   providers: [SymptomsService],

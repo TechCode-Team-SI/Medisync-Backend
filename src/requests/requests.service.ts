@@ -193,7 +193,9 @@ export class RequestsService {
       madeBy: foundUser,
     };
 
-    return this.requestRepository.create(clonedPayload);
+    const request = await this.requestRepository.create(clonedPayload);
+
+    return request;
   }
 
   findAllMinimalWithPagination({

@@ -1,14 +1,15 @@
+import { BullModule } from '@nestjs/bullmq';
 import { forwardRef, Module } from '@nestjs/common';
-import { SpecialtiesService } from './specialties.service';
-import { SpecialtiesController } from './specialties.controller';
-import { RelationalSpecialtyPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
-import { FilesModule } from 'src/files/files.module';
-import { UsersModule } from 'src/users/users.module';
-import { RequestTemplatesModule } from 'src/request-templates/request-templates.module';
-import { permissionsModule } from 'src/permissions/permissions.module';
-import { RequestsModule } from 'src/requests/requests.module';
 import { AgendasModule } from 'src/agendas/agendas.module';
-import { NotificationsModule } from 'src/notifications/notifications.module';
+import { FilesModule } from 'src/files/files.module';
+import { permissionsModule } from 'src/permissions/permissions.module';
+import { RequestTemplatesModule } from 'src/request-templates/request-templates.module';
+import { RequestsModule } from 'src/requests/requests.module';
+import { UsersModule } from 'src/users/users.module';
+import { QueueName } from 'src/utils/queue-enum';
+import { RelationalSpecialtyPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
+import { SpecialtiesController } from './specialties.controller';
+import { SpecialtiesService } from './specialties.service';
 @Module({
   imports: [
     RelationalSpecialtyPersistenceModule,
@@ -18,7 +19,7 @@ import { NotificationsModule } from 'src/notifications/notifications.module';
     permissionsModule,
     forwardRef(() => RequestsModule),
     forwardRef(() => AgendasModule),
-    NotificationsModule,
+    BullModule.registerQueue({ name: QueueName.NOTIFICATION }),
   ],
   controllers: [SpecialtiesController],
   providers: [SpecialtiesService],

@@ -1,12 +1,13 @@
+import { BullModule } from '@nestjs/bullmq';
 import { forwardRef, Module } from '@nestjs/common';
-import { TicketsService } from './tickets.service';
-import { TicketsController } from './tickets.controller';
-import { RelationalTicketPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
-import { UsersModule } from 'src/users/users.module';
-import { TicketCommentsModule } from 'src/ticket-comments/ticket-comments.module';
 import { permissionsModule } from 'src/permissions/permissions.module';
+import { TicketCommentsModule } from 'src/ticket-comments/ticket-comments.module';
 import { TicketTypesModule } from 'src/ticket-types/ticket-types.module';
-import { NotificationsModule } from 'src/notifications/notifications.module';
+import { UsersModule } from 'src/users/users.module';
+import { QueueName } from 'src/utils/queue-enum';
+import { RelationalTicketPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
+import { TicketsController } from './tickets.controller';
+import { TicketsService } from './tickets.service';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { NotificationsModule } from 'src/notifications/notifications.module';
     permissionsModule,
     forwardRef(() => TicketCommentsModule),
     TicketTypesModule,
-    NotificationsModule,
+    BullModule.registerQueue({ name: QueueName.NOTIFICATION }),
   ],
   controllers: [TicketsController],
   providers: [TicketsService],

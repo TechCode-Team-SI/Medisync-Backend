@@ -1,9 +1,16 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import {
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { Queue } from 'bullmq';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
+import { TicketType } from 'src/ticket-types/domain/ticket-type';
+import { TicketTypeRepository } from 'src/ticket-types/infrastructure/persistence/ticket-type.repository';
 import { UsersService } from 'src/users/users.service';
+import { NotificationQueueOperations, QueueName } from 'src/utils/queue-enum';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Ticket } from './domain/ticket';
@@ -13,11 +20,6 @@ import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { TicketRepository } from './infrastructure/persistence/ticket.repository';
 import { TicketStatusEnum, TicketTypeEnum } from './tickets.enum';
 import { exceptionResponses } from './tickets.messages';
-import { TicketTypeRepository } from 'src/ticket-types/infrastructure/persistence/ticket-type.repository';
-import { TicketType } from 'src/ticket-types/domain/ticket-type';
-import { NotificationsService } from 'src/notifications/notifications.service';
-import { MessagesContent } from 'src/notifications/messages.notifications';
-import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @Injectable()
 export class TicketsService {
@@ -25,7 +27,7 @@ export class TicketsService {
     private readonly ticketRepository: TicketRepository,
     private readonly usersService: UsersService,
     private readonly ticketTypeRepository: TicketTypeRepository,
-    private readonly notificationsService: NotificationsService,
+    @InjectQueue(QueueName.NOTIFICATION) private notificationQueue: Queue,
   ) {}
 
   async create(createTicketDto: CreateTicketDto, createdBy: string) {
@@ -59,19 +61,22 @@ export class TicketsService {
       ticketTag: ticketTag,
     };
     const ticket = await this.ticketRepository.create(clonedPayload);
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.ticket.created.title,
-        content: MessagesContent.ticket.created.content(ticket.id),
-        type: MessagesContent.ticket.created.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.ticket.created.title,
+          content: MessagesContent.ticket.created.content(ticket.id),
+          type: MessagesContent.ticket.created.type,
+        },
+        permissions: [
+          PermissionsEnum.ATTEND_SUGGESTION,
+          PermissionsEnum.ATTEND_COMPLAINT,
+          PermissionsEnum.VIEW_SUGGESTION,
+          PermissionsEnum.VIEW_COMPLAINT,
+        ],
       },
-      permissions: [
-        PermissionsEnum.ATTEND_SUGGESTION,
-        PermissionsEnum.ATTEND_COMPLAINT,
-        PermissionsEnum.VIEW_SUGGESTION,
-        PermissionsEnum.VIEW_COMPLAINT,
-      ],
-    });
+    );
     return ticket;
   }
 
@@ -106,37 +111,43 @@ export class TicketsService {
       id,
       updateTicketDto,
     );
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.ticket.updated.title,
-        content: MessagesContent.ticket.updated.content(id),
-        type: MessagesContent.ticket.updated.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.ticket.updated.title,
+          content: MessagesContent.ticket.updated.content(id),
+          type: MessagesContent.ticket.updated.type,
+        },
+        permissions: [
+          PermissionsEnum.ATTEND_SUGGESTION,
+          PermissionsEnum.ATTEND_COMPLAINT,
+          PermissionsEnum.VIEW_SUGGESTION,
+          PermissionsEnum.VIEW_COMPLAINT,
+        ],
       },
-      permissions: [
-        PermissionsEnum.ATTEND_SUGGESTION,
-        PermissionsEnum.ATTEND_COMPLAINT,
-        PermissionsEnum.VIEW_SUGGESTION,
-        PermissionsEnum.VIEW_COMPLAINT,
-      ],
-    });
+    );
     return ticketUpdate;
   }
 
   async remove(id: Ticket['id']) {
     const ticketRemove = await this.ticketRepository.remove(id);
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.ticket.remove.title,
-        content: MessagesContent.ticket.remove.content(id),
-        type: MessagesContent.ticket.remove.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.ticket.remove.title,
+          content: MessagesContent.ticket.remove.content(id),
+          type: MessagesContent.ticket.remove.type,
+        },
+        permissions: [
+          PermissionsEnum.ATTEND_SUGGESTION,
+          PermissionsEnum.ATTEND_COMPLAINT,
+          PermissionsEnum.VIEW_SUGGESTION,
+          PermissionsEnum.VIEW_COMPLAINT,
+        ],
       },
-      permissions: [
-        PermissionsEnum.ATTEND_SUGGESTION,
-        PermissionsEnum.ATTEND_COMPLAINT,
-        PermissionsEnum.VIEW_SUGGESTION,
-        PermissionsEnum.VIEW_COMPLAINT,
-      ],
-    });
+    );
     return ticketRemove;
   }
 
@@ -149,19 +160,22 @@ export class TicketsService {
     if (ticket.status === TicketStatusEnum.CLOSED) {
       throw new UnprocessableEntityException(exceptionResponses.StatusClosed);
     }
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.ticket.closed.title,
-        content: MessagesContent.ticket.closed.content(id),
-        type: MessagesContent.ticket.closed.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.ticket.closed.title,
+          content: MessagesContent.ticket.closed.content(id),
+          type: MessagesContent.ticket.closed.type,
+        },
+        permissions: [
+          PermissionsEnum.ATTEND_SUGGESTION,
+          PermissionsEnum.ATTEND_COMPLAINT,
+          PermissionsEnum.VIEW_SUGGESTION,
+          PermissionsEnum.VIEW_COMPLAINT,
+        ],
       },
-      permissions: [
-        PermissionsEnum.ATTEND_SUGGESTION,
-        PermissionsEnum.ATTEND_COMPLAINT,
-        PermissionsEnum.VIEW_SUGGESTION,
-        PermissionsEnum.VIEW_COMPLAINT,
-      ],
-    });
+    );
     return this.ticketRepository.update(id, {
       status: TicketStatusEnum.CLOSED,
     });

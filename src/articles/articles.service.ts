@@ -1,8 +1,14 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Queue } from 'bullmq';
+import { ArticleCategory } from 'src/article-categories/domain/article-category';
 import { FilesService } from 'src/files/files.service';
-import { NotificationsService } from 'src/notifications/notifications.service';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 import { UsersService } from 'src/users/users.service';
+import { NotificationQueueOperations, QueueName } from 'src/utils/queue-enum';
 import { findOptions } from 'src/utils/types/fine-options.type';
+import { ArticleCategoriesService } from '../article-categories/article-categories.service';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { exceptionResponses } from './articles.messages';
 import { Article } from './domain/article';
@@ -10,19 +16,15 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { FilterArticleDto, SortArticleDto } from './dto/find-all-articles.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticleRepository } from './infrastructure/persistence/article.repository';
-import { ArticleCategoriesService } from '../article-categories/article-categories.service';
-import { ArticleCategory } from 'src/article-categories/domain/article-category';
-import { MessagesContent } from 'src/notifications/messages.notifications';
-import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @Injectable()
 export class ArticlesService {
   constructor(
     private readonly articleRepository: ArticleRepository,
     private usersService: UsersService,
-    private notificationsService: NotificationsService,
     private readonly filesService: FilesService,
     private readonly articleCategoriesService: ArticleCategoriesService,
+    @InjectQueue(QueueName.NOTIFICATION) private notificationQueue: Queue,
   ) {}
 
   async create(createArticleDto: CreateArticleDto, userId: string) {
@@ -54,19 +56,25 @@ export class ArticlesService {
 
     const result = await this.articleRepository.create(clonedPayload);
 
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.article.create.title,
-        content: MessagesContent.article.create.content(result.id),
-        type: MessagesContent.article.create.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.article.create.title,
+          content: MessagesContent.article.create.content(result.id),
+          type: MessagesContent.article.create.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_ARTICLES],
       },
-      permissions: [PermissionsEnum.MANAGE_ARTICLES],
-    });
+    );
 
-    await this.notificationsService.createForAllMobileUsers({
-      title: MessagesContent.article.userNoti.title,
-      content: MessagesContent.article.userNoti.content(clonedPayload.title),
-    });
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_MOBILE,
+      {
+        title: MessagesContent.article.userNoti.title,
+        content: MessagesContent.article.userNoti.content(clonedPayload.title),
+      },
+    );
 
     return result;
   }
@@ -118,26 +126,32 @@ export class ArticlesService {
       }
       clonedPayload.image = fileObject;
     }
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.article.updated.title,
-        content: MessagesContent.article.updated.content(id),
-        type: MessagesContent.article.updated.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.article.updated.title,
+          content: MessagesContent.article.updated.content(id),
+          type: MessagesContent.article.updated.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_ARTICLES],
       },
-      permissions: [PermissionsEnum.MANAGE_ARTICLES],
-    });
+    );
     return this.articleRepository.update(id, clonedPayload);
   }
 
   async remove(id: Article['id']) {
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.article.remove.title,
-        content: MessagesContent.article.remove.content(id),
-        type: MessagesContent.article.remove.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.article.remove.title,
+          content: MessagesContent.article.remove.content(id),
+          type: MessagesContent.article.remove.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_ARTICLES],
       },
-      permissions: [PermissionsEnum.MANAGE_ARTICLES],
-    });
+    );
     return this.articleRepository.remove(id);
   }
 }

@@ -1,32 +1,37 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
+import { Queue } from 'bullmq';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { SortPathologiesDto } from 'src/pathologies/dto/find-all-pathologies.dto';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
+import { NotificationQueueOperations, QueueName } from 'src/utils/queue-enum';
+import { findOptions } from 'src/utils/types/fine-options.type';
+import { IPaginationOptions } from '../utils/types/pagination-options';
+import { Pathology } from './domain/pathology';
+import { CreateMultiplePathologyDto } from './dto/create-multiple-pathology.dto';
 import { CreatePathologyDto } from './dto/create-pathology.dto';
 import { UpdatePathologyDto } from './dto/update-pathology.dto';
 import { PathologyRepository } from './infrastructure/persistence/pathology.repository';
-import { IPaginationOptions } from '../utils/types/pagination-options';
-import { Pathology } from './domain/pathology';
-import { findOptions } from 'src/utils/types/fine-options.type';
-import { SortPathologiesDto } from 'src/pathologies/dto/find-all-pathologies.dto';
-import { CreateMultiplePathologyDto } from './dto/create-multiple-pathology.dto';
-import { NotificationsService } from 'src/notifications/notifications.service';
-import { MessagesContent } from 'src/notifications/messages.notifications';
-import { PermissionsEnum } from 'src/permissions/permissions.enum';
 @Injectable()
 export class PathologiesService {
   constructor(
     private readonly pathologyRepository: PathologyRepository,
-    private readonly notificationsService: NotificationsService,
+    @InjectQueue(QueueName.NOTIFICATION) private notificationQueue: Queue,
   ) {}
 
   async create(createPathologyDto: CreatePathologyDto) {
     const patho = await this.pathologyRepository.create(createPathologyDto);
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.pathologie.created.title,
-        content: MessagesContent.pathologie.created.content(patho.id),
-        type: MessagesContent.pathologie.created.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.pathologie.created.title,
+          content: MessagesContent.pathologie.created.content(patho.id),
+          type: MessagesContent.pathologie.created.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_PATHOLOGIES],
       },
-      permissions: [PermissionsEnum.MANAGE_PATHOLOGIES],
-    });
+    );
     return patho;
   }
 
@@ -56,26 +61,32 @@ export class PathologiesService {
     return this.pathologyRepository.findManyByIds(ids, options);
   }
   async update(id: Pathology['id'], updatePathologyDto: UpdatePathologyDto) {
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.pathologie.updated.title,
-        content: MessagesContent.pathologie.updated.content(id),
-        type: MessagesContent.pathologie.updated.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.pathologie.updated.title,
+          content: MessagesContent.pathologie.updated.content(id),
+          type: MessagesContent.pathologie.updated.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_PATHOLOGIES],
       },
-      permissions: [PermissionsEnum.MANAGE_PATHOLOGIES],
-    });
+    );
     return this.pathologyRepository.update(id, updatePathologyDto);
   }
 
   async remove(id: Pathology['id']) {
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.pathologie.remove.title,
-        content: MessagesContent.pathologie.remove.content(id),
-        type: MessagesContent.pathologie.remove.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.pathologie.remove.title,
+          content: MessagesContent.pathologie.remove.content(id),
+          type: MessagesContent.pathologie.remove.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_PATHOLOGIES],
       },
-      permissions: [PermissionsEnum.MANAGE_PATHOLOGIES],
-    });
+    );
     return this.pathologyRepository.remove(id);
   }
 

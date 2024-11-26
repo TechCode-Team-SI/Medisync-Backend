@@ -1,8 +1,16 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Queue } from 'bullmq';
+import { AgendaRepository } from 'src/agendas/infrastructure/persistence/agenda.repository';
 import { FilesService } from 'src/files/files.service';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 import { RequestTemplate } from 'src/request-templates/domain/request-template';
 import { RequestTemplatesService } from 'src/request-templates/request-templates.service';
+import { RequestStatusEnum } from 'src/requests/requests.enum';
+import { RequestsService } from 'src/requests/requests.service';
 import { UsersService } from 'src/users/users.service';
+import { NotificationQueueOperations, QueueName } from 'src/utils/queue-enum';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Specialty } from './domain/specialty';
@@ -15,12 +23,6 @@ import {
 import { UpdateSpecialtyDto } from './dto/update-specialty.dto';
 import { SpecialtyRepository } from './infrastructure/persistence/specialty.repository';
 import { exceptionResponses } from './specialties.messages';
-import { RequestsService } from 'src/requests/requests.service';
-import { RequestStatusEnum } from 'src/requests/requests.enum';
-import { AgendaRepository } from 'src/agendas/infrastructure/persistence/agenda.repository';
-import { NotificationsService } from 'src/notifications/notifications.service';
-import { MessagesContent } from 'src/notifications/messages.notifications';
-import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @Injectable()
 export class SpecialtiesService {
@@ -31,7 +33,7 @@ export class SpecialtiesService {
     private readonly requestTemplateService: RequestTemplatesService,
     private readonly requestsService: RequestsService,
     private readonly agendasRepository: AgendaRepository,
-    private readonly notificationsService: NotificationsService,
+    @InjectQueue(QueueName.NOTIFICATION) private notificationQueue: Queue,
   ) {}
 
   async create(createSpecialtyDto: CreateSpecialtyDto) {
@@ -62,14 +64,17 @@ export class SpecialtiesService {
       ...createSpecialtyDto,
       requestTemplate: foundRequestTemplate,
     });
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.specialty.created.title,
-        content: MessagesContent.specialty.created.content(result.id),
-        type: MessagesContent.specialty.created.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.specialty.created.title,
+          content: MessagesContent.specialty.created.content(result.id),
+          type: MessagesContent.specialty.created.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_SPECIALTIES],
       },
-      permissions: [PermissionsEnum.MANAGE_SPECIALTIES],
-    });
+    );
     return result;
   }
 
@@ -182,26 +187,32 @@ export class SpecialtiesService {
   }
 
   async update(id: Specialty['id'], updateSpecialtyDto: UpdateSpecialtyDto) {
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.specialty.updated.title,
-        content: MessagesContent.specialty.updated.content(id),
-        type: MessagesContent.specialty.updated.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.specialty.updated.title,
+          content: MessagesContent.specialty.updated.content(id),
+          type: MessagesContent.specialty.updated.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_SPECIALTIES],
       },
-      permissions: [PermissionsEnum.MANAGE_SPECIALTIES],
-    });
+    );
     return this.specialtyRepository.update(id, updateSpecialtyDto);
   }
 
   async remove(id: Specialty['id']) {
-    await this.notificationsService.createForUsersByPermission({
-      payload: {
-        title: MessagesContent.specialty.remove.title,
-        content: MessagesContent.specialty.remove.content(id),
-        type: MessagesContent.specialty.created.type,
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.specialty.remove.title,
+          content: MessagesContent.specialty.remove.content(id),
+          type: MessagesContent.specialty.created.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_SPECIALTIES],
       },
-      permissions: [PermissionsEnum.MANAGE_SPECIALTIES],
-    });
+    );
     return this.specialtyRepository.remove(id);
   }
 
