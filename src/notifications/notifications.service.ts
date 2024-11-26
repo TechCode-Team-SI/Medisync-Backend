@@ -1,25 +1,27 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { NotificationRepository } from './infrastructure/persistence/notification.repository';
-import { IPaginationOptions } from '../utils/types/pagination-options';
-import { Notification } from './domain/notification';
-import { findOptions } from 'src/utils/types/fine-options.type';
+import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
+import { NotificationUser } from 'src/notification-users/domain/notification-user';
+import { NotificationUserRepository } from 'src/notification-users/infrastructure/persistence/notification-user.repository';
 import {
   FilterNotificationDto,
   SortNotificationsDto,
 } from 'src/notifications/dto/find-all-notifications.dto';
-import { NotificationUserRepository } from 'src/notification-users/infrastructure/persistence/notification-user.repository';
-import { NotificationUser } from 'src/notification-users/domain/notification-user';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
+import { SocketEnum } from 'src/socket/socket-enum';
+import { SocketService } from 'src/socket/socket.service';
 import { User } from 'src/users/domain/user';
 import { UserRepository } from 'src/users/infrastructure/persistence/user.repository';
-import { exceptionResponses } from './notifications.messages';
-import { PermissionsEnum } from 'src/permissions/permissions.enum';
+import { MailQueueOperations, QueueName } from 'src/utils/queue-enum';
+import { findOptions } from 'src/utils/types/fine-options.type';
+import { IPaginationOptions } from '../utils/types/pagination-options';
+import { Notification } from './domain/notification';
 import { CreateNotificationNoTypeDto } from './dto/create-notification-no-type.dto';
+import { CreateNotificationDto } from './dto/create-notification.dto';
+import { NotificationRepository } from './infrastructure/persistence/notification.repository';
 import { NotificationTypeEnum } from './notifications.enum';
-import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
-import { SocketService } from 'src/socket/socket.service';
-import { SocketEnum } from 'src/socket/socket-enum';
-import { MailService } from 'src/mail/mail.service';
+import { exceptionResponses } from './notifications.messages';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class NotificationsService {
@@ -28,7 +30,7 @@ export class NotificationsService {
     private readonly notificationUserRepository: NotificationUserRepository,
     private readonly usersRepository: UserRepository,
     private readonly socketService: SocketService,
-    private readonly mailService: MailService,
+    @InjectQueue(QueueName.MAIL) private mailQueue: Queue,
   ) {}
 
   async createForIndividuals(
@@ -49,7 +51,7 @@ export class NotificationsService {
     const [notifUsers] = await Promise.all([
       this.notificationUserRepository.createMany(notifUserData),
       ...users.map((user) =>
-        this.mailService.notificationEmail({
+        this.mailQueue.add(MailQueueOperations.NOTIFICATION, {
           to: user.email,
           data: {
             content: createNotificationDto.content,

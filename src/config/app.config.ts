@@ -69,5 +69,9 @@ export default registerAs<AppConfig>('app', () => {
     installToken: process.env.INSTALL_SECRET || 'secret',
     installInitialStep: process.env.INSTALL_STEP || 'FINISHED',
     installPrefix: process.env.INSTALL_PREFIX || '[system]-',
+    workerHost: process.env.WORKER_HOST || 'localhost',
+    workerPort: process.env.WORKER_PORT
+      ? parseInt(process.env.WORKER_PORT, 10)
+      : 6379,
   };
 });

@@ -13,6 +13,8 @@ import { RelationalPasswordTokenPersistenceModule } from './infrastructure/persi
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordTokenEntity } from './infrastructure/persistence/relational/entities/password-token.entity';
 import { RolesModule } from 'src/roles/roles.module';
+import { BullModule } from '@nestjs/bullmq';
+import { QueueName } from 'src/utils/queue-enum';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { RolesModule } from 'src/roles/roles.module';
     RelationalPasswordTokenPersistenceModule,
     TypeOrmModule.forFeature([PasswordTokenEntity]),
     JwtModule.register({}),
+    BullModule.registerQueue({ name: QueueName.MAIL }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, JwtRefreshStrategy, AnonymousStrategy],
