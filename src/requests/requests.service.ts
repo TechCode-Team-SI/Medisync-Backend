@@ -1,3 +1,4 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import {
   BadRequestException,
   ForbiddenException,
@@ -5,18 +6,21 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { Queue } from 'bullmq';
+import { format } from 'date-fns';
 import { DiagnosticsService } from 'src/diagnostics/diagnostics.service';
 import { CreateDiagnosticDto } from 'src/diagnostics/dto/create-diagnostic.dto';
 import { Selection } from 'src/field-questions/domain/selection';
 import { FieldQuestionTypeEnum } from 'src/field-questions/field-questions.enum';
 import { CreateInstructionsDto } from 'src/instructions/dto/create-instructions.dto';
 import { InstructionsService } from 'src/instructions/instructions.service';
+import { NotificationTypeEnum } from 'src/notifications/notifications.enum';
 import { RequestTemplatesService } from 'src/request-templates/request-templates.service';
 import { SpecialtyRepository } from 'src/specialties/infrastructure/persistence/specialty.repository';
 import { UserPatient } from 'src/user-patients/domain/user-patient';
-import { UserPatientsService } from 'src/user-patients/user-patients.service';
 import { User } from 'src/users/domain/user';
 import { UsersService } from 'src/users/users.service';
+import { NotificationQueueOperations, QueueName } from 'src/utils/queue-enum';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Request } from './domain/request';
@@ -35,9 +39,9 @@ export class RequestsService {
     private readonly requestTemplateService: RequestTemplatesService,
     private readonly specialtiesRepository: SpecialtyRepository,
     private readonly usersService: UsersService,
-    private readonly userPatientsService: UserPatientsService,
     private readonly diagnosticsService: DiagnosticsService,
     private readonly instructionsService: InstructionsService,
+    @InjectQueue(QueueName.NOTIFICATION) private notificationQueue: Queue,
   ) {}
 
   async create(
@@ -195,6 +199,46 @@ export class RequestsService {
 
     const request = await this.requestRepository.create(clonedPayload);
 
+    if (!referredContent) {
+      if (foundSpecialty.isGroup) {
+        await this.notificationQueue.add(
+          NotificationQueueOperations.CREATE_FOR_SPECIALTY,
+          {
+            payload: {
+              title: `¡Nueva cita en ${foundSpecialty.name} !`,
+              content: `El usuario ${foundUser.fullName} ha solicitado una consulta en ${foundSpecialty.name} para la siguiente fecha: ${format(data.appointmentDate, 'P')}.`,
+              type: NotificationTypeEnum.WORK,
+            },
+            specialtyId: foundSpecialty.id,
+          },
+        );
+      } else {
+        await this.notificationQueue.add(
+          NotificationQueueOperations.CREATE_FOR_INDIVIDUALS,
+          {
+            payload: {
+              title: `¡Tienes una nueva cita en ${foundSpecialty.name}!`,
+              content: `El usuario ${foundUser.fullName} ha solicitado una consulta en ${foundSpecialty.name} para la siguiente fecha: ${format(data.appointmentDate, 'P')}.`,
+              type: NotificationTypeEnum.WORK,
+            },
+            userIds: [medic?.id],
+          },
+        );
+      }
+    } else {
+      await this.notificationQueue.add(
+        NotificationQueueOperations.CREATE_FOR_INDIVIDUALS,
+        {
+          payload: {
+            title: `¡Tienes una nueva cita con referencia medica!`,
+            content: `El dr ${foundUser.fullName} te ha referido al paciente ${data.patientFullName} una consulta en ${foundSpecialty.name} para la siguiente fecha: ${format(data.appointmentDate, 'P')}.`,
+            type: NotificationTypeEnum.PATIENT,
+          },
+          userIds: [foundUser.id],
+        },
+      );
+    }
+
     return request;
   }
 
@@ -338,7 +382,24 @@ export class RequestsService {
       );
     }
 
-    return this.updateStatus(requestId, RequestStatusEnum.CANCELLED);
+    const updated = await this.updateStatus(
+      requestId,
+      RequestStatusEnum.CANCELLED,
+    );
+
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_INDIVIDUALS,
+      {
+        payload: {
+          title: `¡Cita cancelada!`,
+          content: `La cita en ${request.requestedSpecialty.name} pautada para la fecha ${format(request.appointmentDate, 'P')} ha sido cancelada.`,
+          type: NotificationTypeEnum.PATIENT,
+        },
+        userIds: [request.madeBy.id],
+      },
+    );
+
+    return updated;
   }
 
   async finish(
@@ -401,6 +462,23 @@ export class RequestsService {
 
     await this.diagnosticsService.create(createDiagnosticDto, medicId);
     await this.instructionsService.create(createInstructionsDto, medicId);
-    return this.updateStatus(requestId, RequestStatusEnum.COMPLETED);
+    const updated = await this.updateStatus(
+      requestId,
+      RequestStatusEnum.COMPLETED,
+    );
+
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_INDIVIDUALS,
+      {
+        payload: {
+          title: `¡Cita atendida!`,
+          content: `La cita en ${request.requestedSpecialty.name} pautada para la fecha ${format(request.appointmentDate, 'P')} ha sido atendida, ¡muchas gracias por preferirnos!.`,
+          type: NotificationTypeEnum.PATIENT,
+        },
+        userIds: [request.madeBy.id],
+      },
+    );
+
+    return updated;
   }
 }

@@ -20,6 +20,7 @@ import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { TicketRepository } from './infrastructure/persistence/ticket.repository';
 import { TicketStatusEnum, TicketTypeEnum } from './tickets.enum';
 import { exceptionResponses } from './tickets.messages';
+import { NotificationTypeEnum } from 'src/notifications/notifications.enum';
 
 @Injectable()
 export class TicketsService {
@@ -75,6 +76,18 @@ export class TicketsService {
           PermissionsEnum.VIEW_SUGGESTION,
           PermissionsEnum.VIEW_COMPLAINT,
         ],
+      },
+    );
+
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_INDIVIDUALS,
+      {
+        payload: {
+          title: MessagesContent.ticket.created.title,
+          content: `${MessagesContent.ticket.created.content(ticket.id)}, llevaremos un seguimiento de su ticket.`,
+          type: NotificationTypeEnum.PATIENT,
+        },
+        userIds: [user.id],
       },
     );
     return ticket;
@@ -176,6 +189,19 @@ export class TicketsService {
         ],
       },
     );
+
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_INDIVIDUALS,
+      {
+        payload: {
+          title: MessagesContent.ticket.closed.title,
+          content: `${MessagesContent.ticket.closed.content(ticket.id)}, gracias por su tiempo.`,
+          type: NotificationTypeEnum.PATIENT,
+        },
+        userIds: [ticket.createdBy.id],
+      },
+    );
+
     return this.ticketRepository.update(id, {
       status: TicketStatusEnum.CLOSED,
     });
