@@ -7,6 +7,7 @@ import { NotificationsController } from './notification.controller';
 import { NotificationsService } from './notifications.service';
 import { BullModule } from '@nestjs/bullmq';
 import { QueueName } from 'src/utils/queue-enum';
+import { NotificationConsumer } from './notification.consumer';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { QueueName } from 'src/utils/queue-enum';
     BullModule.registerQueue({ name: QueueName.MAIL }),
   ],
   controllers: [NotificationsController],
-  providers: [NotificationsService],
+  providers: [NotificationsService, NotificationConsumer],
   exports: [NotificationsService, RelationalNotificationPersistenceModule],
 })
 export class NotificationsModule {}

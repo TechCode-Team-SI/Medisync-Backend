@@ -27,14 +27,14 @@ export class RolesService {
 
     const data = { ...createRoleDto, slug };
     const result = await this.roleRepository.create(data);
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.role.created.title,
         content: MessagesContent.role.created.content(result.id),
         type: MessagesContent.role.created.type,
       },
-      [PermissionsEnum.MANAGE_ROLES],
-    );
+      permissions: [PermissionsEnum.MANAGE_ROLES],
+    });
     return result;
   }
 
@@ -81,26 +81,26 @@ export class RolesService {
     if (updateRoleDto.name) {
       data.slug = slugify(updateRoleDto.name);
     }
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.role.updated.title,
         content: MessagesContent.role.updated.content(id),
         type: MessagesContent.role.updated.type,
       },
-      [PermissionsEnum.MANAGE_ROLES],
-    );
+      permissions: [PermissionsEnum.MANAGE_ROLES],
+    });
     return this.roleRepository.update(id, data);
   }
 
   async remove(id: Role['id']) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.role.remove.title,
         content: MessagesContent.role.remove.content(id),
         type: MessagesContent.role.remove.type,
       },
-      [PermissionsEnum.MANAGE_ROLES],
-    );
+      permissions: [PermissionsEnum.MANAGE_ROLES],
+    });
     return this.roleRepository.remove(id);
   }
 }

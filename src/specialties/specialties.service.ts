@@ -62,14 +62,14 @@ export class SpecialtiesService {
       ...createSpecialtyDto,
       requestTemplate: foundRequestTemplate,
     });
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.specialty.created.title,
         content: MessagesContent.specialty.created.content(result.id),
         type: MessagesContent.specialty.created.type,
       },
-      [PermissionsEnum.MANAGE_SPECIALTIES],
-    );
+      permissions: [PermissionsEnum.MANAGE_SPECIALTIES],
+    });
     return result;
   }
 
@@ -182,26 +182,26 @@ export class SpecialtiesService {
   }
 
   async update(id: Specialty['id'], updateSpecialtyDto: UpdateSpecialtyDto) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.specialty.updated.title,
         content: MessagesContent.specialty.updated.content(id),
         type: MessagesContent.specialty.updated.type,
       },
-      [PermissionsEnum.MANAGE_SPECIALTIES],
-    );
+      permissions: [PermissionsEnum.MANAGE_SPECIALTIES],
+    });
     return this.specialtyRepository.update(id, updateSpecialtyDto);
   }
 
   async remove(id: Specialty['id']) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.specialty.remove.title,
         content: MessagesContent.specialty.remove.content(id),
         type: MessagesContent.specialty.created.type,
       },
-      [PermissionsEnum.MANAGE_SPECIALTIES],
-    );
+      permissions: [PermissionsEnum.MANAGE_SPECIALTIES],
+    });
     return this.specialtyRepository.remove(id);
   }
 

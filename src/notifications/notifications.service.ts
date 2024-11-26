@@ -1,5 +1,6 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Queue } from 'bullmq';
 import { SuccessResponseDto } from 'src/auth/dto/success-response.dto';
 import { NotificationUser } from 'src/notification-users/domain/notification-user';
 import { NotificationUserRepository } from 'src/notification-users/infrastructure/persistence/notification-user.repository';
@@ -10,7 +11,6 @@ import {
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
 import { SocketEnum } from 'src/socket/socket-enum';
 import { SocketService } from 'src/socket/socket.service';
-import { User } from 'src/users/domain/user';
 import { UserRepository } from 'src/users/infrastructure/persistence/user.repository';
 import { MailQueueOperations, QueueName } from 'src/utils/queue-enum';
 import { findOptions } from 'src/utils/types/fine-options.type';
@@ -21,7 +21,6 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { NotificationRepository } from './infrastructure/persistence/notification.repository';
 import { NotificationTypeEnum } from './notifications.enum';
 import { exceptionResponses } from './notifications.messages';
-import { Queue } from 'bullmq';
 
 @Injectable()
 export class NotificationsService {
@@ -33,13 +32,21 @@ export class NotificationsService {
     @InjectQueue(QueueName.MAIL) private mailQueue: Queue,
   ) {}
 
-  async createForIndividuals(
-    createNotificationDto: CreateNotificationDto,
-    users: User[],
-  ) {
-    const notification = await this.notificationRepository.create(
-      createNotificationDto,
-    );
+  async createForIndividuals({
+    payload,
+    userIds,
+  }: {
+    payload: CreateNotificationDto;
+    userIds: string[];
+  }) {
+    const notification = await this.notificationRepository.create(payload);
+
+    const users = await this.usersRepository.findAll({
+      filterOptions: {
+        ids: userIds,
+      },
+    });
+
     const notifUserData = users.map((user) => {
       const notificationUser = new NotificationUser();
       notificationUser.notification = notification;
@@ -54,8 +61,8 @@ export class NotificationsService {
         this.mailQueue.add(MailQueueOperations.NOTIFICATION, {
           to: user.email,
           data: {
-            content: createNotificationDto.content,
-            title: createNotificationDto.title,
+            content: payload.content,
+            title: payload.title,
           },
         }),
       ),
@@ -70,50 +77,57 @@ export class NotificationsService {
     return notifUsers;
   }
 
-  async createForUsersByPermission(
-    createNotificationDto: CreateNotificationDto,
-    permissions: PermissionsEnum[],
-  ) {
+  async createForUsersByPermission({
+    payload,
+    permissions,
+  }: {
+    payload: CreateNotificationDto;
+    permissions: PermissionsEnum[];
+  }) {
     const users = await this.usersRepository.findAllByPermissions(permissions);
 
-    return this.createForIndividuals(createNotificationDto, users);
+    return this.createForIndividuals({
+      payload,
+      userIds: users.map((u) => u.id),
+    });
   }
 
-  async createForAllSpecialty(
-    createNotificationDto: CreateNotificationNoTypeDto,
-    specialtyId: string,
-  ) {
+  async createForAllSpecialty({
+    payload,
+    specialtyId,
+  }: {
+    payload: CreateNotificationNoTypeDto;
+    specialtyId: string;
+  }) {
     const users = await this.usersRepository.findAll({
       filterOptions: {
         specialtyIds: [specialtyId],
       },
     });
 
-    return this.createForIndividuals(
-      {
-        ...createNotificationDto,
+    return this.createForIndividuals({
+      payload: {
+        ...payload,
         type: NotificationTypeEnum.WORK,
       },
-      users,
-    );
+      userIds: users.map((u) => u.id),
+    });
   }
 
-  async createForAllMobileUsers(
-    createNotificationDto: CreateNotificationNoTypeDto,
-  ) {
+  async createForAllMobileUsers(payload: CreateNotificationNoTypeDto) {
     const users = await this.usersRepository.findAll({
       filterOptions: {
         permissionSlugs: [PermissionsEnum.USE_MOBILE],
       },
     });
 
-    return this.createForIndividuals(
-      {
-        ...createNotificationDto,
+    return this.createForIndividuals({
+      payload: {
+        ...payload,
         type: NotificationTypeEnum.PATIENT,
       },
-      users,
-    );
+      userIds: users.map((u) => u.id),
+    });
   }
 
   findAllWithPagination({

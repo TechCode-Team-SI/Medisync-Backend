@@ -22,6 +22,9 @@ import { AgendaMapper } from './infrastructure/persistence/relational/mappers/ag
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { MessagesContent } from 'src/notifications/messages.notifications';
 import { PermissionsEnum } from 'src/permissions/permissions.enum';
+import { InjectQueue } from '@nestjs/bullmq';
+import { NotificationQueueOperations, QueueName } from 'src/utils/queue-enum';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class AgendasService {
@@ -31,6 +34,7 @@ export class AgendasService {
     private readonly employeesRepository: EmployeeProfileRepository,
     private readonly userRepository: UserRepository,
     private readonly notificationsService: NotificationsService,
+    @InjectQueue(QueueName.NOTIFICATION) private notificationQueue: Queue,
   ) {}
 
   async create(createAgendaDto: CreateAgendaDto) {
@@ -46,13 +50,16 @@ export class AgendasService {
     };
 
     const result = await this.agendaRepository.create(payload);
-    await this.notificationsService.createForUsersByPermission(
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
       {
-        title: MessagesContent.agenda.created.title,
-        content: MessagesContent.agenda.created.content(result.id),
-        type: MessagesContent.agenda.created.type,
+        payload: {
+          title: MessagesContent.agenda.created.title,
+          content: MessagesContent.agenda.created.content(result.id),
+          type: MessagesContent.agenda.created.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_AGENDA],
       },
-      [PermissionsEnum.MANAGE_AGENDA],
     );
     return result;
   }
@@ -124,14 +131,14 @@ export class AgendasService {
   }
 
   async update(id: Agenda['id'], updateAgendaDto: UpdateAgendaDto) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.agenda.updated.title,
         content: MessagesContent.agenda.updated.content(id),
         type: MessagesContent.agenda.updated.type,
       },
-      [PermissionsEnum.MANAGE_AGENDA],
-    );
+      permissions: [PermissionsEnum.MANAGE_AGENDA],
+    });
     return this.agendaRepository.update(id, {
       ...updateAgendaDto,
       weekdays: updateAgendaDto.weekdays?.split('_'),
@@ -148,14 +155,14 @@ export class AgendasService {
   }
 
   async remove(id: Agenda['id']) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.agenda.remove.title,
         content: MessagesContent.agenda.remove.content(id),
         type: MessagesContent.agenda.remove.type,
       },
-      [PermissionsEnum.MANAGE_AGENDA],
-    );
+      permissions: [PermissionsEnum.MANAGE_AGENDA],
+    });
     return this.agendaRepository.remove(id);
   }
 

@@ -23,14 +23,14 @@ export class TreatmentsService {
 
   async create(createtreatmentDto: CreatetreatmentDto) {
     const treatment = await this.TreatmentRepository.create(createtreatmentDto);
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.treatment.created.title,
         content: MessagesContent.treatment.created.content(treatment.id),
         type: MessagesContent.treatment.created.type,
       },
-      [PermissionsEnum.MANAGE_TREATMENTS],
-    );
+      permissions: [PermissionsEnum.MANAGE_TREATMENTS],
+    });
     return treatment;
   }
 
@@ -61,26 +61,26 @@ export class TreatmentsService {
   }
 
   async update(id: Treatment['id'], updatetreatmentDto: UpdatetreatmentDto) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.treatment.updated.title,
         content: MessagesContent.treatment.updated.content(id),
         type: MessagesContent.treatment.updated.type,
       },
-      [PermissionsEnum.MANAGE_TREATMENTS],
-    );
+      permissions: [PermissionsEnum.MANAGE_TREATMENTS],
+    });
     return this.TreatmentRepository.update(id, updatetreatmentDto);
   }
 
   async remove(id: Treatment['id']) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.treatment.remove.title,
         content: MessagesContent.treatment.remove.content(id),
         type: MessagesContent.treatment.remove.type,
       },
-      [PermissionsEnum.MANAGE_TREATMENTS],
-    );
+      permissions: [PermissionsEnum.MANAGE_TREATMENTS],
+    });
     return this.TreatmentRepository.remove(id);
   }
 

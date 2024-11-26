@@ -23,14 +23,14 @@ export class InjuriesService {
 
   async create(createInjuryDto: CreateInjuryDto) {
     const result = await this.injuryRepository.create(createInjuryDto);
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.injurie.created.title,
         content: MessagesContent.injurie.created.content(result.id),
         type: MessagesContent.injurie.created.type,
       },
-      [PermissionsEnum.MANAGE_INJURIES],
-    );
+      permissions: [PermissionsEnum.MANAGE_INJURIES],
+    });
     return result;
   }
 
@@ -61,26 +61,26 @@ export class InjuriesService {
   }
 
   async update(id: Injury['id'], updateInjuryDto: UpdateInjuryDto) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.injurie.updated.title,
         content: MessagesContent.injurie.updated.content(id),
         type: MessagesContent.injurie.updated.type,
       },
-      [PermissionsEnum.MANAGE_INJURIES],
-    );
+      permissions: [PermissionsEnum.MANAGE_INJURIES],
+    });
     return this.injuryRepository.update(id, updateInjuryDto);
   }
 
   async remove(id: Injury['id']) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.injurie.remove.title,
         content: MessagesContent.injurie.remove.content(id),
         type: MessagesContent.injurie.remove.type,
       },
-      [PermissionsEnum.MANAGE_INJURIES],
-    );
+      permissions: [PermissionsEnum.MANAGE_INJURIES],
+    });
     return this.injuryRepository.remove(id);
   }
 

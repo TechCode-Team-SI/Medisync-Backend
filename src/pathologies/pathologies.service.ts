@@ -19,14 +19,14 @@ export class PathologiesService {
 
   async create(createPathologyDto: CreatePathologyDto) {
     const patho = await this.pathologyRepository.create(createPathologyDto);
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.pathologie.created.title,
         content: MessagesContent.pathologie.created.content(patho.id),
         type: MessagesContent.pathologie.created.type,
       },
-      [PermissionsEnum.MANAGE_PATHOLOGIES],
-    );
+      permissions: [PermissionsEnum.MANAGE_PATHOLOGIES],
+    });
     return patho;
   }
 
@@ -52,30 +52,30 @@ export class PathologiesService {
   findOne(id: Pathology['id'], options?: findOptions) {
     return this.pathologyRepository.findById(id, options);
   }
- findMany(ids: Pathology['id'][], options?: findOptions) {
+  findMany(ids: Pathology['id'][], options?: findOptions) {
     return this.pathologyRepository.findManyByIds(ids, options);
   }
   async update(id: Pathology['id'], updatePathologyDto: UpdatePathologyDto) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.pathologie.updated.title,
         content: MessagesContent.pathologie.updated.content(id),
         type: MessagesContent.pathologie.updated.type,
       },
-      [PermissionsEnum.MANAGE_PATHOLOGIES],
-    );
+      permissions: [PermissionsEnum.MANAGE_PATHOLOGIES],
+    });
     return this.pathologyRepository.update(id, updatePathologyDto);
   }
 
   async remove(id: Pathology['id']) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.pathologie.remove.title,
         content: MessagesContent.pathologie.remove.content(id),
         type: MessagesContent.pathologie.remove.type,
       },
-      [PermissionsEnum.MANAGE_PATHOLOGIES],
-    );
+      permissions: [PermissionsEnum.MANAGE_PATHOLOGIES],
+    });
     return this.pathologyRepository.remove(id);
   }
 

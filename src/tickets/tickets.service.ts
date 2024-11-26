@@ -59,19 +59,19 @@ export class TicketsService {
       ticketTag: ticketTag,
     };
     const ticket = await this.ticketRepository.create(clonedPayload);
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.ticket.created.title,
         content: MessagesContent.ticket.created.content(ticket.id),
         type: MessagesContent.ticket.created.type,
       },
-      [
+      permissions: [
         PermissionsEnum.ATTEND_SUGGESTION,
         PermissionsEnum.ATTEND_COMPLAINT,
         PermissionsEnum.VIEW_SUGGESTION,
         PermissionsEnum.VIEW_COMPLAINT,
       ],
-    );
+    });
     return ticket;
   }
 
@@ -106,37 +106,37 @@ export class TicketsService {
       id,
       updateTicketDto,
     );
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.ticket.updated.title,
         content: MessagesContent.ticket.updated.content(id),
         type: MessagesContent.ticket.updated.type,
       },
-      [
+      permissions: [
         PermissionsEnum.ATTEND_SUGGESTION,
         PermissionsEnum.ATTEND_COMPLAINT,
         PermissionsEnum.VIEW_SUGGESTION,
         PermissionsEnum.VIEW_COMPLAINT,
       ],
-    );
+    });
     return ticketUpdate;
   }
 
   async remove(id: Ticket['id']) {
     const ticketRemove = await this.ticketRepository.remove(id);
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.ticket.remove.title,
         content: MessagesContent.ticket.remove.content(id),
         type: MessagesContent.ticket.remove.type,
       },
-      [
+      permissions: [
         PermissionsEnum.ATTEND_SUGGESTION,
         PermissionsEnum.ATTEND_COMPLAINT,
         PermissionsEnum.VIEW_SUGGESTION,
         PermissionsEnum.VIEW_COMPLAINT,
       ],
-    );
+    });
     return ticketRemove;
   }
 
@@ -149,19 +149,19 @@ export class TicketsService {
     if (ticket.status === TicketStatusEnum.CLOSED) {
       throw new UnprocessableEntityException(exceptionResponses.StatusClosed);
     }
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.ticket.closed.title,
         content: MessagesContent.ticket.closed.content(id),
         type: MessagesContent.ticket.closed.type,
       },
-      [
+      permissions: [
         PermissionsEnum.ATTEND_SUGGESTION,
         PermissionsEnum.ATTEND_COMPLAINT,
         PermissionsEnum.VIEW_SUGGESTION,
         PermissionsEnum.VIEW_COMPLAINT,
       ],
-    );
+    });
     return this.ticketRepository.update(id, {
       status: TicketStatusEnum.CLOSED,
     });

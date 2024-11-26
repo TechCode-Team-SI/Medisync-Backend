@@ -22,14 +22,14 @@ export class SymptomsService {
 
   async create(createSymptomDto: CreateSymptomDto) {
     const Symptom = await this.symptomRepository.create(createSymptomDto);
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.symptom.created.title,
         content: MessagesContent.symptom.created.content(Symptom.id),
         type: MessagesContent.symptom.created.type,
       },
-      [PermissionsEnum.MANAGE_SYMPTOMS],
-    );
+      permissions: [PermissionsEnum.MANAGE_SYMPTOMS],
+    });
     return Symptom;
   }
 
@@ -60,26 +60,26 @@ export class SymptomsService {
   }
 
   async update(id: Symptom['id'], updateSymptomDto: UpdateSymptomDto) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.symptom.updated.title,
         content: MessagesContent.symptom.updated.content(id),
         type: MessagesContent.symptom.updated.type,
       },
-      [PermissionsEnum.MANAGE_SYMPTOMS],
-    );
+      permissions: [PermissionsEnum.MANAGE_SYMPTOMS],
+    });
     return this.symptomRepository.update(id, updateSymptomDto);
   }
 
   async remove(id: Symptom['id']) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.symptom.remove.title,
         content: MessagesContent.symptom.remove.content(id),
         type: MessagesContent.symptom.remove.type,
       },
-      [PermissionsEnum.MANAGE_SYMPTOMS],
-    );
+      permissions: [PermissionsEnum.MANAGE_SYMPTOMS],
+    });
     return this.symptomRepository.remove(id);
   }
 

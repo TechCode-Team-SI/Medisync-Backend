@@ -54,14 +54,14 @@ export class ArticlesService {
 
     const result = await this.articleRepository.create(clonedPayload);
 
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.article.create.title,
         content: MessagesContent.article.create.content(result.id),
         type: MessagesContent.article.create.type,
       },
-      [PermissionsEnum.MANAGE_ARTICLES],
-    );
+      permissions: [PermissionsEnum.MANAGE_ARTICLES],
+    });
 
     await this.notificationsService.createForAllMobileUsers({
       title: MessagesContent.article.userNoti.title,
@@ -118,26 +118,26 @@ export class ArticlesService {
       }
       clonedPayload.image = fileObject;
     }
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.article.updated.title,
         content: MessagesContent.article.updated.content(id),
         type: MessagesContent.article.updated.type,
       },
-      [PermissionsEnum.MANAGE_ARTICLES],
-    );
+      permissions: [PermissionsEnum.MANAGE_ARTICLES],
+    });
     return this.articleRepository.update(id, clonedPayload);
   }
 
   async remove(id: Article['id']) {
-    await this.notificationsService.createForUsersByPermission(
-      {
+    await this.notificationsService.createForUsersByPermission({
+      payload: {
         title: MessagesContent.article.remove.title,
         content: MessagesContent.article.remove.content(id),
         type: MessagesContent.article.remove.type,
       },
-      [PermissionsEnum.MANAGE_ARTICLES],
-    );
+      permissions: [PermissionsEnum.MANAGE_ARTICLES],
+    });
     return this.articleRepository.remove(id);
   }
 }
