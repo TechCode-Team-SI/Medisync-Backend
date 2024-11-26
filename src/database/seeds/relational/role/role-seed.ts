@@ -23,6 +23,11 @@ const roles: Roles = [
     slug: 'patient',
     permissions: [PermissionsEnum.USE_MOBILE],
   },
+  {
+    name: 'Usuario movil',
+    slug: RolesEnum.MOBILE_USER,
+    permissions: [PermissionsEnum.USE_MOBILE],
+  },
 ];
 
 export const rolesProduction: Roles = [
