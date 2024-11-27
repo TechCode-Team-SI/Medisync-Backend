@@ -8,7 +8,7 @@
     "db:reset": "npm run schema:drop && npm run migration:run && npm run seed:run",
     "db:reset:production": "npm run schema:drop && npm run migration:run:production && npm run seed:run:production",
     "typeorm": "env-cmd ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
-    "typeorm:production": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "typeorm:production": "env-cmd ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "migration:generate": "npm run typeorm -- --dataSource=src/database/data-source.ts migration:generate ./src/database/migrations/migration",
     "migration:create": "npm run typeorm -- migration:create",
     "migration:run": "npm run typeorm -- --dataSource=src/database/data-source.ts migration:run",
