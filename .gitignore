@@ -39,6 +39,7 @@ lerna-debug.log*
 .env
 .env.prod
 /ormconfig.json
+/data/*
 
 #PNPM files
 pnpm-lock.yaml

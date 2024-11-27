@@ -1,16 +1,21 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import {
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { Queue } from 'bullmq';
 import {
   FilterAgendaDto,
   SortAgendasDto,
 } from 'src/agendas/dto/find-all-agendas.dto';
 import { DaysOff } from 'src/days-offs/domain/days-off';
 import { EmployeeProfileRepository } from 'src/employee-profiles/infrastructure/persistence/employee-profile.repository';
+import { MessagesContent } from 'src/notifications/messages.notifications';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 import { SpecialtiesService } from 'src/specialties/specialties.service';
 import { UserRepository } from 'src/users/infrastructure/persistence/user.repository';
+import { NotificationQueueOperations, QueueName } from 'src/utils/queue-enum';
 import { findOptions } from 'src/utils/types/fine-options.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { exceptionResponses } from './agendas.messages';
@@ -27,9 +32,10 @@ export class AgendasService {
     private readonly specialtiesService: SpecialtiesService,
     private readonly employeesRepository: EmployeeProfileRepository,
     private readonly userRepository: UserRepository,
+    @InjectQueue(QueueName.NOTIFICATION) private notificationQueue: Queue,
   ) {}
 
-  create(createAgendaDto: CreateAgendaDto) {
+  async create(createAgendaDto: CreateAgendaDto) {
     const payload = {
       ...createAgendaDto,
       weekdays: createAgendaDto.weekdays.split('_'),
@@ -41,7 +47,19 @@ export class AgendasService {
       }),
     };
 
-    return this.agendaRepository.create(payload);
+    const result = await this.agendaRepository.create(payload);
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.agenda.created.title,
+          content: MessagesContent.agenda.created.content(result.id),
+          type: MessagesContent.agenda.created.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_AGENDA],
+      },
+    );
+    return result;
   }
 
   findAllWithPagination({
@@ -110,7 +128,18 @@ export class AgendasService {
     }
   }
 
-  update(id: Agenda['id'], updateAgendaDto: UpdateAgendaDto) {
+  async update(id: Agenda['id'], updateAgendaDto: UpdateAgendaDto) {
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.agenda.updated.title,
+          content: MessagesContent.agenda.updated.content(id),
+          type: MessagesContent.agenda.updated.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_AGENDA],
+      },
+    );
     return this.agendaRepository.update(id, {
       ...updateAgendaDto,
       weekdays: updateAgendaDto.weekdays?.split('_'),
@@ -126,7 +155,18 @@ export class AgendasService {
     });
   }
 
-  remove(id: Agenda['id']) {
+  async remove(id: Agenda['id']) {
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: MessagesContent.agenda.remove.title,
+          content: MessagesContent.agenda.remove.content(id),
+          type: MessagesContent.agenda.remove.type,
+        },
+        permissions: [PermissionsEnum.MANAGE_AGENDA],
+      },
+    );
     return this.agendaRepository.remove(id);
   }
 

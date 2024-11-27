@@ -107,6 +107,19 @@ export class InstructionsRelationalRepository
     return InstructionsMapper.toDomain(updatedEntity);
   }
 
+  async findByRequestId(
+    requestId: string,
+  ): Promise<NullableType<Instructions>> {
+    const relations = this.relations;
+
+    const entity = await this.instructionsRepository.findOne({
+      where: { request: { id: requestId } },
+      relations,
+    });
+
+    return entity ? InstructionsMapper.toDomain(entity) : null;
+  }
+
   async remove(id: Instructions['id']): Promise<void> {
     await this.instructionsRepository.delete(id);
   }

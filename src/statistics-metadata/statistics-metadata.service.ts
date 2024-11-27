@@ -9,12 +9,18 @@ import { SortStatisticsMetadataDto } from 'src/statistics-metadata/dto/find-all-
 import { FieldQuestionRepository } from 'src/field-questions/infrastructure/persistence/field-question.repository';
 import { FilterAvailableFieldQuestions } from './dto/get-avalable-field-questions.dto';
 import { FilterAvailableSpecialties } from './dto/get-available-specialties.dto';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import { NotificationQueueOperations, QueueName } from 'src/utils/queue-enum';
+import { NotificationTypeEnum } from 'src/notifications/notifications.enum';
+import { PermissionsEnum } from 'src/permissions/permissions.enum';
 
 @Injectable()
 export class StatisticsMetadataService {
   constructor(
     private readonly statisticsMetadataRepository: StatisticsMetadataRepository,
     private readonly fieldQuestionRepository: FieldQuestionRepository,
+    @InjectQueue(QueueName.NOTIFICATION) private notificationQueue: Queue,
   ) {}
 
   async create(createStatisticsMetadataDto: CreateStatisticsMetadataDto) {
@@ -25,10 +31,27 @@ export class StatisticsMetadataService {
     if (!fieldQuestion) {
       throw new UnprocessableEntityException('Field question not found');
     }
-    return this.statisticsMetadataRepository.create({
+    const result = await this.statisticsMetadataRepository.create({
       ...createStatisticsMetadataDto,
       fieldQuestion,
     });
+
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: 'Se ha agregado un nuevo grafico al Dashboard',
+          description: `Se ha creado una nueva grafica estadistica para ${fieldQuestion.name}`,
+          type: NotificationTypeEnum.WORK,
+        },
+        permissions: [
+          PermissionsEnum.MANAGE_STATISTICS,
+          PermissionsEnum.VIEW_STATISTICS,
+        ],
+      },
+    );
+
+    return result;
   }
 
   findAllWithPagination({
@@ -64,8 +87,25 @@ export class StatisticsMetadataService {
     );
   }
 
-  remove(id: StatisticsMetadata['id']) {
-    return this.statisticsMetadataRepository.remove(id);
+  async remove(id: StatisticsMetadata['id']) {
+    const result = await this.statisticsMetadataRepository.remove(id);
+
+    await this.notificationQueue.add(
+      NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
+      {
+        payload: {
+          title: 'Se ha eliminado un grafico del Dashboard',
+          description: `Se ha eliminado una grafica estadistica del dashboard con el id ${id}`,
+          type: NotificationTypeEnum.WORK,
+        },
+        permissions: [
+          PermissionsEnum.MANAGE_STATISTICS,
+          PermissionsEnum.VIEW_STATISTICS,
+        ],
+      },
+    );
+
+    return result;
   }
 
   getAvailableSpecialtiesForGraph(

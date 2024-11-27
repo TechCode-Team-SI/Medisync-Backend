@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import {
   ClassSerializerInterceptor,
   ValidationPipe,
@@ -8,14 +7,27 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
+import 'dotenv/config';
 import { AppModule } from './app.module';
-import validationOptions from './utils/validation-options';
 import { AllConfigType } from './config/config.type';
 import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
+import validationOptions from './utils/validation-options';
 //import { WsAdapter } from '@nestjs/platform-socket.io'; // Import WsAdapter
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
+
+  //app.connectMicroservice<MicroserviceOptions>(
+  //  {
+  //    transport: Transport.REDIS,
+  //    options: {
+  //      host: process.env.WORKER_HOST || 'localhost',
+  //      port: process.env.WORKER_PORT ? Number(process.env.WORKER_PORT) : 6379,
+  //    },
+  //  },
+  //  { inheritAppConfig: true },
+  //);
+
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const configService = app.get(ConfigService<AllConfigType>);
 
@@ -50,6 +62,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('docs', app, document);
 
+  //await app.startAllMicroservices();
   await app.listen(configService.getOrThrow('app.port', { infer: true }));
 }
 

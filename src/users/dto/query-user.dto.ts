@@ -29,6 +29,14 @@ export class FilterUserDto {
   })
   @IsOptional()
   @IsString({ each: true })
+  ids?: string[] | string | null;
+
+  @ApiFilterProperty({
+    isArray: true,
+    type: String,
+  })
+  @IsOptional()
+  @IsString({ each: true })
   permissionSlugs?: string[] | string | null;
 
   @ApiFilterProperty({

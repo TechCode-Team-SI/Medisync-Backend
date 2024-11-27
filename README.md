@@ -27,7 +27,7 @@ npm install
 - Luego se instala las dependencias en docker
 
 ```bash
-docker compose up -d mysql maildev phpmyadmin minio
+docker compose up -d mysql maildev phpmyadmin minio redis
 ```
 
 - Finalmente Crear la base de datos

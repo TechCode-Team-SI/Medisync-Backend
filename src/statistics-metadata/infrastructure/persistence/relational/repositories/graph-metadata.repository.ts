@@ -45,7 +45,7 @@ export class GraphMetadataRelationalRepository
 
     const result: Tart = {
       label: 'Genero',
-      description: 'Porcentaje de pacientes según su genero.',
+      description: 'Porcentaje de pacientes según su genero',
       data: entities.map((entity) => ({
         label: entity.value || '',
         probabilities:
@@ -65,7 +65,8 @@ export class GraphMetadataRelationalRepository
       .select([
         'count(request.id) AS count',
         'TIMESTAMPDIFF( YEAR, request.patientBirthday, CURDATE()) AS value',
-      ]);
+      ])
+      .orderBy('value');
 
     if (date) {
       const dateRange = dateRangeQuery(date);
@@ -76,7 +77,7 @@ export class GraphMetadataRelationalRepository
 
     const result: Histogram = {
       label: 'Edad',
-      description: 'Edades de los pacientes.',
+      description: 'Edades de los pacientes',
       data: entities.map((entity) => ({
         label: entity.value,
         frequency: Number(entity.count),
@@ -105,7 +106,7 @@ export class GraphMetadataRelationalRepository
 
     const result: Tart = {
       label: 'Estatus de solicitudes',
-      description: 'Porcentajes de solicitudes según su estatus.',
+      description: 'Porcentajes de solicitudes según su estatus',
       data: entities.map((entity) => ({
         label: entity.value,
         probabilities:
@@ -134,7 +135,7 @@ export class GraphMetadataRelationalRepository
 
     const result: Histogram = {
       label: 'Calificaciones',
-      description: 'Cantidad de solicitudes según su clasificación.',
+      description: 'Cantidad de solicitudes según su clasificación',
       data: entities.map((entity) => ({
         label: entity.value,
         frequency: Number(entity.count),

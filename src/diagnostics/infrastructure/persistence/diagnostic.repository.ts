@@ -24,6 +24,10 @@ export abstract class DiagnosticRepository extends BaseRepository {
     options?: findOptions,
   ): Promise<NullableType<Diagnostic>>;
 
+  abstract findByRequestId(
+    requestId: string,
+  ): Promise<NullableType<Diagnostic>>;
+
   abstract update(
     id: Diagnostic['id'],
     payload: DeepPartial<Diagnostic>,

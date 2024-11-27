@@ -2,6 +2,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FieldQuestionTypeEnum } from 'src/field-questions/field-questions.enum';
 import { RequestStatusEnum } from '../requests.enum';
 import { genderEnum } from 'src/employee-profiles/employee-profiles.enum';
+import { Diagnostic } from 'src/diagnostics/domain/diagnostic';
+import { Instructions } from 'src/instructions/domain/instructions';
 
 export class RequestFormatted {
   @ApiProperty({
@@ -32,6 +34,12 @@ export class RequestFormatted {
 
   @ApiProperty()
   status: RequestStatusEnum;
+
+  @ApiProperty()
+  diagnostic?: Diagnostic | null;
+
+  @ApiProperty()
+  instruction?: Instructions | null;
 
   @ApiProperty()
   fields: (TextField | SelectionField)[];
