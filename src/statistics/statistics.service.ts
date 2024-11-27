@@ -88,10 +88,6 @@ export class StatisticsService {
     return { histograms: histogramData, tarts: tartData };
   }
 
-  findTopIllness(date?: StatisticsDateDto) {
-    return this.topGenericRepository.findAll(date, StatisticsTopEnum.ILLNESS);
-  }
-
   findTopInjury(date?: StatisticsDateDto) {
     return this.topGenericRepository.findAll(date, StatisticsTopEnum.INJURY);
   }

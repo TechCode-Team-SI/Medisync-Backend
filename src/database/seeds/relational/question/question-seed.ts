@@ -66,24 +66,6 @@ const fieldQuestions: FieldQuestionType[] = [
     type: FieldQuestionTypeEnum.TEXT,
   },
   {
-    id: '550e8400-e29b-41d4-a716-446655440002',
-    isRequired: true,
-    name: 'illnesses',
-    slug: 'illnesses',
-    label: 'Do you have a history of any of the following?',
-    type: FieldQuestionTypeEnum.SELECTION,
-    selectionConfig: {
-      isMultiple: true,
-    },
-    selections: [
-      { id: '1e2f3a4b-5c6d-7e8f-9a0b-1c2d3e4f5a6b', value: 'Diabetes' },
-      { id: '7b8c9d0e-1f2a-3b4c-5d6e-7f8a9b0c1d2e', value: 'Hypertension' },
-      { id: '3a4b5c6d-7e8f-9a0b-1c2d-3e4f5a6b7c8d', value: 'Heart Disease' },
-      { id: '9e8f7d6c-5b4a-3c2d-1e0f-9a8b7c6d5e4f', value: 'Asthma' },
-      { id: '5c6d7e8f-9a0b-1c2d-3e4f-5a6b7c8d9e0f', value: 'Cancer' },
-    ],
-  },
-  {
     id: '550e8400-e29b-41d4-a716-446655440003',
     isRequired: true,
     name: 'smoking',

@@ -22,33 +22,6 @@ const installationModule: InstallationModule = {
       },
     ],
   },
-  illnesses: [
-    {
-      id: 'b5b858c7-8009-44d4-a204-b45c89046719',
-      name: 'Anemia',
-      description:
-        'Disminución del número de glóbulos rojos o de la hemoglobina',
-    },
-    {
-      id: '96496678-8104-4777-b546-09da27fa8f78',
-      name: 'Púrpura trombocitopénica idiopática (PTI)',
-      description:
-        'Trastorno hemorrágico causado por la destrucción de plaquetas',
-    },
-    {
-      id: 'e7aba456-1380-4dfb-8548-a1a6876a6e53',
-      name: 'Talasemia',
-      description:
-        'Grupo de enfermedades hereditarias que afectan a la producción de hemoglobina',
-    },
-    {
-      id: '88448265-63cb-420f-952b-d0ce3ac36d9e',
-      name: 'Síndrome mielodisplásico',
-      description:
-        'Grupo de trastornos de la médula ósea que afectan la producción de células sanguíneas',
-    },
-  ],
-
   injuries: [
     {
       id: 'abd84d59-96b2-4f47-b8d0-b12245197806',

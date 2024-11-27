@@ -43,8 +43,6 @@ export function dateGroupingQuery(grouping?: StatisticsTimeUnitEnum): string {
 
 export function topQuery(filter?: StatisticsTopEnum): string[] {
   switch (filter) {
-    case StatisticsTopEnum.ILLNESS:
-      return ['illness', 'illnesses'];
     case StatisticsTopEnum.INJURY:
       return ['injury', 'injuries'];
     case StatisticsTopEnum.PATHOLOGY:

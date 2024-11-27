@@ -30,7 +30,6 @@ const installationModule: InstallationModule = {
       },
     ],
   },
-  illnesses: [],
   injuries: [],
   treatments: [],
   pathologies: [],

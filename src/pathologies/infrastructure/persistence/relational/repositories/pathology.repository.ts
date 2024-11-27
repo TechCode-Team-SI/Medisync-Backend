@@ -147,7 +147,7 @@ export class PathologyRelationalRepository
       where: { id: In(ids) },
       relations,
     });
-    return entities.map((illness) => PathologyMapper.toDomain(illness));
+    return entities.map((pathology) => PathologyMapper.toDomain(pathology));
   }
 
   async update(

@@ -21,12 +21,6 @@ export class CreateDiagnosticDto {
   @IsOptional()
   @IsString({ each: true })
   @IsArray()
-  illnesses: string[];
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString({ each: true })
-  @IsArray()
   injuries: string[];
 
   @ApiProperty()

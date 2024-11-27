@@ -58,16 +58,6 @@ export class StatisticsController {
     return this.statisticsService.findStatisticsGraphMetadata(query);
   }
 
-  @Get('top-illness')
-  @ApiOkResponse({
-    type: PaginationResponse(TopGeneric),
-  })
-  async findTopIllness(
-    @Query() query: StatisticsDateDto,
-  ): Promise<TopGeneric[]> {
-    return this.statisticsService.findTopIllness(query);
-  }
-
   @Get('top-injury')
   @ApiOkResponse({
     type: PaginationResponse(TopGeneric),
