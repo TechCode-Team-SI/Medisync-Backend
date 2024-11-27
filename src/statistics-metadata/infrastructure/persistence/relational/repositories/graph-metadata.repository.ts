@@ -122,7 +122,7 @@ export class GraphMetadataRelationalRepository
     const query = entityManager
       .getRepository(RatingEntity)
       .createQueryBuilder('rating')
-      .leftJoin('rating.request', 'request', 'rating.requestId = rating.id')
+      .leftJoin('rating.request', 'request', 'rating.requestId = request.id')
       .groupBy('value')
       .select(['count(request.id) AS count', 'rating.stars AS value']);
 
