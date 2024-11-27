@@ -22,4 +22,14 @@ export const exceptionResponses: HTTPErrorMessage = {
     error: 'permission_not_exist',
     message: 'Los permisos proporcionados no existen',
   },
+  CannotDelete: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'role_cannot_delete',
+    message: 'Este rol no puede ser eliminado',
+  },
+  CannotUpdate: {
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    error: 'role_cannot_update',
+    message: 'Este rol no puede ser modificado',
+  },
 } as const;

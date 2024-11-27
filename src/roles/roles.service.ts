@@ -13,6 +13,7 @@ import { SortRoleDto } from './dto/find-all-roles.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleRepository } from './infrastructure/persistence/role.repository';
 import { exceptionResponses } from './roles.messages';
+import { RolesEnum } from './roles.enum';
 @Injectable()
 export class RolesService {
   constructor(
@@ -79,6 +80,14 @@ export class RolesService {
   }
 
   async update(id: Role['id'], updateRoleDto: UpdateRoleDto) {
+    const role = await this.roleRepository.findById(id);
+    if (!role) {
+      throw new UnprocessableEntityException(exceptionResponses.NotFound);
+    }
+    const inmutableRoles: string[] = [RolesEnum.MOBILE_USER, RolesEnum.OWNER];
+    if (inmutableRoles.includes(role.slug)) {
+      throw new UnprocessableEntityException(exceptionResponses.CannotUpdate);
+    }
     const data: UpdateRoleDto & { slug?: string } = {
       ...updateRoleDto,
     };
@@ -101,6 +110,14 @@ export class RolesService {
   }
 
   async remove(id: Role['id']) {
+    const role = await this.roleRepository.findById(id);
+    if (!role) {
+      throw new UnprocessableEntityException(exceptionResponses.NotFound);
+    }
+    const inmutableRoles: string[] = [RolesEnum.MOBILE_USER, RolesEnum.OWNER];
+    if (inmutableRoles.includes(role.slug)) {
+      throw new UnprocessableEntityException(exceptionResponses.CannotDelete);
+    }
     await this.notificationQueue.add(
       NotificationQueueOperations.CREATE_FOR_USERS_BY_PERMISSIONS,
       {
