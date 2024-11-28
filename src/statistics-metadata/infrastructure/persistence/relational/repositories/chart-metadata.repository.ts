@@ -4,17 +4,17 @@ import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
 import { DataSource } from 'typeorm';
-import { GraphMetadataRepository } from '../../graph-metadata.repository';
+import { ChartMetadataRepository } from '../../chart-metadata.repository';
 import { dateRangeQuery } from 'src/utils/statistics-utils';
 import { Chart } from 'src/statistics-metadata/statistics-metadata.type';
 import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
 import { RatingEntity } from 'src/ratings/infrastructure/persistence/relational/entities/rating.entity';
-import { StatisticType } from 'src/statistics-metadata/statistics-metadata.enum';
+import { ChartType } from 'src/statistics-metadata/statistics-metadata.enum';
 
 @Injectable({ scope: Scope.REQUEST })
-export class GraphMetadataRelationalRepository
+export class ChartMetadataRelationalRepository
   extends BaseRepository
-  implements GraphMetadataRepository
+  implements ChartMetadataRepository
 {
   constructor(
     datasource: DataSource,
@@ -40,7 +40,7 @@ export class GraphMetadataRelationalRepository
     const entities = await query.getRawMany();
 
     const result: Chart = {
-      type: StatisticType.BAR,
+      type: ChartType.BAR,
       title: 'Genero',
       description: 'Porcentaje de pacientes según su genero',
       data: entities.map((entity) => ({
@@ -72,7 +72,7 @@ export class GraphMetadataRelationalRepository
     const entities = await query.getRawMany();
 
     const result: Chart = {
-      type: StatisticType.BAR,
+      type: ChartType.BAR,
       title: 'Edad',
       description: 'Edades de los pacientes',
       data: entities.map((entity) => ({
@@ -100,7 +100,7 @@ export class GraphMetadataRelationalRepository
     const entities = await query.getRawMany();
 
     const result: Chart = {
-      type: StatisticType.PIE,
+      type: ChartType.PIE,
       title: 'Estatus de solicitudes',
       description: 'Porcentajes de solicitudes según su estatus',
       data: entities.map((entity) => ({
@@ -129,7 +129,7 @@ export class GraphMetadataRelationalRepository
     const entities = await query.getRawMany();
 
     const result: Chart = {
-      type: StatisticType.PIE,
+      type: ChartType.PIE,
       title: 'Calificaciones',
       description: 'Cantidad de solicitudes según su clasificación',
       data: entities.map((entity) => ({

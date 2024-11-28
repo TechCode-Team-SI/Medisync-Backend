@@ -6,9 +6,9 @@ import { StatisticsMetadataRepository } from 'src/statistics-metadata/infrastruc
 import { StatisticsDateDto } from './dto/statistics-date.dto';
 import { TopGenericRepository } from './infrastructure/persistence/top-generic.repository';
 import { StatisticsTopEnum } from './statistics-top.enum';
-import { StatisticType } from 'src/statistics-metadata/statistics-metadata.enum';
+import { ChartType } from 'src/statistics-metadata/statistics-metadata.enum';
 import { Chart } from 'src/statistics-metadata/statistics-metadata.type';
-import { GraphMetadataRepository } from 'src/statistics-metadata/infrastructure/persistence/graph-metadata.repository';
+import { ChartMetadataRepository } from 'src/statistics-metadata/infrastructure/persistence/chart-metadata.repository';
 
 @Injectable()
 export class StatisticsService {
@@ -18,7 +18,7 @@ export class StatisticsService {
     private readonly topWeekdaysRepository: TopWeekdaysRepository,
     private readonly statisticMetadataRepository: StatisticsMetadataRepository,
     private readonly topGenericRepository: TopGenericRepository,
-    private readonly graphMetadataRepository: GraphMetadataRepository,
+    private readonly chartMetadataRepository: ChartMetadataRepository,
   ) {}
 
   findTopMedics(date?: StatisticsDateDto) {
@@ -40,7 +40,7 @@ export class StatisticsService {
     await Promise.all(
       metadatas.map(async (metadata) => {
         switch (metadata.type) {
-          case StatisticType.PIE:
+          case ChartType.PIE:
             chartData.push(
               await this.statisticMetadataRepository.genPieMetadata(
                 metadata,
@@ -48,7 +48,7 @@ export class StatisticsService {
               ),
             );
             break;
-          case StatisticType.BAR:
+          case ChartType.BAR:
             chartData.push(
               await this.statisticMetadataRepository.genBarMetadata(
                 metadata,
@@ -60,23 +60,23 @@ export class StatisticsService {
       }),
     );
 
-    const ageGraph = await this.graphMetadataRepository.age(date);
+    const ageGraph = await this.chartMetadataRepository.age(date);
     if (ageGraph.data.length > 0) {
       chartData.push(ageGraph);
     }
 
-    const ratingGraph = await this.graphMetadataRepository.rating(date);
+    const ratingGraph = await this.chartMetadataRepository.rating(date);
     if (ratingGraph.data.length > 0) {
       chartData.push(ratingGraph);
     }
 
-    const genderGraph = await this.graphMetadataRepository.gender(date);
+    const genderGraph = await this.chartMetadataRepository.gender(date);
     if (genderGraph.data.length > 0) {
       chartData.push(genderGraph);
     }
 
     const requestStatusGraph =
-      await this.graphMetadataRepository.requestStatus(date);
+      await this.chartMetadataRepository.requestStatus(date);
     if (requestStatusGraph.data.length > 0) {
       chartData.push(requestStatusGraph);
     }

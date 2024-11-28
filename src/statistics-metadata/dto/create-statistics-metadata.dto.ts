@@ -7,7 +7,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { FilteredByType, StatisticType } from '../statistics-metadata.enum';
+import { FilteredByType, ChartType } from '../statistics-metadata.enum';
 import { FieldQuestionDto } from 'src/field-questions/dto/field-question.dto';
 import { Type } from 'class-transformer';
 
@@ -26,8 +26,8 @@ export class CreateStatisticsMetadataDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsEnum(StatisticType)
-  type: StatisticType;
+  @IsEnum(ChartType)
+  type: ChartType;
 
   @ApiProperty()
   @IsNotEmpty()

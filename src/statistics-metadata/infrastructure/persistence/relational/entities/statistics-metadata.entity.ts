@@ -10,7 +10,7 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 import { ApiProperty } from '@nestjs/swagger';
 import {
   FilteredByType,
-  StatisticType,
+  ChartType,
 } from 'src/statistics-metadata/statistics-metadata.enum';
 import { FieldQuestionEntity } from 'src/field-questions/infrastructure/persistence/relational/entities/field-question.entity';
 
@@ -27,8 +27,8 @@ export class StatisticsMetadataEntity extends EntityRelationalHelper {
   label: string;
 
   @ApiProperty()
-  @Column({ nullable: false, enum: StatisticType, type: 'enum' })
-  type: StatisticType;
+  @Column({ nullable: false, enum: ChartType, type: 'enum' })
+  type: ChartType;
 
   @ApiProperty()
   @Column({ nullable: false, type: 'enum', enum: FilteredByType })
