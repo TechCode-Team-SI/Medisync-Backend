@@ -1,8 +1,8 @@
 import { FieldQuestionType } from 'src/database/seeds/relational/question/question-seed';
-import { ChartType } from './statistics-metadata.enum';
+import { ChartTypeEnum } from './statistics-metadata.enum';
 
 export type Chart = {
-  type: ChartType;
+  type: ChartTypeEnum;
   title: string;
   description: string;
   data: {

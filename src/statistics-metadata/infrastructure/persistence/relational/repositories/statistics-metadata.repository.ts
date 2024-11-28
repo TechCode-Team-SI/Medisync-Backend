@@ -6,7 +6,7 @@ import { SelectionEntity } from 'src/field-questions/infrastructure/persistence/
 import { SortStatisticsMetadataDto } from 'src/statistics-metadata/dto/find-all-statistics-metadata.dto';
 import {
   FilteredByType,
-  ChartType,
+  ChartTypeEnum,
 } from 'src/statistics-metadata/statistics-metadata.enum';
 import { exceptionResponses } from 'src/statistics-metadata/statistics-metadata.messages';
 import {
@@ -203,7 +203,7 @@ export class StatisticsMetadataRelationalRepository
     const entities = await query.getRawMany();
 
     const result: Chart = {
-      type: ChartType.PIE,
+      type: ChartTypeEnum.PIE,
       title: metadata.label,
       description: metadata.fieldQuestion?.label || '',
       data: entities.map((entity) => ({
@@ -259,7 +259,7 @@ export class StatisticsMetadataRelationalRepository
     const entities = await query.getRawMany();
 
     const result: Chart = {
-      type: ChartType.BAR,
+      type: ChartTypeEnum.BAR,
       title: metadata.label,
       description: metadata.fieldQuestion?.label || '',
       data: entities.map((entity) => ({

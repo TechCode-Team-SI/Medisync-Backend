@@ -6,7 +6,7 @@ import { StatisticsMetadataRepository } from 'src/statistics-metadata/infrastruc
 import { StatisticsDateDto } from './dto/statistics-date.dto';
 import { TopGenericRepository } from './infrastructure/persistence/top-generic.repository';
 import { StatisticsTopEnum } from './statistics-top.enum';
-import { ChartType } from 'src/statistics-metadata/statistics-metadata.enum';
+import { ChartTypeEnum } from 'src/statistics-metadata/statistics-metadata.enum';
 import { Chart } from 'src/statistics-metadata/statistics-metadata.type';
 import { ChartMetadataRepository } from 'src/statistics-metadata/infrastructure/persistence/chart-metadata.repository';
 
@@ -40,7 +40,7 @@ export class StatisticsService {
     await Promise.all(
       metadatas.map(async (metadata) => {
         switch (metadata.type) {
-          case ChartType.PIE:
+          case ChartTypeEnum.PIE:
             chartData.push(
               await this.statisticMetadataRepository.genPieMetadata(
                 metadata,
@@ -48,7 +48,7 @@ export class StatisticsService {
               ),
             );
             break;
-          case ChartType.BAR:
+          case ChartTypeEnum.BAR:
             chartData.push(
               await this.statisticMetadataRepository.genBarMetadata(
                 metadata,

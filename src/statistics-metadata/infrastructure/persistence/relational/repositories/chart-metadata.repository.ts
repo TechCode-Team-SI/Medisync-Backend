@@ -9,7 +9,7 @@ import { dateRangeQuery } from 'src/utils/statistics-utils';
 import { Chart } from 'src/statistics-metadata/statistics-metadata.type';
 import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
 import { RatingEntity } from 'src/ratings/infrastructure/persistence/relational/entities/rating.entity';
-import { ChartType } from 'src/statistics-metadata/statistics-metadata.enum';
+import { ChartTypeEnum } from 'src/statistics-metadata/statistics-metadata.enum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ChartMetadataRelationalRepository
@@ -40,7 +40,7 @@ export class ChartMetadataRelationalRepository
     const entities = await query.getRawMany();
 
     const result: Chart = {
-      type: ChartType.BAR,
+      type: ChartTypeEnum.BAR,
       title: 'Genero',
       description: 'Porcentaje de pacientes según su genero',
       data: entities.map((entity) => ({
@@ -72,7 +72,7 @@ export class ChartMetadataRelationalRepository
     const entities = await query.getRawMany();
 
     const result: Chart = {
-      type: ChartType.BAR,
+      type: ChartTypeEnum.BAR,
       title: 'Edad',
       description: 'Edades de los pacientes',
       data: entities.map((entity) => ({
@@ -100,7 +100,7 @@ export class ChartMetadataRelationalRepository
     const entities = await query.getRawMany();
 
     const result: Chart = {
-      type: ChartType.PIE,
+      type: ChartTypeEnum.PIE,
       title: 'Estatus de solicitudes',
       description: 'Porcentajes de solicitudes según su estatus',
       data: entities.map((entity) => ({
@@ -129,7 +129,7 @@ export class ChartMetadataRelationalRepository
     const entities = await query.getRawMany();
 
     const result: Chart = {
-      type: ChartType.PIE,
+      type: ChartTypeEnum.PIE,
       title: 'Calificaciones',
       description: 'Cantidad de solicitudes según su clasificación',
       data: entities.map((entity) => ({
