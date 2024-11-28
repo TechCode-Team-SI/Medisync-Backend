@@ -1,20 +1,13 @@
 import { FieldQuestionType } from 'src/database/seeds/relational/question/question-seed';
+import { StatisticType } from './statistics-metadata.enum';
 
-export type Tart = {
-  label: string;
+export type Chart = {
+  type: StatisticType;
+  title: string;
   description: string;
   data: {
-    label: string;
-    probabilities: number;
-  }[];
-};
-
-export type Histogram = {
-  label: string;
-  description: string;
-  data: {
-    label: string;
-    frequency: number;
+    category: string;
+    value: number;
   }[];
 };
 

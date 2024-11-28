@@ -6,12 +6,10 @@ import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
 import { DataSource } from 'typeorm';
 import { GraphMetadataRepository } from '../../graph-metadata.repository';
 import { dateRangeQuery } from 'src/utils/statistics-utils';
-import {
-  Histogram,
-  Tart,
-} from 'src/statistics-metadata/statistics-metadata.type';
+import { Chart } from 'src/statistics-metadata/statistics-metadata.type';
 import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
 import { RatingEntity } from 'src/ratings/infrastructure/persistence/relational/entities/rating.entity';
+import { StatisticType } from 'src/statistics-metadata/statistics-metadata.enum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class GraphMetadataRelationalRepository
@@ -26,7 +24,7 @@ export class GraphMetadataRelationalRepository
     super(datasource, request);
   }
 
-  async gender(date?: StatisticsDateDto): Promise<Tart> {
+  async gender(date?: StatisticsDateDto): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RequestEntity)
@@ -41,22 +39,20 @@ export class GraphMetadataRelationalRepository
 
     const entities = await query.getRawMany();
 
-    const totalCount = entities.reduce((acc, entity) => acc + +entity.count, 0);
-
-    const result: Tart = {
-      label: 'Genero',
+    const result: Chart = {
+      type: StatisticType.BAR,
+      title: 'Genero',
       description: 'Porcentaje de pacientes según su genero',
       data: entities.map((entity) => ({
-        label: entity.value || '',
-        probabilities:
-          Number(((entity.count / totalCount) * 100).toFixed(2)) || 0,
+        category: entity.value || '',
+        value: Number(entity.count) || 0,
       })),
     };
 
     return result;
   }
 
-  async age(date?: StatisticsDateDto): Promise<Histogram> {
+  async age(date?: StatisticsDateDto): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RequestEntity)
@@ -75,19 +71,20 @@ export class GraphMetadataRelationalRepository
 
     const entities = await query.getRawMany();
 
-    const result: Histogram = {
-      label: 'Edad',
+    const result: Chart = {
+      type: StatisticType.BAR,
+      title: 'Edad',
       description: 'Edades de los pacientes',
       data: entities.map((entity) => ({
-        label: entity.value,
-        frequency: Number(entity.count),
+        category: entity.value || '',
+        value: Number(entity.count),
       })),
     };
 
     return result;
   }
 
-  async requestStatus(date?: StatisticsDateDto): Promise<Tart> {
+  async requestStatus(date?: StatisticsDateDto): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RequestEntity)
@@ -102,22 +99,20 @@ export class GraphMetadataRelationalRepository
 
     const entities = await query.getRawMany();
 
-    const totalCount = entities.reduce((acc, entity) => acc + +entity.count, 0);
-
-    const result: Tart = {
-      label: 'Estatus de solicitudes',
+    const result: Chart = {
+      type: StatisticType.PIE,
+      title: 'Estatus de solicitudes',
       description: 'Porcentajes de solicitudes según su estatus',
       data: entities.map((entity) => ({
-        label: entity.value,
-        probabilities:
-          Number(((entity.count / totalCount) * 100).toFixed(2)) || 0,
+        category: entity.value || '',
+        value: Number(entity.count) || 0,
       })),
     };
 
     return result;
   }
 
-  async rating(date?: StatisticsDateDto): Promise<Histogram> {
+  async rating(date?: StatisticsDateDto): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RatingEntity)
@@ -133,12 +128,13 @@ export class GraphMetadataRelationalRepository
 
     const entities = await query.getRawMany();
 
-    const result: Histogram = {
-      label: 'Calificaciones',
+    const result: Chart = {
+      type: StatisticType.PIE,
+      title: 'Calificaciones',
       description: 'Cantidad de solicitudes según su clasificación',
       data: entities.map((entity) => ({
-        label: entity.value,
-        frequency: Number(entity.count),
+        category: entity.value,
+        value: Number(entity.count),
       })),
     };
 

@@ -6,9 +6,10 @@ import { TopMedics } from './domain/top-medics';
 import { StatisticsService } from './statistics.service';
 import { TopSpecialties } from './domain/top-specialties';
 import { TopWeekdays } from './domain/top-weekdays';
-import { Graph } from './domain/graph';
+import { ChartGeneric } from './domain/chart-generic';
 import { StatisticsDateDto } from './dto/statistics-date.dto';
 import { TopGeneric } from './domain/top-generic';
+import { Chart } from 'src/statistics-metadata/statistics-metadata.type';
 
 @ApiTags('Statistics')
 @ApiBearerAuth()
@@ -30,7 +31,7 @@ export class StatisticsController {
 
   @Get('top-specialties')
   @ApiOkResponse({
-    type: PaginationResponse(TopMedics),
+    type: PaginationResponse(TopSpecialties),
   })
   async findTopSpecialties(
     @Query() query: StatisticsDateDto,
@@ -40,7 +41,7 @@ export class StatisticsController {
 
   @Get('top-weekdays')
   @ApiOkResponse({
-    type: PaginationResponse(TopMedics),
+    type: PaginationResponse(TopWeekdays),
   })
   async findTopWeekdays(
     @Query() query: StatisticsDateDto,
@@ -50,11 +51,11 @@ export class StatisticsController {
 
   @Get()
   @ApiOkResponse({
-    type: PaginationResponse(Graph),
+    type: PaginationResponse(ChartGeneric),
   })
   async findAllStatisticGraphsMetadata(
     @Query() query: StatisticsDateDto,
-  ): Promise<Graph> {
+  ): Promise<Chart[]> {
     return this.statisticsService.findStatisticsGraphMetadata(query);
   }
 

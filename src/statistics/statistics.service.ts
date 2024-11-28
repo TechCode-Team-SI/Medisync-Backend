@@ -7,10 +7,7 @@ import { StatisticsDateDto } from './dto/statistics-date.dto';
 import { TopGenericRepository } from './infrastructure/persistence/top-generic.repository';
 import { StatisticsTopEnum } from './statistics-top.enum';
 import { StatisticType } from 'src/statistics-metadata/statistics-metadata.enum';
-import {
-  Histogram,
-  Tart,
-} from 'src/statistics-metadata/statistics-metadata.type';
+import { Chart } from 'src/statistics-metadata/statistics-metadata.type';
 import { GraphMetadataRepository } from 'src/statistics-metadata/infrastructure/persistence/graph-metadata.repository';
 
 @Injectable()
@@ -37,24 +34,23 @@ export class StatisticsService {
   }
 
   async findStatisticsGraphMetadata(date: StatisticsDateDto) {
-    const tartData: Tart[] = [];
-    const histogramData: Histogram[] = [];
+    const chartData: Chart[] = [];
 
     const metadatas = await this.statisticMetadataRepository.findAll({});
     await Promise.all(
       metadatas.map(async (metadata) => {
         switch (metadata.type) {
-          case StatisticType.TART:
-            tartData.push(
-              await this.statisticMetadataRepository.genTartMetadata(
+          case StatisticType.PIE:
+            chartData.push(
+              await this.statisticMetadataRepository.genPieMetadata(
                 metadata,
                 date,
               ),
             );
             break;
-          case StatisticType.HISTOGRAM:
-            histogramData.push(
-              await this.statisticMetadataRepository.genHistogramMetadata(
+          case StatisticType.BAR:
+            chartData.push(
+              await this.statisticMetadataRepository.genBarMetadata(
                 metadata,
                 date,
               ),
@@ -66,26 +62,26 @@ export class StatisticsService {
 
     const ageGraph = await this.graphMetadataRepository.age(date);
     if (ageGraph.data.length > 0) {
-      histogramData.push(ageGraph);
+      chartData.push(ageGraph);
     }
 
     const ratingGraph = await this.graphMetadataRepository.rating(date);
     if (ratingGraph.data.length > 0) {
-      histogramData.push(ratingGraph);
+      chartData.push(ratingGraph);
     }
 
     const genderGraph = await this.graphMetadataRepository.gender(date);
     if (genderGraph.data.length > 0) {
-      tartData.push(genderGraph);
+      chartData.push(genderGraph);
     }
 
     const requestStatusGraph =
       await this.graphMetadataRepository.requestStatus(date);
     if (requestStatusGraph.data.length > 0) {
-      tartData.push(requestStatusGraph);
+      chartData.push(requestStatusGraph);
     }
 
-    return { histograms: histogramData, tarts: tartData };
+    return chartData;
   }
 
   findTopInjury(date?: StatisticsDateDto) {

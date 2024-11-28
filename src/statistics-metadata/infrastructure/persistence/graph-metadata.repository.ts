@@ -1,16 +1,13 @@
 import { BaseRepository } from 'src/common/base.repository';
 import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
-import {
-  Histogram,
-  Tart,
-} from 'src/statistics-metadata/statistics-metadata.type';
+import { Chart } from 'src/statistics-metadata/statistics-metadata.type';
 
 export abstract class GraphMetadataRepository extends BaseRepository {
-  abstract gender(date?: StatisticsDateDto): Promise<Tart>;
+  abstract gender(date?: StatisticsDateDto): Promise<Chart>;
 
-  abstract age(date?: StatisticsDateDto): Promise<Histogram>;
+  abstract age(date?: StatisticsDateDto): Promise<Chart>;
 
-  abstract requestStatus(date?: StatisticsDateDto): Promise<Tart>;
+  abstract requestStatus(date?: StatisticsDateDto): Promise<Chart>;
 
-  abstract rating(date?: StatisticsDateDto): Promise<Histogram>;
+  abstract rating(date?: StatisticsDateDto): Promise<Chart>;
 }

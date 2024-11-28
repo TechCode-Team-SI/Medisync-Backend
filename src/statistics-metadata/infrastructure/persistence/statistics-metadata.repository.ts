@@ -9,8 +9,7 @@ import { SortStatisticsMetadataDto } from 'src/statistics-metadata/dto/find-all-
 import {
   AvailableFieldQuestion,
   AvailableSpecialty,
-  Tart,
-  Histogram,
+  Chart,
 } from 'src/statistics-metadata/statistics-metadata.type';
 import { FilterAvailableFieldQuestions } from 'src/statistics-metadata/dto/get-avalable-field-questions.dto';
 import { FilterAvailableSpecialties } from 'src/statistics-metadata/dto/get-available-specialties.dto';
@@ -49,15 +48,15 @@ export abstract class StatisticsMetadataRepository extends BaseRepository {
 
   abstract remove(id: StatisticsMetadata['id']): Promise<void>;
 
-  abstract genTartMetadata(
+  abstract genPieMetadata(
     metadata: StatisticsMetadata,
     date: StatisticsDateDto,
-  ): Promise<Tart>;
+  ): Promise<Chart>;
 
-  abstract genHistogramMetadata(
+  abstract genBarMetadata(
     metadata: StatisticsMetadata,
     date: StatisticsDateDto,
-  ): Promise<Histogram>;
+  ): Promise<Chart>;
 
   abstract getAvailableSpecialtiesForGraph(
     fieldQuestionId: string,
