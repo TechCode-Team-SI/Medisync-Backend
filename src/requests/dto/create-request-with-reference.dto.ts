@@ -6,5 +6,10 @@ export class CreateRequestWithReferenceDto extends CreateRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  id: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
   referredContent?: string;
 }
