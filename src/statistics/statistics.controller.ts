@@ -2,12 +2,9 @@ import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationResponse } from '../utils/dto/pagination-response.dto';
-import { TopMedics } from './domain/top-medics';
 import { StatisticsService } from './statistics.service';
-import { TopSpecialties } from './domain/top-specialties';
-import { TopWeekdays } from './domain/top-weekdays';
 import { ChartGeneric } from './domain/chart-generic';
-import { StatisticsDateDto } from './dto/statistics-date.dto';
+import { StatisticsFilterDto } from './dto/statistics-filter.dto';
 import { TopGeneric } from './domain/top-generic';
 import { Chart } from 'src/statistics-metadata/statistics-metadata.type';
 
@@ -23,29 +20,31 @@ export class StatisticsController {
 
   @Get('top-medics')
   @ApiOkResponse({
-    type: PaginationResponse(TopMedics),
+    type: PaginationResponse(TopGeneric),
   })
-  async findTopMedics(@Query() query: StatisticsDateDto): Promise<TopMedics[]> {
+  async findTopMedics(
+    @Query() query: StatisticsFilterDto,
+  ): Promise<TopGeneric[]> {
     return this.statisticsService.findTopMedics(query);
   }
 
   @Get('top-specialties')
   @ApiOkResponse({
-    type: PaginationResponse(TopSpecialties),
+    type: PaginationResponse(TopGeneric),
   })
   async findTopSpecialties(
-    @Query() query: StatisticsDateDto,
-  ): Promise<TopSpecialties[]> {
+    @Query() query: StatisticsFilterDto,
+  ): Promise<TopGeneric[]> {
     return this.statisticsService.findTopSpecialties(query);
   }
 
   @Get('top-weekdays')
   @ApiOkResponse({
-    type: PaginationResponse(TopWeekdays),
+    type: PaginationResponse(TopGeneric),
   })
   async findTopWeekdays(
-    @Query() query: StatisticsDateDto,
-  ): Promise<TopWeekdays[]> {
+    @Query() query: StatisticsFilterDto,
+  ): Promise<TopGeneric[]> {
     return this.statisticsService.findTopWeekdays(query);
   }
 
@@ -54,7 +53,7 @@ export class StatisticsController {
     type: PaginationResponse(ChartGeneric),
   })
   async findAllStatisticGraphsMetadata(
-    @Query() query: StatisticsDateDto,
+    @Query() query: StatisticsFilterDto,
   ): Promise<Chart[]> {
     return this.statisticsService.findStatisticsGraphMetadata(query);
   }
@@ -64,7 +63,7 @@ export class StatisticsController {
     type: PaginationResponse(TopGeneric),
   })
   async findTopInjury(
-    @Query() query: StatisticsDateDto,
+    @Query() query: StatisticsFilterDto,
   ): Promise<TopGeneric[]> {
     return this.statisticsService.findTopInjury(query);
   }
@@ -74,7 +73,7 @@ export class StatisticsController {
     type: PaginationResponse(TopGeneric),
   })
   async findTopSymptom(
-    @Query() query: StatisticsDateDto,
+    @Query() query: StatisticsFilterDto,
   ): Promise<TopGeneric[]> {
     return this.statisticsService.findTopSymptom(query);
   }
@@ -84,7 +83,7 @@ export class StatisticsController {
     type: PaginationResponse(TopGeneric),
   })
   async findTopTreatment(
-    @Query() query: StatisticsDateDto,
+    @Query() query: StatisticsFilterDto,
   ): Promise<TopGeneric[]> {
     return this.statisticsService.findTopTreatment(query);
   }
@@ -94,8 +93,28 @@ export class StatisticsController {
     type: PaginationResponse(TopGeneric),
   })
   async findTopPathology(
-    @Query() query: StatisticsDateDto,
+    @Query() query: StatisticsFilterDto,
   ): Promise<TopGeneric[]> {
     return this.statisticsService.findTopPathology(query);
+  }
+
+  @Get('top-ages')
+  @ApiOkResponse({
+    type: PaginationResponse(TopGeneric),
+  })
+  async findTopAges(
+    @Query() query: StatisticsFilterDto,
+  ): Promise<TopGeneric[]> {
+    return this.statisticsService.findTopAges(query);
+  }
+
+  @Get('top-genders')
+  @ApiOkResponse({
+    type: PaginationResponse(TopGeneric),
+  })
+  async findTopGenders(
+    @Query() query: StatisticsFilterDto,
+  ): Promise<TopGeneric[]> {
+    return this.statisticsService.findTopGenders(query);
   }
 }

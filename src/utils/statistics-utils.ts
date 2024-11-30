@@ -1,12 +1,12 @@
-import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
+import { StatisticsFilterDto } from 'src/statistics/dto/statistics-filter.dto';
 import { StatisticsTimeUnitEnum } from 'src/statistics/statistics-time-unit.enum';
-import { StatisticsTopEnum } from 'src/statistics/statistics-top.enum';
+import { StatisticsDiagnosticTopEnum } from 'src/statistics/statistics-top.enum';
 
 export function formatDate(dateString: string): string {
   return dateString.split('T')[0];
 }
 
-export function dateRangeQuery(date?: StatisticsDateDto): string {
+export function dateRangeQuery(date?: StatisticsFilterDto): string {
   if (!date) return '';
 
   const dateFrom = date.from ? formatDate(date.from) : null;
@@ -41,15 +41,17 @@ export function dateGroupingQuery(grouping?: StatisticsTimeUnitEnum): string {
   }
 }
 
-export function topQuery(filter?: StatisticsTopEnum): string[] {
+export function topDiagnosticQuery(
+  filter?: StatisticsDiagnosticTopEnum,
+): string[] {
   switch (filter) {
-    case StatisticsTopEnum.INJURY:
+    case StatisticsDiagnosticTopEnum.INJURY:
       return ['injury', 'injuries'];
-    case StatisticsTopEnum.PATHOLOGY:
+    case StatisticsDiagnosticTopEnum.PATHOLOGY:
       return ['pathology', 'pathologies'];
-    case StatisticsTopEnum.SYMPTOM:
+    case StatisticsDiagnosticTopEnum.SYMPTOM:
       return ['symptom', 'symptoms'];
-    case StatisticsTopEnum.TREATMENT:
+    case StatisticsDiagnosticTopEnum.TREATMENT:
       return ['treatment', 'treatments'];
     default:
       return ['', ''];

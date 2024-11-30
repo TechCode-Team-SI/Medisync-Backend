@@ -9,9 +9,5 @@ export class TopGenericEntity extends EntityRelationalHelper {
 
   @ApiProperty()
   @ViewColumn()
-  description: string;
-
-  @ApiProperty()
-  @ViewColumn()
   requests: number;
 }

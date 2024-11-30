@@ -127,6 +127,21 @@ export class StatisticsMetadataService {
     );
   }
 
+  getAllAvailableSpecialtiesForGraph({
+    paginationOptions,
+    filterOptions,
+  }: {
+    paginationOptions: IPaginationOptions;
+    filterOptions?: FilterAvailableSpecialties | null;
+  }) {
+    return this.statisticsMetadataRepository.getAllAvailableSpecialtiesForGraph(
+      {
+        paginationOptions,
+        filterOptions,
+      },
+    );
+  }
+
   getAvailableFieldQuestionsForGraph({
     paginationOptions,
     filterOptions,

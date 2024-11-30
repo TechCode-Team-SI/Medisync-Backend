@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { TopMedicsRepository } from './infrastructure/persistence/top-medics.repository';
-import { TopSpecialtiesRepository } from './infrastructure/persistence/top-specialties.repository';
-import { TopWeekdaysRepository } from './infrastructure/persistence/top-weekdays.repository';
 import { StatisticsMetadataRepository } from 'src/statistics-metadata/infrastructure/persistence/statistics-metadata.repository';
-import { StatisticsDateDto } from './dto/statistics-date.dto';
+import { StatisticsFilterDto } from './dto/statistics-filter.dto';
 import { TopGenericRepository } from './infrastructure/persistence/top-generic.repository';
-import { StatisticsTopEnum } from './statistics-top.enum';
+import { StatisticsDiagnosticTopEnum } from './statistics-top.enum';
 import { ChartTypeEnum } from 'src/statistics-metadata/statistics-metadata.enum';
 import { Chart } from 'src/statistics-metadata/statistics-metadata.type';
 import { ChartMetadataRepository } from 'src/statistics-metadata/infrastructure/persistence/chart-metadata.repository';
@@ -13,27 +10,24 @@ import { ChartMetadataRepository } from 'src/statistics-metadata/infrastructure/
 @Injectable()
 export class StatisticsService {
   constructor(
-    private readonly topMedicsRepository: TopMedicsRepository,
-    private readonly topSpecialtiesRepository: TopSpecialtiesRepository,
-    private readonly topWeekdaysRepository: TopWeekdaysRepository,
     private readonly statisticMetadataRepository: StatisticsMetadataRepository,
     private readonly topGenericRepository: TopGenericRepository,
     private readonly chartMetadataRepository: ChartMetadataRepository,
   ) {}
 
-  findTopMedics(date?: StatisticsDateDto) {
-    return this.topMedicsRepository.findAll(date);
+  findTopMedics(date?: StatisticsFilterDto) {
+    return this.topGenericRepository.findTopMedics(date);
   }
 
-  findTopSpecialties(date?: StatisticsDateDto) {
-    return this.topSpecialtiesRepository.findAll(date);
+  findTopSpecialties(date?: StatisticsFilterDto) {
+    return this.topGenericRepository.findTopSpecialties(date);
   }
 
-  findTopWeekdays(date?: StatisticsDateDto) {
-    return this.topWeekdaysRepository.findAll(date);
+  findTopWeekdays(date?: StatisticsFilterDto) {
+    return this.topGenericRepository.findTopWeekdays(date);
   }
 
-  async findStatisticsGraphMetadata(date: StatisticsDateDto) {
+  async findStatisticsGraphMetadata(date: StatisticsFilterDto) {
     const chartData: Chart[] = [];
 
     const metadatas = await this.statisticMetadataRepository.findAll({});
@@ -84,19 +78,39 @@ export class StatisticsService {
     return chartData;
   }
 
-  findTopInjury(date?: StatisticsDateDto) {
-    return this.topGenericRepository.findAll(date, StatisticsTopEnum.INJURY);
+  findTopInjury(date?: StatisticsFilterDto) {
+    return this.topGenericRepository.findTopDiagnostic(
+      date,
+      StatisticsDiagnosticTopEnum.INJURY,
+    );
   }
 
-  findTopSymptom(date?: StatisticsDateDto) {
-    return this.topGenericRepository.findAll(date, StatisticsTopEnum.SYMPTOM);
+  findTopSymptom(date?: StatisticsFilterDto) {
+    return this.topGenericRepository.findTopDiagnostic(
+      date,
+      StatisticsDiagnosticTopEnum.SYMPTOM,
+    );
   }
 
-  findTopTreatment(date?: StatisticsDateDto) {
-    return this.topGenericRepository.findAll(date, StatisticsTopEnum.TREATMENT);
+  findTopTreatment(date?: StatisticsFilterDto) {
+    return this.topGenericRepository.findTopDiagnostic(
+      date,
+      StatisticsDiagnosticTopEnum.TREATMENT,
+    );
   }
 
-  findTopPathology(date?: StatisticsDateDto) {
-    return this.topGenericRepository.findAll(date, StatisticsTopEnum.PATHOLOGY);
+  findTopPathology(date?: StatisticsFilterDto) {
+    return this.topGenericRepository.findTopDiagnostic(
+      date,
+      StatisticsDiagnosticTopEnum.PATHOLOGY,
+    );
+  }
+
+  findTopAges(date?: StatisticsFilterDto) {
+    return this.topGenericRepository.findTopAges(date);
+  }
+
+  findTopGenders(date?: StatisticsFilterDto) {
+    return this.topGenericRepository.findTopGenders(date);
   }
 }

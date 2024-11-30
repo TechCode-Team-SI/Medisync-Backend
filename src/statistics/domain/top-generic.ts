@@ -5,8 +5,5 @@ export class TopGeneric {
   name: string;
 
   @ApiProperty()
-  description: string;
-
-  @ApiProperty()
   requests: number;
 }

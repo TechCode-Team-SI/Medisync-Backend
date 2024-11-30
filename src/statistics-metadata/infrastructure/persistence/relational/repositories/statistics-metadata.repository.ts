@@ -33,7 +33,7 @@ import { StatisticsMetadataMapper } from '../mappers/statistics-metadata.mapper'
 import { RequestValueEntity } from 'src/requests/infrastructure/persistence/relational/entities/request-value.entity';
 import { FilterAvailableFieldQuestions } from 'src/statistics-metadata/dto/get-avalable-field-questions.dto';
 import { FilterAvailableSpecialties } from 'src/statistics-metadata/dto/get-available-specialties.dto';
-import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
+import { StatisticsFilterDto } from 'src/statistics/dto/statistics-filter.dto';
 import { dateGroupingQuery, dateRangeQuery } from 'src/utils/statistics-utils';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -170,7 +170,7 @@ export class StatisticsMetadataRelationalRepository
 
   async genPieMetadata(
     metadata: StatisticsMetadata,
-    date: StatisticsDateDto,
+    date: StatisticsFilterDto,
   ): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
@@ -217,7 +217,7 @@ export class StatisticsMetadataRelationalRepository
 
   async genBarMetadata(
     metadata: StatisticsMetadata,
-    date: StatisticsDateDto,
+    date: StatisticsFilterDto,
   ): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
@@ -298,6 +298,40 @@ export class StatisticsMetadataRelationalRepository
         search: `%${filterOptions.search}%`,
       });
     }
+
+    const count = await query.getCount();
+
+    query
+      .skip((paginationOptions.page - 1) * paginationOptions.limit)
+      .take(paginationOptions.limit);
+
+    const items: AvailableSpecialty[] = await query.getRawMany();
+
+    return Pagination(
+      { items, count },
+      {
+        limit: paginationOptions.limit,
+        page: paginationOptions.page,
+        domain: 'statistics-metadata',
+      },
+    );
+  }
+
+  async getAllAvailableSpecialtiesForGraph({
+    paginationOptions,
+  }: {
+    filterOptions?: FilterAvailableSpecialties | null;
+    paginationOptions: IPaginationOptions;
+  }): Promise<PaginationResponseDto<AvailableSpecialty>> {
+    const entityManager = this.getEntityManager();
+    const query = entityManager
+      .getRepository(RequestValueEntity)
+      .createQueryBuilder('rv')
+      .innerJoin('rv.request', 'r')
+      .innerJoin('r.requestedSpecialty', 'specialty')
+      .where('r.status <> :status', { status: 'cancelled' })
+      .groupBy('specialty.id, specialty.name')
+      .select(['specialty.id as id', 'specialty.name as name']);
 
     const count = await query.getCount();
 

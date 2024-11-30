@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsEnum, IsDateString } from 'class-validator';
+import { IsOptional, IsEnum, IsDateString, IsString } from 'class-validator';
 import { StatisticsTimeUnitEnum } from '../statistics-time-unit.enum';
 
-export class StatisticsDateDto {
+export class StatisticsFilterDto {
   @ApiPropertyOptional()
   @IsDateString()
   @IsOptional()
@@ -17,4 +17,9 @@ export class StatisticsDateDto {
   @IsEnum(StatisticsTimeUnitEnum)
   @IsOptional()
   grouping?: StatisticsTimeUnitEnum;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  specialtyId?: string;
 }
