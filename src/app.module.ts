@@ -19,7 +19,6 @@ import { FieldQuestionsModule } from './field-questions/field-questions.module';
 import fileConfig from './files/config/file.config';
 import { FilesModule } from './files/files.module';
 import { HomeModule } from './home/home.module';
-import { IllnessesModule } from './illnesses/illnesses.module';
 import { InjuriesModule } from './injuries/injuries.module';
 import { InstallationsModule } from './installations/installations.module';
 import { InstructionsModule } from './instructions/instructions.module';
@@ -57,7 +56,6 @@ import { UserPatientsModule } from './user-patients/user-patients.module';
 
 import { StatisticsMetadataModule } from './statistics-metadata/statistics-metadata.module';
 
-//import { EventsModule } from './events/events.module';
 import { SocketModule } from './socket/socket.module';
 import { TicketTypesModule } from './ticket-types/ticket-types.module';
 
@@ -112,7 +110,6 @@ import { QueueName } from './utils/queue-enum';
     SymptomsModule,
     PathologiesModule,
     treatmentsModule,
-    IllnessesModule,
     StatisticsModule,
     RatingsModule,
     PackagesModule,

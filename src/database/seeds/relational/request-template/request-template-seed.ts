@@ -25,12 +25,8 @@ const requestTemplates: RequestTemplateType[] = [
         order: 2,
       },
       {
-        fieldQuestion: { id: '550e8400-e29b-41d4-a716-446655440002' },
-        order: 3,
-      },
-      {
         fieldQuestion: { id: '550e8400-e29b-41d4-a716-446655440003' },
-        order: 4,
+        order: 3,
       },
     ],
   },

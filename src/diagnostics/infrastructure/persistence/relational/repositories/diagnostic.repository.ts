@@ -34,7 +34,6 @@ export class DiagnosticRelationalRepository
   private relations: FindOptionsRelations<DiagnosticEntity> = {
     injuries: true,
     pathologies: true,
-    illnesses: true,
     treatments: true,
     symptoms: true,
   };

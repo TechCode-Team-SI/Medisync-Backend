@@ -108,11 +108,6 @@ const permissions: Permissions = [
     description: 'Permite solicitar estadísticas',
   },
   {
-    name: 'Gestionar Enfermedades',
-    slug: PermissionsEnum.MANAGE_ILLNESSES,
-    description: 'Permite gestionar enfermedades',
-  },
-  {
     name: 'Gestionar Tratamientos',
     slug: PermissionsEnum.MANAGE_TREATMENTS,
     description: 'Permite gestionar tratamientos',

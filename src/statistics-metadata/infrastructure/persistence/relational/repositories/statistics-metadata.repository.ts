@@ -4,13 +4,15 @@ import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
 import { SelectionEntity } from 'src/field-questions/infrastructure/persistence/relational/entities/selection.entity';
 import { SortStatisticsMetadataDto } from 'src/statistics-metadata/dto/find-all-statistics-metadata.dto';
-import { FilteredByType } from 'src/statistics-metadata/statistics-metadata.enum';
+import {
+  FilteredByType,
+  ChartTypeEnum,
+} from 'src/statistics-metadata/statistics-metadata.enum';
 import { exceptionResponses } from 'src/statistics-metadata/statistics-metadata.messages';
 import {
   AvailableFieldQuestion,
   AvailableSpecialty,
-  Tart,
-  Histogram,
+  Chart,
 } from 'src/statistics-metadata/statistics-metadata.type';
 import { PaginationResponseDto } from 'src/utils/dto/pagination-response.dto';
 import { Pagination } from 'src/utils/pagination';
@@ -31,7 +33,7 @@ import { StatisticsMetadataMapper } from '../mappers/statistics-metadata.mapper'
 import { RequestValueEntity } from 'src/requests/infrastructure/persistence/relational/entities/request-value.entity';
 import { FilterAvailableFieldQuestions } from 'src/statistics-metadata/dto/get-avalable-field-questions.dto';
 import { FilterAvailableSpecialties } from 'src/statistics-metadata/dto/get-available-specialties.dto';
-import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
+import { StatisticsFilterDto } from 'src/statistics/dto/statistics-filter.dto';
 import { dateGroupingQuery, dateRangeQuery } from 'src/utils/statistics-utils';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -166,10 +168,10 @@ export class StatisticsMetadataRelationalRepository
     return items;
   }
 
-  async genTartMetadata(
+  async genPieMetadata(
     metadata: StatisticsMetadata,
-    date: StatisticsDateDto,
-  ): Promise<Tart> {
+    date: StatisticsFilterDto,
+  ): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(SelectionEntity)
@@ -200,25 +202,23 @@ export class StatisticsMetadataRelationalRepository
 
     const entities = await query.getRawMany();
 
-    const totalCount = entities.reduce((acc, entity) => acc + +entity.count, 0);
-
-    const result: Tart = {
-      label: metadata.label,
+    const result: Chart = {
+      type: ChartTypeEnum.PIE,
+      title: metadata.label,
       description: metadata.fieldQuestion?.label || '',
       data: entities.map((entity) => ({
-        label: entity.value,
-        probabilities:
-          Number(((entity.count / totalCount) * 100).toFixed(2)) || 0,
+        category: entity.value || '',
+        value: Number(entity.count) || 0,
       })),
     };
 
     return result;
   }
 
-  async genHistogramMetadata(
+  async genBarMetadata(
     metadata: StatisticsMetadata,
-    date: StatisticsDateDto,
-  ): Promise<Histogram> {
+    date: StatisticsFilterDto,
+  ): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(SelectionEntity)
@@ -258,12 +258,13 @@ export class StatisticsMetadataRelationalRepository
 
     const entities = await query.getRawMany();
 
-    const result: Histogram = {
-      label: metadata.label,
+    const result: Chart = {
+      type: ChartTypeEnum.BAR,
+      title: metadata.label,
       description: metadata.fieldQuestion?.label || '',
       data: entities.map((entity) => ({
-        label: date.grouping ? entity.dateFormatted : entity.value,
-        frequency: Number(entity.count) || 0,
+        category: date.grouping ? entity.dateFormatted : entity.value,
+        value: Number(entity.count) || 0,
       })),
     };
 
@@ -297,6 +298,40 @@ export class StatisticsMetadataRelationalRepository
         search: `%${filterOptions.search}%`,
       });
     }
+
+    const count = await query.getCount();
+
+    query
+      .skip((paginationOptions.page - 1) * paginationOptions.limit)
+      .take(paginationOptions.limit);
+
+    const items: AvailableSpecialty[] = await query.getRawMany();
+
+    return Pagination(
+      { items, count },
+      {
+        limit: paginationOptions.limit,
+        page: paginationOptions.page,
+        domain: 'statistics-metadata',
+      },
+    );
+  }
+
+  async getAllAvailableSpecialtiesForGraph({
+    paginationOptions,
+  }: {
+    filterOptions?: FilterAvailableSpecialties | null;
+    paginationOptions: IPaginationOptions;
+  }): Promise<PaginationResponseDto<AvailableSpecialty>> {
+    const entityManager = this.getEntityManager();
+    const query = entityManager
+      .getRepository(RequestValueEntity)
+      .createQueryBuilder('rv')
+      .innerJoin('rv.request', 'r')
+      .innerJoin('r.requestedSpecialty', 'specialty')
+      .where('r.status <> :status', { status: 'cancelled' })
+      .groupBy('specialty.id, specialty.name')
+      .select(['specialty.id as id', 'specialty.name as name']);
 
     const count = await query.getCount();
 

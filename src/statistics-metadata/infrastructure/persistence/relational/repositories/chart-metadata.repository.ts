@@ -2,21 +2,20 @@ import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { BaseRepository } from 'src/common/base.repository';
-import { StatisticsDateDto } from 'src/statistics/dto/statistics-date.dto';
+import { StatisticsFilterDto } from 'src/statistics/dto/statistics-filter.dto';
 import { DataSource } from 'typeorm';
-import { GraphMetadataRepository } from '../../graph-metadata.repository';
+import { ChartMetadataRepository } from '../../chart-metadata.repository';
 import { dateRangeQuery } from 'src/utils/statistics-utils';
-import {
-  Histogram,
-  Tart,
-} from 'src/statistics-metadata/statistics-metadata.type';
+import { Chart } from 'src/statistics-metadata/statistics-metadata.type';
 import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
 import { RatingEntity } from 'src/ratings/infrastructure/persistence/relational/entities/rating.entity';
+import { ChartTypeEnum } from 'src/statistics-metadata/statistics-metadata.enum';
+import { RequestStatusEnum } from 'src/requests/requests.enum';
 
 @Injectable({ scope: Scope.REQUEST })
-export class GraphMetadataRelationalRepository
+export class ChartMetadataRelationalRepository
   extends BaseRepository
-  implements GraphMetadataRepository
+  implements ChartMetadataRepository
 {
   constructor(
     datasource: DataSource,
@@ -26,13 +25,15 @@ export class GraphMetadataRelationalRepository
     super(datasource, request);
   }
 
-  async gender(date?: StatisticsDateDto): Promise<Tart> {
+  async gender(date?: StatisticsFilterDto): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RequestEntity)
       .createQueryBuilder('request')
+      .where('request.status <> :status', { status: 'cancelled' })
       .groupBy('request.patientGender')
-      .select(['count(request.id) AS count', 'request.patientGender AS value']);
+      .select(['count(request.id) AS count', 'request.patientGender AS value'])
+      .orderBy('count', 'DESC');
 
     if (date) {
       const dateRange = dateRangeQuery(date);
@@ -41,26 +42,30 @@ export class GraphMetadataRelationalRepository
 
     const entities = await query.getRawMany();
 
-    const totalCount = entities.reduce((acc, entity) => acc + +entity.count, 0);
+    const genderMapping: Record<string, string> = {
+      M: 'Masculino',
+      F: 'Femenino',
+    };
 
-    const result: Tart = {
-      label: 'Genero',
-      description: 'Porcentaje de pacientes según su genero',
+    const result: Chart = {
+      type: ChartTypeEnum.PIE,
+      title: 'Sexo',
+      description: 'Pacientes según su sexo',
       data: entities.map((entity) => ({
-        label: entity.value || '',
-        probabilities:
-          Number(((entity.count / totalCount) * 100).toFixed(2)) || 0,
+        category: genderMapping[entity.value] || '',
+        value: Number(entity.count) || 0,
       })),
     };
 
     return result;
   }
 
-  async age(date?: StatisticsDateDto): Promise<Histogram> {
+  async age(date?: StatisticsFilterDto): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RequestEntity)
       .createQueryBuilder('request')
+      .where('request.status <> :status', { status: 'cancelled' })
       .groupBy('value')
       .select([
         'count(request.id) AS count',
@@ -75,25 +80,27 @@ export class GraphMetadataRelationalRepository
 
     const entities = await query.getRawMany();
 
-    const result: Histogram = {
-      label: 'Edad',
+    const result: Chart = {
+      type: ChartTypeEnum.BAR,
+      title: 'Edad',
       description: 'Edades de los pacientes',
       data: entities.map((entity) => ({
-        label: entity.value,
-        frequency: Number(entity.count),
+        category: entity.value || '',
+        value: Number(entity.count),
       })),
     };
 
     return result;
   }
 
-  async requestStatus(date?: StatisticsDateDto): Promise<Tart> {
+  async requestStatus(date?: StatisticsFilterDto): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RequestEntity)
       .createQueryBuilder('request')
       .groupBy('value')
-      .select(['count(request.id) AS count', 'request.status AS value']);
+      .select(['count(request.id) AS count', 'request.status AS value'])
+      .orderBy('count', 'DESC');
 
     if (date) {
       const dateRange = dateRangeQuery(date);
@@ -102,29 +109,35 @@ export class GraphMetadataRelationalRepository
 
     const entities = await query.getRawMany();
 
-    const totalCount = entities.reduce((acc, entity) => acc + +entity.count, 0);
+    const statusMapping: Record<string, string> = {
+      [RequestStatusEnum.PENDING]: 'Pendiente',
+      [RequestStatusEnum.ATTENDING]: 'Atendiendo',
+      [RequestStatusEnum.CANCELLED]: 'Cancelada',
+      [RequestStatusEnum.COMPLETED]: 'Completada',
+    };
 
-    const result: Tart = {
-      label: 'Estatus de solicitudes',
-      description: 'Porcentajes de solicitudes según su estatus',
+    const result: Chart = {
+      type: ChartTypeEnum.PIE,
+      title: 'Citas',
+      description: 'Estatus de las citas',
       data: entities.map((entity) => ({
-        label: entity.value,
-        probabilities:
-          Number(((entity.count / totalCount) * 100).toFixed(2)) || 0,
+        category: statusMapping[entity.value] || '',
+        value: Number(entity.count) || 0,
       })),
     };
 
     return result;
   }
 
-  async rating(date?: StatisticsDateDto): Promise<Histogram> {
+  async rating(date?: StatisticsFilterDto): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RatingEntity)
       .createQueryBuilder('rating')
-      .leftJoin('rating.request', 'request', 'rating.requestId = rating.id')
+      .leftJoin('rating.request', 'request', 'rating.requestId = request.id')
       .groupBy('value')
-      .select(['count(request.id) AS count', 'rating.stars AS value']);
+      .select(['count(request.id) AS count', 'rating.stars AS value'])
+      .orderBy('value');
 
     if (date) {
       const dateRange = dateRangeQuery(date);
@@ -133,12 +146,17 @@ export class GraphMetadataRelationalRepository
 
     const entities = await query.getRawMany();
 
-    const result: Histogram = {
-      label: 'Calificaciones',
-      description: 'Cantidad de solicitudes según su clasificación',
+    const convertToStars = (value: number): string => {
+      return '⭐'.repeat(value);
+    };
+
+    const result: Chart = {
+      type: ChartTypeEnum.BAR,
+      title: 'Calificaciones',
+      description: 'Calificaciones de las citas',
       data: entities.map((entity) => ({
-        label: entity.value,
-        frequency: Number(entity.count),
+        category: convertToStars(Number(entity.value)),
+        value: Number(entity.count),
       })),
     };
 

@@ -26,9 +26,6 @@ export class Migration1727299333188 implements MigrationInterface {
       `ALTER TABLE \`field_question\` ADD UNIQUE INDEX \`IDX_30b498d38d1b4b7f7768d08f02\` (\`slug\`)`,
     );
     await queryRunner.query(
-      `ALTER TABLE \`illness\` ADD UNIQUE INDEX \`IDX_6d86cb18688124396046c3ab2d\` (\`name\`)`,
-    );
-    await queryRunner.query(
       `ALTER TABLE \`injury\` ADD UNIQUE INDEX \`IDX_7a0adf37818783c0f09e462733\` (\`name\`)`,
     );
     await queryRunner.query(
@@ -48,9 +45,6 @@ export class Migration1727299333188 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE \`injury\` DROP INDEX \`IDX_7a0adf37818783c0f09e462733\``,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`illness\` DROP INDEX \`IDX_6d86cb18688124396046c3ab2d\``,
     );
     await queryRunner.query(
       `ALTER TABLE \`field_question\` DROP INDEX \`IDX_30b498d38d1b4b7f7768d08f02\``,

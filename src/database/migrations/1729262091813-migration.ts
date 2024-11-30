@@ -8,7 +8,7 @@ export class Migration1729262091813 implements MigrationInterface {
       `DROP INDEX \`IDX_30b498d38d1b4b7f7768d08f02\` ON \`field_question\``,
     );
     await queryRunner.query(
-      `CREATE TABLE \`statistics_metadata\` (\`id\` varchar(36) NOT NULL, \`label\` varchar(255) NOT NULL, \`type\` enum ('tart') NOT NULL, \`filteredByType\` enum ('none', 'specialty') NOT NULL, \`filter\` varchar(255) NULL, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`fieldQuestionId\` varchar(36) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`statistics_metadata\` (\`id\` varchar(36) NOT NULL, \`label\` varchar(255) NOT NULL, \`type\` enum ('pie') NOT NULL, \`filteredByType\` enum ('none', 'specialty') NOT NULL, \`filter\` varchar(255) NULL, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`fieldQuestionId\` varchar(36) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `ALTER TABLE \`field_question\` ADD UNIQUE INDEX \`IDX_30b498d38d1b4b7f7768d08f02\` (\`slug\`)`,

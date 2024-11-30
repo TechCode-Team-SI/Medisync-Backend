@@ -133,7 +133,7 @@ export class TreatmentRelationalRepository
       where: { id: In(ids) },
       relations,
     });
-    return entities.map((illness) => TreatmentMapper.toDomain(illness));
+    return entities.map((treatment) => TreatmentMapper.toDomain(treatment));
   }
 
   async findById(

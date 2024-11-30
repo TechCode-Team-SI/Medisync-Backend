@@ -7,7 +7,6 @@ import { exceptionResponses } from './diagnostics.messages';
 import { Diagnostic } from './domain/diagnostic';
 import { CreateDiagnosticDto } from './dto/create-diagnostic.dto';
 import { DiagnosticRepository } from './infrastructure/persistence/diagnostic.repository';
-import { IllnessesService } from 'src/illnesses/illnesses.service';
 import { InjuriesService } from 'src/injuries/injuries.service';
 import { TreatmentsService } from 'src/treatments/treatments.service';
 import { PathologiesService } from 'src/pathologies/pathologies.service';
@@ -17,7 +16,6 @@ export class DiagnosticsService {
   constructor(
     private readonly diagnosticRepository: DiagnosticRepository,
     private readonly usersService: UsersService,
-    private readonly illnessesService: IllnessesService,
     private readonly injuriesService: InjuriesService,
     private readonly symptomsService: SymptomsService,
     private readonly treatmentsService: TreatmentsService,
@@ -31,10 +29,6 @@ export class DiagnosticsService {
         exceptionResponses.CurrentUserNotFound,
       );
     }
-
-    const illnesses = await this.illnessesService.findMany(
-      createDiagnosticDto.illnesses,
-    );
 
     const injuries = await this.injuriesService.findMany(
       createDiagnosticDto.injuries,
@@ -55,7 +49,6 @@ export class DiagnosticsService {
     const clonedPayload = {
       ...createDiagnosticDto,
       madeBy: user,
-      illnesses,
       injuries,
       symptoms,
       treatments,

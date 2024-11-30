@@ -8,7 +8,6 @@ import { RequestTemplatesModule } from 'src/request-templates/request-templates.
 import { PackagesController } from './packages.controller';
 import { PathologiesModule } from 'src/pathologies/pathologies.module';
 import { SymptomsModule } from 'src/symptoms/symptoms.module';
-import { IllnessesModule } from 'src/illnesses/illnesses.module';
 import { InjuriesModule } from 'src/injuries/injuries.module';
 import { treatmentsModule } from 'src/treatments/treatments.module';
 import { FilesS3Module } from 'src/files/infrastructure/uploader/s3/files.module';
@@ -24,7 +23,6 @@ import { UsersModule } from 'src/users/users.module';
     RequestTemplatesModule,
     PathologiesModule,
     SymptomsModule,
-    IllnessesModule,
     treatmentsModule,
     InjuriesModule,
     FilesS3Module,

@@ -33,63 +33,6 @@ const installationModule: InstallationModule = {
       },
     ],
   },
-  illnesses: [
-    {
-      id: 'b711e6b2-0a54-43a8-b494-b10228851c3d',
-      name: 'Resfriado común',
-      description: 'Infección viral de las vías respiratorias superiores.',
-    },
-    {
-      id: 'd2e0c934-421e-41c1-8e1b-93100970d496',
-      name: 'Gripe',
-      description:
-        'Enfermedad viral aguda que afecta principalmente al sistema respiratorio.',
-    },
-    {
-      id: '52f4ab52-0ff4-4418-afce-1315580e7682',
-      name: 'Otitis media',
-      description: 'Inflamación del oído medio.',
-    },
-    {
-      id: '44d49925-9a55-4c77-a45c-693de65b11c1',
-      name: 'Bronquiolitis',
-      description:
-        'Inflamación de los bronquiolos, las vías respiratorias pequeñas.',
-    },
-    {
-      id: 'f5d241bc-517c-4c81-be57-e8b4a077a5f4',
-      name: 'Neumonía',
-      description: 'Inflamación de los pulmones.',
-    },
-    {
-      id: 'fc3f399a-315f-4079-99ff-2146b1d6c94d',
-      name: 'Meningitis',
-      description:
-        'Inflamación de las meninges, las membranas que recubren el cerebro y la médula espinal.',
-    },
-    {
-      id: '8a336bc1-fcf3-48d5-8865-76e995664a7f',
-      name: 'Gastroenteritis',
-      description: 'Inflamación del estómago y los intestinos.',
-    },
-    {
-      id: 'a253936a-fc7e-409f-9c05-d805a5601087',
-      name: 'Conjuntivitis',
-      description:
-        'Inflamación de la conjuntiva, la membrana que recubre el ojo.',
-    },
-    {
-      id: '2f014036-5cd2-4eaf-bf44-84625ba4ef68',
-      name: 'Urticaria',
-      description: 'Erupción cutánea con ronchas elevadas y pruriginosas.',
-    },
-    {
-      id: '153314f1-2f0e-432d-bb53-7a1dab8c1e43',
-      name: 'Asma',
-      description:
-        'Enfermedad crónica que provoca inflamación de las vías respiratorias.',
-    },
-  ],
   injuries: [
     {
       id: '9539be96-c218-480b-9861-48aa46d0cbef',
