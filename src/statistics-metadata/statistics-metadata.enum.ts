@@ -6,4 +6,5 @@ export enum FilteredByType {
 export enum ChartTypeEnum {
   PIE = 'pie',
   BAR = 'bar',
+  LINE = 'line',
 }

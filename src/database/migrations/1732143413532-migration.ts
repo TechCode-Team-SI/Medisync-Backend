@@ -17,7 +17,7 @@ export class Migration1732143413532 implements MigrationInterface {
       `ALTER TABLE \`field_question\` ADD UNIQUE INDEX \`IDX_30b498d38d1b4b7f7768d08f02\` (\`slug\`)`,
     );
     await queryRunner.query(
-      `ALTER TABLE \`statistics_metadata\` CHANGE \`type\` \`type\` enum ('pie', 'bar') NOT NULL`,
+      `ALTER TABLE \`statistics_metadata\` CHANGE \`type\` \`type\` enum ('pie', 'bar', 'line') NOT NULL`,
     );
   }
 
