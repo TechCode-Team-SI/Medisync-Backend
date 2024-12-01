@@ -27,7 +27,10 @@ export class StatisticsService {
     return this.topGenericRepository.findTopWeekdays(date);
   }
 
-  async findStatisticsGraphMetadata(date: StatisticsFilterDto) {
+  async findStatisticsGraphMetadata(
+    date: StatisticsFilterDto,
+    userId?: string,
+  ) {
     const chartData: Chart[] = [];
 
     const metadatas = await this.statisticMetadataRepository.findAll({});
@@ -39,6 +42,7 @@ export class StatisticsService {
               await this.statisticMetadataRepository.genPieMetadata(
                 metadata,
                 date,
+                userId,
               ),
             );
             break;
@@ -47,6 +51,7 @@ export class StatisticsService {
               await this.statisticMetadataRepository.genBarMetadata(
                 metadata,
                 date,
+                userId,
               ),
             );
             break;
@@ -54,23 +59,25 @@ export class StatisticsService {
       }),
     );
 
-    const ageGraph = await this.chartMetadataRepository.age(date);
+    const ageGraph = await this.chartMetadataRepository.age(date, userId);
     if (ageGraph.data.length > 0) {
       chartData.push(ageGraph);
     }
 
-    const ratingGraph = await this.chartMetadataRepository.rating(date);
+    const ratingGraph = await this.chartMetadataRepository.rating(date, userId);
     if (ratingGraph.data.length > 0) {
       chartData.push(ratingGraph);
     }
 
-    const genderGraph = await this.chartMetadataRepository.gender(date);
+    const genderGraph = await this.chartMetadataRepository.gender(date, userId);
     if (genderGraph.data.length > 0) {
       chartData.push(genderGraph);
     }
 
-    const requestStatusGraph =
-      await this.chartMetadataRepository.requestStatus(date);
+    const requestStatusGraph = await this.chartMetadataRepository.requestStatus(
+      date,
+      userId,
+    );
     if (requestStatusGraph.data.length > 0) {
       chartData.push(requestStatusGraph);
     }

@@ -171,6 +171,7 @@ export class StatisticsMetadataRelationalRepository
   async genPieMetadata(
     metadata: StatisticsMetadata,
     date: StatisticsFilterDto,
+    userId?: string,
   ): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
@@ -200,6 +201,10 @@ export class StatisticsMetadataRelationalRepository
       query.where(`DATE(r.createdAt) ${dateRange}`);
     }
 
+    if (date.filterByMe !== undefined && userId !== undefined) {
+      query.andWhere('r.requestedMedic = :medicId', { medicId: userId });
+    }
+
     const entities = await query.getRawMany();
 
     const result: Chart = {
@@ -218,6 +223,7 @@ export class StatisticsMetadataRelationalRepository
   async genBarMetadata(
     metadata: StatisticsMetadata,
     date: StatisticsFilterDto,
+    userId?: string,
   ): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
@@ -254,6 +260,10 @@ export class StatisticsMetadataRelationalRepository
       );
       query.groupBy('dateFormatted');
       query.orderBy('dateFormatted');
+    }
+
+    if (date.filterByMe !== undefined && userId !== undefined) {
+      query.andWhere('r.requestedMedic = :medicId', { medicId: userId });
     }
 
     const entities = await query.getRawMany();
