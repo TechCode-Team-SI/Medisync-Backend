@@ -114,17 +114,17 @@ export class TopGenericRelationalRepository
     }
 
     query
-      .groupBy('dayname(request.createdAt)')
+      .groupBy('dayname(request.appointmentDate)')
       .orderBy('count(request.id)', 'DESC')
       .select([
-        'dayname(request.createdAt) AS name',
+        'dayname(request.appointmentDate) AS name',
         'count(request.id) AS requests',
       ])
       .limit(10);
 
     if (date) {
       const dateRange = dateRangeQuery(date);
-      query.andWhere(`(DATE(request.createdAt) ${dateRange})`);
+      query.andWhere(`(DATE(request.appointmentDate) ${dateRange})`);
     }
 
     const dayMapping: Record<string, string> = {
@@ -333,24 +333,26 @@ export class TopGenericRelationalRepository
     }
 
     const monthNames = [
-      'Enero',
-      'Febrero',
-      'Marzo',
-      'Abril',
-      'Mayo',
-      'Junio',
-      'Julio',
-      'Agosto',
-      'Septiembre',
-      'Octubre',
-      'Noviembre',
-      'Diciembre',
+      'en.',
+      'feb.',
+      'mar.',
+      'abr.',
+      'may.',
+      'jun.',
+      'jul.',
+      'agto.',
+      'sept.',
+      'oct.',
+      'nov.',
+      'dic.',
     ];
 
     return entities.map((entity) => {
       if (date?.grouping === StatisticsTimeUnitEnum.MONTH) {
         const monthNumber = Number(entity.name);
         entity.name = monthNames[monthNumber - 1];
+      } else if (date?.grouping === StatisticsTimeUnitEnum.HOUR) {
+        entity.name = entity.name + ':00';
       }
       return TopGenericMapper.toDomain(entity);
     });
