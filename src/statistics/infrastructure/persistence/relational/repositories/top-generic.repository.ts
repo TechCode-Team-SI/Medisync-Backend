@@ -219,7 +219,8 @@ export class TopGenericRelationalRepository
       .select([
         'count(request.id) AS requests',
         'TIMESTAMPDIFF(YEAR, request.patientBirthday, CURDATE()) AS name',
-      ]);
+      ])
+      .orderBy('name');
 
     if (date) {
       const dateRange = dateRangeQuery(date);
@@ -273,7 +274,10 @@ export class TopGenericRelationalRepository
     });
   }
 
-  async findTopDetailed(date?: StatisticsFilterDto): Promise<TopGeneric[]> {
+  async findTopDetailed(
+    date?: StatisticsFilterDto,
+    userId?: string,
+  ): Promise<TopGeneric[]> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RequestEntity)
@@ -324,6 +328,10 @@ export class TopGenericRelationalRepository
     if (date) {
       const dateRange = dateRangeQuery(date);
       query.andWhere(`DATE(r.createdAt) ${dateRange}`);
+    }
+
+    if (date?.filterByMe !== undefined && userId !== undefined) {
+      query.andWhere('r.requestedMedic = :medicId', { medicId: userId });
     }
 
     const entities = await query.getRawMany();
