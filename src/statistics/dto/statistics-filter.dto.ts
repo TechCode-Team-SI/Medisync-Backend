@@ -38,4 +38,9 @@ export class StatisticsFilterDto {
   @IsString()
   @IsOptional()
   ageTo?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  filterByMe?: string;
 }

@@ -25,7 +25,7 @@ export class ChartMetadataRelationalRepository
     super(datasource, request);
   }
 
-  async gender(date?: StatisticsFilterDto): Promise<Chart> {
+  async gender(date?: StatisticsFilterDto, userId?: string): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RequestEntity)
@@ -38,6 +38,10 @@ export class ChartMetadataRelationalRepository
     if (date) {
       const dateRange = dateRangeQuery(date);
       query.andWhere(`(DATE(request.createdAt) ${dateRange})`);
+    }
+
+    if (date?.filterByMe !== undefined && userId !== undefined) {
+      query.andWhere('request.requestedMedic = :medicId', { medicId: userId });
     }
 
     const entities = await query.getRawMany();
@@ -60,7 +64,7 @@ export class ChartMetadataRelationalRepository
     return result;
   }
 
-  async age(date?: StatisticsFilterDto): Promise<Chart> {
+  async age(date?: StatisticsFilterDto, userId?: string): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RequestEntity)
@@ -78,6 +82,10 @@ export class ChartMetadataRelationalRepository
       query.andWhere(`(DATE(request.createdAt) ${dateRange})`);
     }
 
+    if (date?.filterByMe !== undefined && userId !== undefined) {
+      query.andWhere('request.requestedMedic = :medicId', { medicId: userId });
+    }
+
     const entities = await query.getRawMany();
 
     const result: Chart = {
@@ -93,7 +101,10 @@ export class ChartMetadataRelationalRepository
     return result;
   }
 
-  async requestStatus(date?: StatisticsFilterDto): Promise<Chart> {
+  async requestStatus(
+    date?: StatisticsFilterDto,
+    userId?: string,
+  ): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RequestEntity)
@@ -105,6 +116,10 @@ export class ChartMetadataRelationalRepository
     if (date) {
       const dateRange = dateRangeQuery(date);
       query.andWhere(`(DATE(request.createdAt) ${dateRange})`);
+    }
+
+    if (date?.filterByMe !== undefined && userId !== undefined) {
+      query.andWhere('request.requestedMedic = :medicId', { medicId: userId });
     }
 
     const entities = await query.getRawMany();
@@ -129,7 +144,7 @@ export class ChartMetadataRelationalRepository
     return result;
   }
 
-  async rating(date?: StatisticsFilterDto): Promise<Chart> {
+  async rating(date?: StatisticsFilterDto, userId?: string): Promise<Chart> {
     const entityManager = this.getEntityManager();
     const query = entityManager
       .getRepository(RatingEntity)
@@ -142,6 +157,10 @@ export class ChartMetadataRelationalRepository
     if (date) {
       const dateRange = dateRangeQuery(date);
       query.andWhere(`(DATE(request.createdAt) ${dateRange})`);
+    }
+
+    if (date?.filterByMe !== undefined && userId !== undefined) {
+      query.andWhere('request.requestedMedic = :medicId', { medicId: userId });
     }
 
     const entities = await query.getRawMany();

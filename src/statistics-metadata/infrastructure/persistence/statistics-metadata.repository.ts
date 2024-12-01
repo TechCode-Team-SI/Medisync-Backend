@@ -51,11 +51,13 @@ export abstract class StatisticsMetadataRepository extends BaseRepository {
   abstract genPieMetadata(
     metadata: StatisticsMetadata,
     date: StatisticsFilterDto,
+    userId?: string,
   ): Promise<Chart>;
 
   abstract genBarMetadata(
     metadata: StatisticsMetadata,
     date: StatisticsFilterDto,
+    userId?: string,
   ): Promise<Chart>;
 
   abstract getAvailableSpecialtiesForGraph(

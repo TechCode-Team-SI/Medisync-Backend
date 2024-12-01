@@ -7,6 +7,8 @@ import { ChartGeneric } from './domain/chart-generic';
 import { StatisticsFilterDto } from './dto/statistics-filter.dto';
 import { TopGeneric } from './domain/top-generic';
 import { Chart } from 'src/statistics-metadata/statistics-metadata.type';
+import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { Me } from 'src/auth/auth.decorator';
 
 @ApiTags('Statistics')
 @ApiBearerAuth()
@@ -53,9 +55,13 @@ export class StatisticsController {
     type: PaginationResponse(ChartGeneric),
   })
   async findAllStatisticGraphsMetadata(
+    @Me() userPayload: JwtPayloadType,
     @Query() query: StatisticsFilterDto,
   ): Promise<Chart[]> {
-    return this.statisticsService.findStatisticsGraphMetadata(query);
+    return this.statisticsService.findStatisticsGraphMetadata(
+      query,
+      userPayload.id,
+    );
   }
 
   @Get('top-injury')
