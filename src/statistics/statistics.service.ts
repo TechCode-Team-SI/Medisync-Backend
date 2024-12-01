@@ -33,6 +33,29 @@ export class StatisticsService {
   ) {
     const chartData: Chart[] = [];
 
+    const ageGraph = await this.chartMetadataRepository.age(date, userId);
+    if (ageGraph.data.length > 0) {
+      chartData.push(ageGraph);
+    }
+
+    const genderGraph = await this.chartMetadataRepository.gender(date, userId);
+    if (genderGraph.data.length > 0) {
+      chartData.push(genderGraph);
+    }
+
+    const requestStatusGraph = await this.chartMetadataRepository.requestStatus(
+      date,
+      userId,
+    );
+    if (requestStatusGraph.data.length > 0) {
+      chartData.push(requestStatusGraph);
+    }
+
+    const ratingGraph = await this.chartMetadataRepository.rating(date, userId);
+    if (ratingGraph.data.length > 0) {
+      chartData.push(ratingGraph);
+    }
+
     const metadatas = await this.statisticMetadataRepository.findAll({});
     await Promise.all(
       metadatas.map(async (metadata) => {
@@ -58,29 +81,6 @@ export class StatisticsService {
         }
       }),
     );
-
-    const ageGraph = await this.chartMetadataRepository.age(date, userId);
-    if (ageGraph.data.length > 0) {
-      chartData.push(ageGraph);
-    }
-
-    const ratingGraph = await this.chartMetadataRepository.rating(date, userId);
-    if (ratingGraph.data.length > 0) {
-      chartData.push(ratingGraph);
-    }
-
-    const genderGraph = await this.chartMetadataRepository.gender(date, userId);
-    if (genderGraph.data.length > 0) {
-      chartData.push(genderGraph);
-    }
-
-    const requestStatusGraph = await this.chartMetadataRepository.requestStatus(
-      date,
-      userId,
-    );
-    if (requestStatusGraph.data.length > 0) {
-      chartData.push(requestStatusGraph);
-    }
 
     return chartData;
   }
@@ -121,7 +121,7 @@ export class StatisticsService {
     return this.topGenericRepository.findTopGenders(date);
   }
 
-  findTopDetailed(date?: StatisticsFilterDto) {
-    return this.topGenericRepository.findTopDetailed(date);
+  findTopDetailed(date?: StatisticsFilterDto, userId?: string) {
+    return this.topGenericRepository.findTopDetailed(date, userId);
   }
 }

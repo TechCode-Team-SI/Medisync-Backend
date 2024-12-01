@@ -129,8 +129,9 @@ export class StatisticsController {
     type: PaginationResponse(TopGeneric),
   })
   async findTopDetailed(
+    @Me() userPayload: JwtPayloadType,
     @Query() query: StatisticsFilterDto,
   ): Promise<TopGeneric[]> {
-    return this.statisticsService.findTopDetailed(query);
+    return this.statisticsService.findTopDetailed(query, userPayload.id);
   }
 }

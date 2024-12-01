@@ -21,5 +21,8 @@ export abstract class TopGenericRepository extends BaseRepository {
 
   abstract findTopGenders(date?: StatisticsFilterDto): Promise<TopGeneric[]>;
 
-  abstract findTopDetailed(date?: StatisticsFilterDto): Promise<TopGeneric[]>;
+  abstract findTopDetailed(
+    date?: StatisticsFilterDto,
+    userId?: string,
+  ): Promise<TopGeneric[]>;
 }
