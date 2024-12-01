@@ -113,4 +113,8 @@ export class StatisticsService {
   findTopGenders(date?: StatisticsFilterDto) {
     return this.topGenericRepository.findTopGenders(date);
   }
+
+  findTopDetailed(date?: StatisticsFilterDto) {
+    return this.topGenericRepository.findTopDetailed(date);
+  }
 }

@@ -7,10 +7,15 @@ import { DataSource } from 'typeorm';
 import { TopGeneric } from 'src/statistics/domain/top-generic';
 import { TopGenericRepository } from '../../top-generic.repository';
 import { TopGenericMapper } from '../mappers/top-generic.mapper';
-import { dateRangeQuery, topDiagnosticQuery } from 'src/utils/statistics-utils';
+import {
+  dateGroupingQuery,
+  dateRangeQuery,
+  topDiagnosticQuery,
+} from 'src/utils/statistics-utils';
 import { StatisticsDiagnosticTopEnum } from 'src/statistics/statistics-top.enum';
 import { DiagnosticEntity } from 'src/diagnostics/infrastructure/persistence/relational/entities/diagnostic.entity';
 import { RequestEntity } from 'src/requests/infrastructure/persistence/relational/entities/request.entity';
+import { StatisticsTimeUnitEnum } from 'src/statistics/statistics-time-unit.enum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class TopGenericRelationalRepository
@@ -214,15 +219,14 @@ export class TopGenericRelationalRepository
       .select([
         'count(request.id) AS requests',
         'TIMESTAMPDIFF(YEAR, request.patientBirthday, CURDATE()) AS name',
-      ])
-      .orderBy('name');
+      ]);
 
     if (date) {
       const dateRange = dateRangeQuery(date);
       query.andWhere(`(DATE(request.createdAt) ${dateRange})`);
     }
 
-    const entities = await query.printSql().getRawMany();
+    const entities = await query.getRawMany();
 
     return entities.map((entity) => TopGenericMapper.toDomain(entity));
   }
@@ -266,6 +270,89 @@ export class TopGenericRelationalRepository
     return entities.map((entity) => {
       const gender = genderMapping[entity.name];
       return TopGenericMapper.toDomain({ ...entity, name: gender });
+    });
+  }
+
+  async findTopDetailed(date?: StatisticsFilterDto): Promise<TopGeneric[]> {
+    const entityManager = this.getEntityManager();
+    const query = entityManager
+      .getRepository(RequestEntity)
+      .createQueryBuilder('r')
+      .where('r.status <> :status', { status: 'cancelled' });
+
+    if (date?.specialtyId !== undefined) {
+      query
+        .innerJoin(
+          'r.requestedSpecialty',
+          'specialty',
+          'r.requestedSpecialty = specialty.id',
+        )
+        .andWhere(`r.requestedSpecialty = :specialtyId`, {
+          specialtyId: date.specialtyId,
+        });
+    }
+
+    if (date?.gender !== undefined) {
+      query.andWhere('r.patientGender = :gender', {
+        gender: date.gender,
+      });
+    }
+
+    if (date?.ageFrom !== undefined || date?.ageTo !== undefined) {
+      query.andWhere(
+        'TIMESTAMPDIFF(YEAR, r.patientBirthday, CURDATE()) BETWEEN :ageFrom AND :ageTo',
+        { ageFrom: date.ageFrom ?? 0, ageTo: date.ageTo ?? 99 },
+      );
+    }
+
+    if (date?.grouping !== undefined) {
+      const dateGrouping = dateGroupingQuery(date.grouping);
+      query
+        .select([
+          `${dateGrouping}(r.createdAt) as name`,
+          'count(r.id) AS requests',
+        ])
+        .groupBy(`${dateGrouping}(r.createdAt)`)
+        .orderBy(`${dateGrouping}(r.createdAt)`);
+    } else {
+      query
+        .select(['YEAR(r.createdAt) as name', 'count(r.id) AS requests'])
+        .groupBy('YEAR(r.createdAt)')
+        .orderBy('YEAR(r.createdAt)');
+    }
+
+    if (date) {
+      const dateRange = dateRangeQuery(date);
+      query.andWhere(`DATE(r.createdAt) ${dateRange}`);
+    }
+
+    const entities = await query.getRawMany();
+
+    if (!entities || entities.length === 0) {
+      return [];
+    }
+
+    const monthNames = [
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Agosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre',
+    ];
+
+    return entities.map((entity) => {
+      if (date?.grouping === StatisticsTimeUnitEnum.MONTH) {
+        const monthNumber = Number(entity.name);
+        entity.name = monthNames[monthNumber - 1];
+      }
+      return TopGenericMapper.toDomain(entity);
     });
   }
 }

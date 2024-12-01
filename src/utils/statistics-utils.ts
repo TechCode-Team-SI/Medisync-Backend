@@ -31,11 +31,13 @@ export function dateRangeQuery(date?: StatisticsFilterDto): string {
 export function dateGroupingQuery(grouping?: StatisticsTimeUnitEnum): string {
   switch (grouping) {
     case StatisticsTimeUnitEnum.YEAR:
-      return '%Y';
+      return 'YEAR';
     case StatisticsTimeUnitEnum.MONTH:
-      return '%Y %m';
+      return 'MONTH';
     case StatisticsTimeUnitEnum.DAY:
-      return '%Y %m %d';
+      return 'DAY';
+    case StatisticsTimeUnitEnum.HOUR:
+      return 'HOUR';
     default:
       return '';
   }

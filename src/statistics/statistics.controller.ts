@@ -117,4 +117,14 @@ export class StatisticsController {
   ): Promise<TopGeneric[]> {
     return this.statisticsService.findTopGenders(query);
   }
+
+  @Get('top-detailed')
+  @ApiOkResponse({
+    type: PaginationResponse(TopGeneric),
+  })
+  async findTopDetailed(
+    @Query() query: StatisticsFilterDto,
+  ): Promise<TopGeneric[]> {
+    return this.statisticsService.findTopDetailed(query);
+  }
 }
