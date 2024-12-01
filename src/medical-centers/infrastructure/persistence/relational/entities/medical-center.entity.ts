@@ -63,10 +63,10 @@ export class MedicalCenterEntity extends EntityRelationalHelper {
   mobilePhone: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ type: 'text' })
   mission: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ type: 'text' })
   vision: string;
 }
