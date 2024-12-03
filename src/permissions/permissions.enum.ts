@@ -19,7 +19,6 @@ export enum PermissionsEnum {
   MANAGE_SPECIALTIES = 'manage-specialties',
   MANAGE_STATISTICS = 'manage-statistics',
   VIEW_STATISTICS = 'view-statistics',
-  MANAGE_ILLNESSES = 'manage-illnesses',
   MANAGE_TREATMENTS = 'manage-treatments',
   MANAGE_INJURIES = 'manage-injuries',
   MANAGE_PATHOLOGIES = 'manage-pathologies',

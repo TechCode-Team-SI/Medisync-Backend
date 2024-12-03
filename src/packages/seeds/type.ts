@@ -27,7 +27,6 @@ export type InstallationModule = {
   specialty: string;
   description: string;
   requestTemplate: RequestTemplate;
-  illnesses: GlossaryData[];
   injuries: GlossaryData[];
   treatments: GlossaryData[];
   pathologies: GlossaryData[];
@@ -37,7 +36,6 @@ export type InstallationModule = {
 
 export type ModuleInstallationSteps = {
   fieldQuestions: FieldQuestionType[];
-  illnesses: RecursiveRequired<InstallationModule['illnesses']>;
   injuries: RecursiveRequired<InstallationModule['injuries']>;
   pathologies: RecursiveRequired<InstallationModule['pathologies']>;
   treatments: RecursiveRequired<InstallationModule['treatments']>;

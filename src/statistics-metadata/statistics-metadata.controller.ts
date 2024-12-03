@@ -99,6 +99,25 @@ export class StatisticsMetadataController {
     );
   }
 
+  @Get('all-specialties')
+  @ApiParam({
+    name: 'fieldQuestionId',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({
+    type: PaginationResponse(StatisticsMetadata),
+  })
+  async getAllAvailableSpecialtiesForgraph(
+    @Query() query: GetAvailableSpecialtiesDto,
+  ): Promise<PaginationResponseDto<AvailableSpecialty>> {
+    const pagination = getPagination(query);
+    return this.statisticsMetadataService.getAllAvailableSpecialtiesForGraph({
+      paginationOptions: pagination,
+      filterOptions: query.filters,
+    });
+  }
+
   @Get('field-questions')
   @ApiOkResponse({
     type: PaginationResponse(StatisticsMetadata),

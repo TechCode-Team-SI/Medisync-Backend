@@ -45,59 +45,6 @@ const installationModule: InstallationModule = {
       },
     ],
   },
-  illnesses: [
-    {
-      id: '558356d5-ff99-4cac-851f-8c97855871d2',
-      name: 'Infecciones del tracto urinario (ITU)',
-      description: 'Infección bacteriana que afecta el tracto urinario.',
-    },
-    {
-      id: 'c5024938-06b8-48d2-ab8e-f25a52174fcd',
-      name: 'Vaginosis bacteriana',
-      description: 'Desequilibrio de las bacterias vaginales.',
-    },
-    {
-      id: 'f90b6aae-74a8-4266-a0fe-82b09a45e93e',
-      name: 'Candidiasis',
-      description: 'Infección vaginal por hongos.',
-    },
-    {
-      id: 'aa900d05-3cfb-4cad-87a9-3bddc5b70ded',
-      name: 'Enfermedad inflamatoria pélvica (EIP)',
-      description: 'Infección de los órganos reproductores femeninos.',
-    },
-    {
-      id: '70cffe18-54a3-4423-abc3-37e358e35c83',
-      name: 'Endometriosis',
-      description: 'Crecimiento del tejido endometrial fuera del útero.',
-    },
-    {
-      id: '61ee8ed5-3893-47ba-b314-09921576b819',
-      name: 'Miomas uterinos',
-      description: 'Tumores benignos en el útero.',
-    },
-    {
-      id: 'ba2b64ea-e12e-4266-9eab-5ed6a1cd1faf',
-      name: 'Quistes ováricos',
-      description: 'Sacos llenos de líquido en los ovarios.',
-    },
-    {
-      id: 'bc21ed45-da32-47cb-8a97-380a9cae2199',
-      name: 'Síndrome de ovario poliquístico (SOP)',
-      description:
-        'Desequilibrio hormonal que afecta los ovarios y el metabolismo.',
-    },
-    {
-      id: 'd0b589bf-a367-4f64-82c6-c43bcd5007c8',
-      name: 'Cáncer de cuello uterino',
-      description: 'Crecimiento anormal de células en el cuello uterino.',
-    },
-    {
-      id: '52c4f45a-f61f-40ce-8073-4986a5e0934b',
-      name: 'Cáncer de mama',
-      description: 'Crecimiento anormal de células en el tejido mamario.',
-    },
-  ],
   injuries: [],
   treatments: [
     {

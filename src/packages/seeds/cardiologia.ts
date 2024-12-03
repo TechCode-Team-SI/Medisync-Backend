@@ -57,38 +57,6 @@ const installationModule: InstallationModule = {
       },
     ],
   },
-  illnesses: [
-    {
-      id: 'cab16812-259b-4b7c-bf31-ee587e6f93c2',
-      name: 'Enfermedad de las arterias coronarias',
-      description:
-        'Una enfermedad causada por la acumulación de placa en las arterias coronarias, lo que lleva a una reducción del flujo sanguíneo al corazón.',
-    },
-    {
-      id: '898bc231-fec7-4ef6-b40e-69d548a452d9',
-      name: 'Enfermedad valvular cardíaca',
-      description:
-        'Una condición que implica daño a una o más de las válvulas del corazón, lo que puede interrumpir el flujo sanguíneo normal.',
-    },
-    {
-      id: '3b7f11e0-a66e-4c48-a103-1b19f3b8b97b',
-      name: 'Enfermedad cardíaca congénita',
-      description:
-        'Una variedad de defectos en la estructura del corazón presentes al nacer, que pueden afectar el flujo sanguíneo a través del corazón.',
-    },
-    {
-      id: '39dbb5d2-9b22-4d9c-aad6-e879a2a78471',
-      name: 'Enfermedad arterial periférica',
-      description:
-        'Una condición en la que las arterias estrechas reducen el flujo sanguíneo a las extremidades, a menudo causando dolor en las piernas y aumentando el riesgo cardiovascular.',
-    },
-    {
-      id: '9fb9006c-f773-4aee-bf57-62a63de7d520',
-      name: 'Miocardiopatía',
-      description:
-        'Una enfermedad del músculo cardíaco que dificulta que el corazón bombee sangre, lo que puede llevar a insuficiencia cardíaca.',
-    },
-  ],
   injuries: [
     {
       id: 'de7cfd53-9e2b-4b6c-a715-e8f3800f12bc',

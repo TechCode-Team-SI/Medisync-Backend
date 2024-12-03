@@ -130,7 +130,7 @@ export class InjuryRelationalRepository
       where: { id: In(ids) },
       relations,
     });
-    return entities.map((illness) => InjuryMapper.toDomain(illness));
+    return entities.map((injury) => InjuryMapper.toDomain(injury));
   }
 
   async findById(

@@ -3,7 +3,6 @@ import { Diagnostic } from '../../../../domain/diagnostic';
 import { DiagnosticEntity } from '../entities/diagnostic.entity';
 import { SpecialtyMapper } from 'src/specialties/infrastructure/persistence/relational/mappers/specialty.mapper';
 import { RequestMapper } from 'src/requests/infrastructure/persistence/relational/mappers/request.mapper';
-import { IllnessMapper } from 'src/illnesses/infrastructure/persistence/relational/mappers/illness.mapper';
 import { InjuryMapper } from 'src/injuries/infrastructure/persistence/relational/mappers/injury.mapper';
 import { SymptomMapper } from 'src/symptoms/infrastructure/persistence/relational/mappers/symptom.mapper';
 import { TreatmentMapper } from 'src/treatments/infrastructure/persistence/relational/mappers/treatment.mapper';
@@ -22,11 +21,6 @@ export class DiagnosticMapper {
     }
     if (raw.request) {
       domainEntity.request = RequestMapper.toDomain(raw.request);
-    }
-    if (raw.illnesses) {
-      domainEntity.illnesses = raw.illnesses.map((illness) =>
-        IllnessMapper.toDomain(illness),
-      );
     }
     if (raw.injuries) {
       domainEntity.injuries = raw.injuries.map((injury) =>
@@ -71,11 +65,6 @@ export class DiagnosticMapper {
     if (domainEntity.request) {
       persistenceEntity.request = RequestMapper.toPersistence(
         domainEntity.request,
-      );
-    }
-    if (domainEntity.illnesses) {
-      persistenceEntity.illnesses = domainEntity.illnesses.map((illness) =>
-        IllnessMapper.toPersistence(illness),
       );
     }
     if (domainEntity.injuries) {

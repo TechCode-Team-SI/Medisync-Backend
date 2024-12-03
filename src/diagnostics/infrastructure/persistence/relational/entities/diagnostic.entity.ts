@@ -13,7 +13,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
-import { IllnessEntity } from 'src/illnesses/infrastructure/persistence/relational/entities/illness.entity';
 import { InjuryEntity } from 'src/injuries/infrastructure/persistence/relational/entities/injury.entity';
 import { SymptomEntity } from 'src/symptoms/infrastructure/persistence/relational/entities/symptom.entity';
 import { TreatmentEntity } from 'src/treatments/infrastructure/persistence/relational/entities/treatment.entity';
@@ -42,11 +41,6 @@ export class DiagnosticEntity extends EntityRelationalHelper {
   @ApiProperty()
   @ManyToOne(() => RequestEntity)
   request: RequestEntity;
-
-  @ApiProperty()
-  @ManyToMany(() => IllnessEntity)
-  @JoinTable({ name: 'diagnostic_illness' })
-  illnesses: IllnessEntity[];
 
   @ApiProperty()
   @ManyToMany(() => InjuryEntity)

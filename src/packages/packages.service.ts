@@ -23,7 +23,6 @@ import {
 import { FilterPackageDto, SortPackageDto } from './dto/find-all-packages.dto';
 import { PathologiesService } from 'src/pathologies/pathologies.service';
 import { SymptomsService } from 'src/symptoms/symptoms.service';
-import { IllnessesService } from 'src/illnesses/illnesses.service';
 import { TreatmentsService } from 'src/treatments/treatments.service';
 import { InjuriesService } from 'src/injuries/injuries.service';
 import { FilesS3Service } from 'src/files/infrastructure/uploader/s3/files.service';
@@ -39,7 +38,6 @@ export class PackagesService {
     private readonly requestTemplatesService: RequestTemplatesService,
     private readonly pathologiesService: PathologiesService,
     private readonly symptomsService: SymptomsService,
-    private readonly illnessesService: IllnessesService,
     private readonly treatmentsService: TreatmentsService,
     private readonly injuriesService: InjuriesService,
     private readonly filesS3Service: FilesS3Service,
@@ -103,7 +101,6 @@ export class PackagesService {
       fieldQuestions: [],
       requestTemplates: [],
       specialties: [],
-      illnesses: [],
       injuries: [],
       pathologies: [],
       treatments: [],
@@ -124,7 +121,6 @@ export class PackagesService {
         image: file,
       });
 
-      installationSteps.illnesses.push(...installationModule.illnesses);
       installationSteps.injuries.push(...installationModule.injuries);
       installationSteps.pathologies.push(...installationModule.pathologies);
       installationSteps.treatments.push(...installationModule.treatments);
@@ -165,9 +161,6 @@ export class PackagesService {
     }
 
     //Remove duplicated data
-    installationSteps.illnesses = this.removeDuplicateGlosaryData(
-      installationSteps.illnesses,
-    );
     installationSteps.injuries = this.removeDuplicateGlosaryData(
       installationSteps.injuries,
     );
@@ -232,25 +225,6 @@ export class PackagesService {
         (symptom) =>
           !duplicatedSymptoms.find(
             (duplicatedSymptom) => duplicatedSymptom.name === symptom.name,
-          ),
-      );
-    }
-
-    //Remove illnesses that are already installed
-    const illnessesName = installationSteps.illnesses.map(
-      (illness) => illness.name,
-    );
-    const duplicatedIllnesses = await this.illnessesService.findAllWithNames(
-      illnessesName,
-      {
-        minimal: true,
-      },
-    );
-    if (duplicatedIllnesses.length > 0) {
-      installationSteps.illnesses = installationSteps.illnesses.filter(
-        (illness) =>
-          !duplicatedIllnesses.find(
-            (duplicatedSymptom) => duplicatedSymptom.name === illness.name,
           ),
       );
     }
@@ -339,11 +313,6 @@ export class PackagesService {
       //Create Symptoms
       this.symptomsService.createMultiple({
         symptoms: installationSteps.symptoms,
-      }),
-
-      //Create Illnesses
-      this.illnessesService.createMultiple({
-        illnesses: installationSteps.illnesses,
       }),
 
       //Create Treatments

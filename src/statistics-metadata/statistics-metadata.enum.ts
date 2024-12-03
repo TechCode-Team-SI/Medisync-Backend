@@ -3,7 +3,8 @@ export enum FilteredByType {
   SPECIALTY = 'specialty',
 }
 
-export enum StatisticType {
-  TART = 'tart',
-  HISTOGRAM = 'histogram',
+export enum ChartTypeEnum {
+  PIE = 'pie',
+  BAR = 'bar',
+  LINE = 'line',
 }

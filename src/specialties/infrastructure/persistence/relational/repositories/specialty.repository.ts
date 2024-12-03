@@ -125,7 +125,8 @@ export class SpecialtyRelationalRepository
       .getRepository(SpecialtyEntity)
       .createQueryBuilder('s')
       .innerJoin('s.employees', 'e')
-      .where('e.id = :id', { id });
+      .innerJoin('e.user', 'u')
+      .where('u.id = :id', { id });
 
     const entity = await query.getOne();
 

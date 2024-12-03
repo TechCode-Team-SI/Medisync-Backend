@@ -60,11 +60,8 @@ export class RequestsController {
   @ApiCreatedResponse({
     type: Request,
   })
-  createWithReference(
-    @Body() createRequestDto: CreateRequestWithReferenceDto,
-    @Me() userPayload: JwtPayloadType,
-  ) {
-    return this.requestsService.create(createRequestDto, userPayload.id);
+  createWithReference(@Body() createRequestDto: CreateRequestWithReferenceDto) {
+    return this.requestsService.create(createRequestDto, createRequestDto.id);
   }
 
   //In private, the user can create a request with a reference

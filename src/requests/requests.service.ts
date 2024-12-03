@@ -489,7 +489,6 @@ export class RequestsService {
       description: finishRequestDto.diagnostic.description,
       request,
       specialty,
-      illnesses: finishRequestDto.diagnostic.illnesses,
       injuries: finishRequestDto.diagnostic.injuries,
       symptoms: finishRequestDto.diagnostic.symptoms,
       treatments: finishRequestDto.diagnostic.treatments,

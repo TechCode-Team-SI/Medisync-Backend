@@ -154,30 +154,6 @@ export const MessagesContent = {
       type: NotificationTypeEnum.WORK,
     },
   },
-  illness: {
-    created: {
-      title: 'Nuevo Enfermedad registrada',
-      content: (Id: string) =>
-        `Se ha registrado una nueva enfermedad con el ID: ${Id}.`,
-      type: NotificationTypeEnum.WORK,
-    },
-    closed: {
-      title: 'Enfermedad cerrado',
-      content: (Id: string) => `La enfermedad con ID: ${Id} ha sido cerrado.`,
-      type: NotificationTypeEnum.WORK,
-    },
-    updated: {
-      title: 'Enfermedad actualizada',
-      content: (Id: string) =>
-        `La enfermedad con ID: ${Id} ha sido actualizada.`,
-      type: NotificationTypeEnum.WORK,
-    },
-    remove: {
-      title: 'Enfermedad removida',
-      content: (Id: string) => `La Enfermedad con ID: ${Id} ha sido removida.`,
-      type: NotificationTypeEnum.WORK,
-    },
-  },
   treatment: {
     created: {
       title: 'Nuevo tratamiento creado',

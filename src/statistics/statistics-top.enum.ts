@@ -1,5 +1,4 @@
-export enum StatisticsTopEnum {
-  ILLNESS = 'ILLNESS',
+export enum StatisticsDiagnosticTopEnum {
   INJURY = 'INJURY',
   PATHOLOGY = 'PATHOLOGY',
   SYMPTOM = 'SYMPTOM',

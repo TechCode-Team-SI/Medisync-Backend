@@ -21,66 +21,6 @@ const installationModule: InstallationModule = {
       },
     ],
   },
-  illnesses: [
-    {
-      id: 'ff05bba2-a208-4593-8ba0-f4c123dd1e77',
-      name: 'Gripe',
-      description:
-        'Enfermedad viral aguda que afecta principalmente al sistema respiratorio.',
-    },
-    {
-      id: '1fa22fda-a517-4062-8f90-719fc505bf97',
-      name: 'Diabetes',
-      description:
-        'Enfermedad crónica que se caracteriza por niveles altos de azúcar en la sangre.',
-    },
-    {
-      id: '6fd96b36-b3ea-4301-a088-026f1b9813b7',
-      name: 'Hipertensión',
-      description:
-        'Enfermedad crónica caracterizada por una presión arterial elevada.',
-    },
-    {
-      id: 'eed3ae1e-ba09-4ac5-b292-9d9d902edfb5',
-      name: 'Asma',
-      description:
-        'Enfermedad crónica que provoca inflamación de las vías respiratorias.',
-    },
-    {
-      id: 'e2317b68-75df-4b6d-b5ea-8259b281b86b',
-      name: 'Artritis',
-      description: 'Inflamación de una o más articulaciones.',
-    },
-    {
-      id: 'fa462680-091a-4bad-9449-269ed1902aa8',
-      name: 'Migraña',
-      description:
-        'Trastorno neurológico caracterizado por dolores de cabeza intensos y recurrentes.',
-    },
-    {
-      id: '6162ea43-a122-4b4d-8752-b600761f2a44',
-      name: 'Depresión',
-      description:
-        'Trastorno del estado de ánimo que causa sentimientos de tristeza, pérdida de interés y baja energía.',
-    },
-    {
-      id: '78017ab3-f5e1-41e1-8d21-2516a6fe3ed9',
-      name: 'Ansiedad',
-      description:
-        'Trastorno mental caracterizado por sentimientos de preocupación excesiva e incontrolable.',
-    },
-    {
-      id: '1e7a4313-43d4-4410-a4e5-8f8d3d9548d1',
-      name: 'Insomnio',
-      description: 'Dificultad para conciliar el sueño o mantenerlo.',
-    },
-    {
-      id: 'dc160717-7e5e-4172-b231-3d6879c7a4e1',
-      name: 'Enfermedad de Alzheimer',
-      description:
-        'Enfermedad neurodegenerativa que afecta la memoria y otras funciones cognitivas.',
-    },
-  ],
   injuries: [
     {
       id: 'da562640-60d5-4876-8d52-66f99bcc2b85',
